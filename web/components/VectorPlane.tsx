@@ -3,7 +3,7 @@ import type { KeyboardEvent, PointerEvent } from 'react';
 import type { Matrix, Vector } from '../../src/index.ts';
 import { TOKEN_COLORS, TOKEN_NAMES, formatVector } from '../format.ts';
 import { VECTOR_LIMIT } from '../state.ts';
-import type { VectorKind } from '../state.ts';
+import type { EditPolicy, VectorKind } from '../state.ts';
 
 const CENTER = 140;
 const UNIT = 23;
@@ -16,21 +16,23 @@ interface Props {
   selectedToken: number;
   observedQuery: Vector;
   observedToken: number;
+  editPolicy: EditPolicy | null;
   onSelect: (token: number) => void;
   onChange: (token: number, vector: readonly [number, number]) => void;
 }
 
-export function VectorPlane({ vectors, kind, selectedToken, observedQuery, observedToken, onSelect, onChange }: Props) {
+export function VectorPlane({ vectors, kind, selectedToken, observedQuery, observedToken, editPolicy, onSelect, onChange }: Props) {
   const dragging = useRef<{ token: number; pointerId: number } | null>(null);
+  const editable = (token: number) => editPolicy === null || editPolicy.enabled && token === editPolicy.token && kind === editPolicy.kind;
   const onPointerMove = (event: PointerEvent<SVGSVGElement>) => {
-    if (!dragging.current || event.pointerId !== dragging.current.pointerId) return;
+    if (!dragging.current || event.pointerId !== dragging.current.pointerId || !editable(dragging.current.token)) return;
     const transform = event.currentTarget.getScreenCTM();
     if (!transform) return;
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(transform.inverse());
     onChange(dragging.current.token, [snap((point.x - CENTER) / UNIT), snap((CENTER - point.y) / UNIT)]);
   };
   const startDrag = (event: PointerEvent<SVGCircleElement>, token: number) => {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || !editable(token)) return;
     event.preventDefault();
     const svg = event.currentTarget.ownerSVGElement;
     if (!svg) return;
@@ -40,6 +42,7 @@ export function VectorPlane({ vectors, kind, selectedToken, observedQuery, obser
     onSelect(token);
   };
   const moveWithKeyboard = (event: KeyboardEvent<SVGCircleElement>, token: number) => {
+    if (!editable(token)) return;
     const delta = event.shiftKey ? 1 : 0.1;
     const vector = vectors[token]!;
     const offsets: Record<string, readonly [number, number]> = {
@@ -79,7 +82,7 @@ export function VectorPlane({ vectors, kind, selectedToken, observedQuery, obser
           <line x1={CENTER} y1={CENTER} x2={x} y2={y} stroke={TOKEN_COLORS[index]} strokeWidth={selectedToken === index ? 2.5 : 1.8} markerEnd={`url(#vector-arrow-${index})`} />
           <text x={x + (vector[0]! >= 0 ? 14 : -14)} y={y - 13 - (index === 2 ? 2 : 0)} textAnchor={vector[0]! >= 0 ? 'start' : 'end'} className="vector-label" fill={TOKEN_COLORS[index]}>{kinds[kind]}{TOKEN_NAMES[index]}</text>
           {selectedToken === index && <circle cx={x} cy={y} r="13" fill={TOKEN_COLORS[index]} opacity="0.12" pointerEvents="none" />}
-          <circle cx={x} cy={y} r="7" fill={TOKEN_COLORS[index]} stroke="white" strokeWidth="2" tabIndex={0} role="button"
+          <circle cx={x} cy={y} r="7" fill={TOKEN_COLORS[index]} stroke="white" strokeWidth="2" tabIndex={editable(index) ? 0 : -1} role="button" aria-disabled={!editable(index)} data-editable={editable(index)}
             aria-label={`拖动词元 ${TOKEN_NAMES[index]} 的 ${kinds[kind]} 向量`}
             aria-describedby="drag-help" data-testid={`vector-handle-${index}`}
             onPointerDown={(event) => startDrag(event, index)} onKeyDown={(event) => moveWithKeyboard(event, index)}>

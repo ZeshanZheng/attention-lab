@@ -1,6 +1,6 @@
 # Attention 实验室
 
-面向 AI 初学者的可控 Attention 教学实验。第一阶段的计算核心与第二阶段的交互网页均已完成。
+面向 AI 初学者的可控 Attention 教学实验。计算核心、交互网页和第三阶段的引导学习闭环均已完成。
 
 ![Attention 实验室桌面界面](docs/images/desktop.png)
 
@@ -14,7 +14,26 @@
 - 保存当前参数作为比较基线、恢复基线、一键重置。基线保留在当前页面中；刷新页面会回到默认实验。
 - 手机布局、键盘操作、使用说明及非法输入反馈。
 
-本阶段为自由探索原型；预测题、引导课程与学习反馈留给第三阶段。
+## 引导学习与理解自测
+
+每次实验按“先预测 → 动手修改 → 解释结果 → 完成实验”推进，只开放目标向量，固定观察 A 并保留初始基线，避免同时修改多个变量。
+
+| 实验 | 操作 | 学习目标 |
+|---|---|---|
+| 改变关注对象 | 只改 B 的 K，让 B 权重超过 60% | Q/K 匹配决定关注谁；Q 的零分量不参与点积 |
+| 改变传递内容 | 把 B 的 V 从 `(0, 2)` 改为 `(0, 4)` | 权重不变，输出 y 翻倍；V 决定传递的内容 |
+| 观察权重竞争 | 只改 A 的 K，让 A 权重至少为 70% | 权重归一化，A 增大时 B/C 减小；共同平移得分不改变 Softmax |
+
+![引导实验完成界面](docs/images/guided.png)
+
+- 先记录预测再开放编辑，达到目标后冻结参数，用实际数值反馈结果；理解题支持提示与重试。
+- 四道理解自测使用新的数值情境，提交后逐题解释；首次成绩和最近成绩分别保留。
+- 已完成实验和已提交自测保存到当前浏览器的 `localStorage`，刷新后仍可查看进度。未完成的实验和自由探索参数刷新后重新开始；不同设备或网址的记录不会自动同步。
+- “导出记录”下载匿名 JSON，包含首次预测、理解题回答序列、完成时的输入/权重/输出快照，以及自测回答和成绩。不收集姓名，不向服务器发送记录。
+- 实验与自测历史分别最多保留 30 条；各实验首次完成和首次自测会保留。重复练习不覆盖首次错误，不能把重试后的分数当作首次掌握情况。
+- 切回自由探索会恢复本次页面中之前的参数；重置引导实验保留已经完成的学习记录。浏览器无法保存时仍可学习并导出，但刷新后新增记录不会保留。
+
+参见[理解自测截图](docs/images/assessment.png)、[手机引导截图](docs/images/guided-mobile.png)和[真人试用流程](docs/user-testing.md)。目前已验证程序行为，尚未开展真人学习效果评估。
 
 ## 当前能力
 
@@ -51,9 +70,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task verify
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task test:browser
 ```
 
-`verify` 依次运行计算核心与前端的严格类型检查、19 项数学/边界/实验状态测试、核心与网页编译以及默认实验演示；任何一步失败都会返回失败。
+`verify` 依次运行计算核心与前端的严格类型检查、28 项数学/边界/实验状态/学习流程测试、核心与网页编译以及默认实验演示；任何一步失败都会返回失败。
 
-`test:browser` 对构建后的网页执行 8 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖编辑 V、拖拽与方向键、步骤播放、切换 Query、基线保存/恢复/重置、非法输入及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
+`test:browser` 对构建后的网页执行 14 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖向量编辑、拖拽与键盘、步骤播放、基线管理、三个实验全流程、错误预测与重试、自测首次成绩、进度刷新、JSON 导出、存储异常及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
 
 ### 已有 Node.js 的环境
 
@@ -140,17 +159,22 @@ src/
   index.ts                          公共入口
 tests/attention.test.ts              数学与边界测试
 tests/lab-state.test.ts              基线、重置与输入验证测试
+tests/learning.test.ts               实验目标、流程门禁、记录与自测测试
 tests/browser/lab.spec.ts            真实浏览器交互验收
+tests/browser/learning.spec.ts       引导学习与记录持久化验收
 web/                                React 界面、实验状态与 SVG 图表
+  learning/                         课程、会话、学习记录与本地保存
 examples/default-experiment.ts       可运行的修改前后演示
 scripts/                            Windows 本地环境与运行脚本
 docs/development/                    本次需求、开发与验证记录
+docs/user-testing.md                真人试用流程与评价边界
+docs/user-testing-template.csv      空白试用记录模板
 ```
 
 ## 开发记录与比赛材料
 
-参见 [第一次迭代记录](docs/development/01-calculation-core.md) 和 [第二次迭代记录](docs/development/02-interactive-interface.md)。Git 历史将工程初始化、计算模块与交互界面分开记录。GitHub 仓库：[ZeshanZheng/attention-lab](https://github.com/ZeshanZheng/attention-lab)。
+参见 [第一次迭代记录](docs/development/01-calculation-core.md)、[第二次迭代记录](docs/development/02-interactive-interface.md) 和 [第三次迭代记录](docs/development/03-guided-learning.md)。Git 历史将工程初始化、计算模块、交互界面与引导学习分开记录。GitHub 仓库：[ZeshanZheng/attention-lab](https://github.com/ZeshanZheng/attention-lab)。
 
-开发记录只是摘要，不等同于完整 AI 对话。应保留当前会话原始对话或截图/录屏，后续阶段继续积累真实 Prompt 链；两次阶段迭代不冒充三次核心功能迭代。
+开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 
 数学依据：[Attention Is All You Need](https://papers.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)。运行方式依据：[Node.js TypeScript 文档](https://nodejs.org/docs/latest-v24.x/api/typescript.html)。

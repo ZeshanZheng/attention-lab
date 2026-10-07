@@ -7,13 +7,14 @@ export function HelpDialog({ onClose }: { onClose: () => void }) {
   return <dialog ref={dialog} className="help-dialog" aria-labelledby="help-title" onCancel={onClose}
     onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
     <div className="dialog-heading"><div><span className="eyebrow">QUICK GUIDE</span><h2 id="help-title">欢迎来到注意力实验室</h2></div><button className="icon-button" onClick={onClose} aria-label="关闭说明"><Icon name="close" /></button></div>
-    <p>从一个小实验，理解 Attention 的计算过程。</p>
+    <p>自由探索可以修改所有向量；引导实验会限定一个变量，先预测再验证。</p>
     <ol className="guide-list">
       <li><b>选择观察对象</b><span>页面上方选择 A、B 或 C，观察它的 Query 如何关注其他词元。</span></li>
       <li><b>改变一个向量</b><span>左侧选中编辑词元，输入数字，或拖动 Q/K/V 的圆点。向量各坐标范围为 −5 到 5。</span></li>
       <li><b>沿着四步计算走一遍</b><span>点击步骤或“自动演示”，查看实际数值如何得到权重和输出。</span></li>
       <li><b>比较修改前后</b><span>默认基线是初始实验。也可以保存当前参数作为新基线，或恢复基线继续实验。</span></li>
     </ol>
+    <div className="dialog-note"><b>三次引导实验与理解自测</b><p>进入“引导实验”，按预测、修改、解释和理解题的顺序完成任务。已完成进度与自测成绩保存在当前浏览器，可导出匿名记录；未完成实验重新进入时从预测开始。重置实验保留学习进度。</p></div>
     <div className="dialog-note"><b>这是一个简化的教学模型</b><p>向量由人为设置，直接编辑 Q/K/V。点积是匹配得分，不是余弦相似度；输出是聚合向量，不是下一词预测。本实验没有加入训练、位置编码和多头机制。</p></div>
     <button className="button primary" onClick={onClose}>开始探索<Icon name="arrow" /></button>
   </dialog>;
