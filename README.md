@@ -16,6 +16,7 @@
 - 3 × 3 Attention 权重热力图展示所有 Query 与 Key 的关注关系，使用固定 0%–100% 色阶和百分比，高亮当前观察行；悬停、聚焦或点选单元格查看点积、缩放得分、基线权重和差值。自由探索中点击或按 Enter 同步切换观察 Query，引导实验保持观察 A。
 - 保存当前参数作为比较基线、恢复基线、一键重置。基线保留在当前页面中；刷新页面会回到默认实验。
 - 手机布局、键盘操作、使用说明及非法输入反馈。
+- 正文常用字号为 14–15px，公式为 16–17px（手机窄屏为 14px），权重数值为 16px，输入数字为 14px；辅助说明颜色加深，兼顾桌面和手机阅读。
 
 ![Attention 权重热力图](docs/images/heatmap.png)
 
@@ -192,6 +193,8 @@ docs/user-testing-template.csv      空白试用记录模板
 题库扩充、换题与历史兼容见[第五次迭代记录](docs/development/05-assessment-bank.md)。
 
 热力图的设计与验证见[第六次迭代记录](docs/development/06-attention-heatmap.md)。
+
+字号与文字对比度调整见[第七次迭代记录](docs/development/07-readable-typography.md)。
 
 开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 
