@@ -31,3 +31,9 @@
 初次类型检查提示启用 `exactOptionalPropertyTypes` 时不能向可选回调直接传入 `undefined`，调整为显式的回调或 `undefined` 联合类型后通过。初次浏览器检查有一项颜色断言在 150ms 过渡开始前读取旧颜色；修改测试以读取目标样式，并等待实际背景色达到目标值后验证，保留界面过渡动画。
 
 桌面和手机热力图截图已检查，保存在 `docs/images/heatmap.png` 与 `docs/images/heatmap-mobile.png`。现有学习记录格式与题库不变；完整 AI 对话仍需另行保留，本文为实际开发摘要。
+
+## 在线发布
+
+热力图提交 `bb2d028` 与后续字号调整提交 `da80265` 一并推送，[云端构建与发布](https://github.com/ZeshanZheng/attention-lab/actions/runs/37605520709) 成功，34 项测试与 21 项浏览器验收通过。
+
+实际访问[线上网页](https://zeshanzheng.github.io/attention-lab/)返回 HTTP 200，验证九格数值、点击切换观察 Query、只改 V 时权重不变，以及手机引导实验仍固定观察 A；无横向溢出或页面运行时错误。

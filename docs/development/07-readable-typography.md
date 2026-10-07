@@ -29,3 +29,9 @@
 | 390 | 14px | 14px | 14px | 16px | 15px |
 
 已检查 [桌面实验面板截图](../images/readable-desktop.png) 与 [手机页面截图](../images/mobile.png)，并更新当前界面、热力图、自测和引导实验的截图。自动检查和截图不作为真人学习效果数据。
+
+## 在线发布
+
+提交 `da80265d77f83d83d16d9bca18199e6f5c1e1d0a` 已通过[云端部署](https://github.com/ZeshanZheng/attention-lab/actions/runs/37605520709)，34 项核心/状态测试和 21 项浏览器验收均通过。
+
+实际访问[公开网页](https://zeshanzheng.github.io/attention-lab/)返回 HTTP 200，读取步骤正文为 14px，热力图和观察联动正常；390 像素宽度的页面无横向溢出，没有页面运行时错误。
