@@ -1,1 +1,1 @@
-participant_id,prior_attention_knowledge,pre_learning_explanation,duration_seconds,completed_lessons,independent_completion,hints_used,first_quiz_score,retry_quiz_score,post_learning_explanation,confusing_step,help_given,most_helpful_part,suggestions,export_file
+﻿参与者编号,是否了解注意力机制,学习前的理解说明,实验总用时（秒）,已完成的实验,是否独立完成,使用提示次数,首次自测成绩,重试自测成绩,学习后的理解说明,困惑的步骤,提供过的帮助,最有帮助的部分,改进建议,导出文件名
