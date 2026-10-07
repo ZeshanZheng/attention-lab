@@ -13,8 +13,13 @@
 - 向量圆点支持方向键调整 0.1，Shift + 方向键调整 1；坐标范围为 −5 到 5。
 - 点积、缩放、Softmax、加权求和四个步骤，展示公式、代入数值及实际结果；支持逐步导航和自动演示。
 - 权重柱状图、输出向量图及修改前后差值，使用同一份计算结果。
+- 3 × 3 Attention 权重热力图展示所有 Query 与 Key 的关注关系，使用固定 0%–100% 色阶和百分比，高亮当前观察行；悬停、聚焦或点选单元格查看点积、缩放得分、基线权重和差值。自由探索中点击或按 Enter 同步切换观察 Query，引导实验保持观察 A。
 - 保存当前参数作为比较基线、恢复基线、一键重置。基线保留在当前页面中；刷新页面会回到默认实验。
 - 手机布局、键盘操作、使用说明及非法输入反馈。
+
+![Attention 权重热力图](docs/images/heatmap.png)
+
+热力图的每一行分别归一化，真实权重之和为 1；显示百分比已经四舍五入，合计可能略偏离 100%。颜色越深代表权重越大，色阶随编辑保持一致。只修改 V 时，九格权重和颜色保持不变，输出向量可能改变。参见[手机热力图](docs/images/heatmap-mobile.png)。
 
 ## 引导学习与理解自测
 
@@ -77,7 +82,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task test:b
 
 `verify` 依次运行计算核心与前端的严格类型检查、34 项数学/边界/实验状态/学习流程/题库测试、核心与网页编译以及默认实验演示；任何一步失败都会返回失败。
 
-`test:browser` 对构建后的网页执行 16 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖向量编辑、拖拽与键盘、步骤播放、基线管理、三个实验全流程、错误预测与重试、自测换题与首次成绩、旧版记录迁移、进度刷新、题目快照 JSON 导出、存储异常及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
+`test:browser` 对构建后的网页执行 21 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖向量编辑、拖拽与键盘、步骤播放、基线管理、热力图九格数值与 Query 联动、三个实验全流程、错误预测与重试、自测换题与首次成绩、旧版记录迁移、进度刷新、题目快照 JSON 导出、存储异常及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
 
 ### 已有 Node.js 的环境
 
@@ -167,6 +172,7 @@ tests/lab-state.test.ts              基线、重置与输入验证测试
 tests/learning.test.ts               实验目标、流程门禁、记录与自测测试
 tests/assessment.test.ts             题库抽取、数学核对、快照与旧记录迁移
 tests/browser/lab.spec.ts            真实浏览器交互验收
+tests/browser/heatmap.spec.ts        热力图数值、基线、键盘与手机验收
 tests/browser/learning.spec.ts       引导学习与记录持久化验收
 web/                                React 界面、实验状态与 SVG 图表
   learning/                         课程、会话、学习记录与本地保存
@@ -184,6 +190,8 @@ docs/user-testing-template.csv      空白试用记录模板
 在线发布的配置与实际验收见[第四次迭代记录](docs/development/04-online-deployment.md)。
 
 题库扩充、换题与历史兼容见[第五次迭代记录](docs/development/05-assessment-bank.md)。
+
+热力图的设计与验证见[第六次迭代记录](docs/development/06-attention-heatmap.md)。
 
 开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App.tsx';
 import './styles.css';
 import './learning.css';
+import './heatmap.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Application root element is missing.');

@@ -9,6 +9,7 @@ import { HelpDialog } from './components/HelpDialog.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
+import { AttentionHeatmap } from './components/AttentionHeatmap.tsx';
 import { LESSONS, createLessonInput, getLesson } from './learning/lessons.ts';
 import type { LessonId } from './learning/lessons.ts';
 import { addAssessmentRecord, addLessonRecord, completedLessons, exportProgress } from './learning/progress.ts';
@@ -118,6 +119,8 @@ export function App() {
       </div></div><div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div></div>
       <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} playing={playing} onStep={selectStep}
         onPlay={() => { if (!playing && state.step === 3) dispatch({ type: 'select-step', step: 0 }); setPlaying(!playing); }} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
+      <AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
+        onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
       <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { setPlaying(false); dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
       </>}
       <footer className="page-footer"><p>人为设定的教学向量 · 输出为聚合向量，不是下一词预测</p><span>小规模，可手算，可探索。</span></footer>

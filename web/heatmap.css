@@ -1,0 +1,50 @@
+.heatmap-card { display: grid; grid-template-columns: minmax(210px, 1fr) minmax(260px, 1.05fr) minmax(230px, 1fr); gap: 38px; align-items: start; margin-top: 20px; }
+.heatmap-intro h2 { font-size: 19px; color: #424b66; margin-top: 9px; font-weight: 600; }
+.heatmap-intro > p { font-size: 12px; color: #8993a8; line-height: 1.9; margin-top: 12px; }
+.heatmap-axis-guide { display: flex; gap: 26px; margin-top: 18px; }
+.heatmap-axis-guide span { display: flex; flex-direction: column; gap: 5px; font-size: 11px; color: #929bb0; }
+.heatmap-axis-guide b { font-size: 11px; font-weight: 550; color: #7560b4; }
+.heatmap-axis-guide span:last-child b { color: #318c81; }
+.heatmap-intro .heatmap-instruction { font-size: 11px; margin-top: 20px; color: #929bb0; }
+.attention-matrix { width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 5px; }
+.attention-matrix caption { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.attention-matrix th { font-size: 12px; font-weight: 550; color: #7a839d; height: 28px; }
+.attention-matrix thead th:first-child { width: 60px; }
+.attention-matrix thead th:not(:first-child) { color: #378e82; }
+.attention-matrix sub { font-size: 9px; margin-left: 2px; }
+.heatmap-corner { font-size: 9px; font-family: var(--mono); color: #9da5b8; }
+.attention-matrix tbody th > span { display: flex; align-items: center; justify-content: center; min-height: 50px; border-radius: 7px; }
+.attention-matrix tbody th i { font-style: normal; font-size: 10px; margin-left: 6px; }
+.attention-matrix tr.observed th > span { background: #f1edfc; color: #6d52c2; }
+.heatmap-cell { width: 100%; min-height: 50px; border: 2px solid transparent; border-radius: 7px; padding: 10px 2px; font-family: var(--mono); font-size: 13px; font-weight: 550; transition: background-color .15s; }
+.heatmap-cell small { font-size: 9px; margin-left: 2px; font-weight: 400; }
+.attention-matrix tr.observed .heatmap-cell { box-shadow: 0 0 0 1px #a994df; }
+.heatmap-cell.inspected { border-color: #544091; }
+.heatmap-cell:hover { outline: 2px solid #bca8e3; outline-offset: 1px; }
+.heatmap-cell:focus-visible { outline: 3px solid #7460dd; outline-offset: 2px; }
+.heatmap-legend { display: flex; align-items: center; gap: 9px; margin: 14px 5px 0 70px; font-size: 9px; color: #919bb0; font-family: var(--mono); }
+.heatmap-legend i { height: 8px; flex: 1; border-radius: 3px; background: linear-gradient(to right, rgb(247,244,255), rgb(98,72,201)); }
+.heatmap-rounding { color: #929bb0; font-size: 10px; margin: 10px 5px 0; text-align: center; line-height: 1.8; }
+.heatmap-reading { border-left: 1px solid #ece9f5; padding-left: 28px; }
+.heatmap-reading h3 { margin-top: 8px; font-size: 18px; font-weight: 600; color: #655487; }
+.heatmap-reading > p { font-size: 11px; color: #8993a8; margin-top: 7px; }
+.heatmap-reading > p span { font-size: 10px; }
+.heatmap-reading dl { margin-top: 13px; }
+.heatmap-reading dl > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.heatmap-reading dt { font-size: 11px; color: #8993a8; }
+.heatmap-reading dd { font-family: var(--mono); font-size: 11px; color: #66577e; text-align: right; }
+.heatmap-reading dl > div:first-child dd { color: #6b50c4; font-size: 16px; }
+.heatmap-note { font-size: 10px; color: #8a799f; line-height: 1.8; background: #f6f3fc; border-radius: 7px; padding: 9px 11px; margin-top: 12px; }
+@media (max-width: 1100px) {
+  .heatmap-card { grid-template-columns: minmax(260px, 1fr) minmax(230px, 1fr); gap: 22px; }
+  .heatmap-intro { grid-column: 1/-1; }
+  .heatmap-intro > p { margin-top: 7px; }
+  .heatmap-axis-guide { margin-top: 12px; }
+  .heatmap-intro .heatmap-instruction { margin-top: 12px; }
+}
+@media (max-width: 700px) {
+  .heatmap-card { grid-template-columns: minmax(0, 1fr); gap: 23px; }
+  .heatmap-intro h2 { font-size: 18px; }
+  .heatmap-reading { border-left: 0; border-top: 1px solid #ece9f5; padding: 19px 0 0; }
+  .heatmap-cell { font-size: 13px; min-height: 48px; }
+}
