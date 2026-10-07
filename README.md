@@ -49,6 +49,8 @@
 
 ## 10 分钟复现
 
+在线发布由 GitHub Actions 自动执行；查看[部署和更新说明](docs/deployment.md)或[部署进度](https://github.com/ZeshanZheng/attention-lab/actions/workflows/deploy-pages.yml)。本地开发与在线发布互不影响。
+
 ### Windows：使用本项目运行环境
 
 在项目根目录的 PowerShell 中执行：
