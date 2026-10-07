@@ -2,6 +2,8 @@
 
 面向 AI 初学者的可控 Attention 教学实验。计算核心、交互网页和第三阶段的引导学习闭环均已完成。
 
+**在线体验：[打开 Attention 实验室](https://zeshanzheng.github.io/attention-lab/)**。电脑或手机浏览器即可使用，无需安装或注册。
+
 ![Attention 实验室桌面界面](docs/images/desktop.png)
 
 ## 交互网页
@@ -176,6 +178,8 @@ docs/user-testing-template.csv      空白试用记录模板
 ## 开发记录与比赛材料
 
 参见 [第一次迭代记录](docs/development/01-calculation-core.md)、[第二次迭代记录](docs/development/02-interactive-interface.md) 和 [第三次迭代记录](docs/development/03-guided-learning.md)。Git 历史将工程初始化、计算模块、交互界面与引导学习分开记录。GitHub 仓库：[ZeshanZheng/attention-lab](https://github.com/ZeshanZheng/attention-lab)。
+
+在线发布的配置与实际验收见[第四次迭代记录](docs/development/04-online-deployment.md)。
 
 开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 

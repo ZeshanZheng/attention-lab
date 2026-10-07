@@ -2,6 +2,8 @@
 
 本项目使用 GitHub Pages，构建和部署定义于 `.github/workflows/deploy-pages.yml`。线上发布的是 `site-dist/`，源码和开发记录仍保留在原 GitHub 仓库。
 
+在线地址：[https://zeshanzheng.github.io/attention-lab/](https://zeshanzheng.github.io/attention-lab/)。使用者直接打开浏览器即可使用，无需运行本地命令。
+
 ## 自动更新
 
 推送到 `main` 或在 Actions 手动运行 **Deploy Attention Lab** 时，工作流依次安装锁文件依赖、执行严格类型检查与 28 项测试、构建网页、运行 14 项 Chromium 浏览器测试，再发布到 Pages。失败的检查会阻止此次发布。
