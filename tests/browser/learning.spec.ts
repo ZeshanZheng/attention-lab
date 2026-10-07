@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { ASSESSMENT, getLesson } from '../../web/learning/lessons.ts';
+import { getLesson } from '../../web/learning/lessons.ts';
+import { QUESTION_BANK } from '../../web/learning/assessment.ts';
 import { STORAGE_KEY } from '../../web/learning/progress.ts';
 
 async function predict(page: Page, lessonId: 'focus' | 'content' | 'competition', answer: number) {
@@ -13,6 +14,21 @@ async function answerUnderstanding(page: Page, lessonId: 'focus' | 'content' | '
   const lesson = getLesson(lessonId);
   await page.getByRole('radio', { name: lesson.comprehension.options[answer]!, exact: true }).check();
   await page.getByRole('button', { name: '提交理解题', exact: true }).click();
+}
+
+async function answerQuiz(page: Page, correct: boolean) {
+  const cards = page.getByTestId('assessment-question');
+  await expect(cards).toHaveCount(5);
+  const ids: string[] = [];
+  for (let index = 0; index < 5; index += 1) {
+    const card = cards.nth(index);
+    const id = (await card.getAttribute('data-question-id'))!;
+    ids.push(id);
+    const question = QUESTION_BANK.find((item) => item.id === id)!;
+    const choice = correct ? question.correctIndex : (question.correctIndex + 1) % question.options.length;
+    await card.getByRole('radio', { name: question.options[choice]!, exact: true }).check();
+  }
+  return ids;
 }
 
 test('all three guided lessons enforce the learning flow, retain first mistakes, export and persist progress', async ({ page }) => {
@@ -100,27 +116,72 @@ test('assessment gives per-question feedback and preserves first score independe
   await page.goto('/');
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   await expect(page.getByRole('button', { name: '提交自测', exact: true })).toBeDisabled();
-  const wrong = [1, 0, 0, 1];
-  for (const [index, question] of ASSESSMENT.entries()) {
-    await page.getByRole('group', { name: question.prompt, exact: true }).getByRole('radio', { name: question.options[wrong[index]!]!, exact: true }).check();
-  }
+  const firstIds = await answerQuiz(page, false);
   await page.getByRole('button', { name: '提交自测', exact: true }).click();
-  await expect(page.getByTestId('assessment-score')).toHaveText('0 / 4');
-  await expect(page.getByText(/正确答案：/)).toHaveCount(4);
-  await page.getByRole('button', { name: '再做一次自测', exact: true }).click();
-  for (const question of ASSESSMENT) {
-    await page.getByRole('group', { name: question.prompt, exact: true }).getByRole('radio', { name: question.options[question.correctIndex]!, exact: true }).check();
-  }
+  await expect(page.getByTestId('assessment-score')).toHaveText('0 / 5');
+  await expect(page.getByText(/正确答案：/)).toHaveCount(5);
+  await page.getByRole('button', { name: '换一组题，再测一次', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '换一组题，看看是否真正理解', exact: true })).toBeFocused();
+  await expect(page.getByRole('radio', { checked: true })).toHaveCount(0);
+  const secondIds = await answerQuiz(page, true);
+  expect(secondIds.every((id) => !firstIds.includes(id))).toBe(true);
   await page.getByRole('button', { name: '提交自测', exact: true }).click();
-  await expect(page.getByTestId('assessment-score')).toHaveText('4 / 4');
-  await expect(page.getByTestId('first-score')).toHaveText('0 / 4');
-  await expect(page.getByTestId('latest-score')).toHaveText('4 / 4');
+  await expect(page.getByTestId('assessment-score')).toHaveText('5 / 5');
+  await expect(page.getByTestId('first-score')).toHaveText('0 / 5');
+  await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.screenshot({ path: '.tools/preview-assessment.png', fullPage: true });
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '导出记录', exact: true }).click();
+  const download = await downloadPromise;
+  const exported = JSON.parse(await readFile((await download.path())!, 'utf8'));
+  expect(exported.assessmentAttempts.map((record: { score: number; total: number }) => [record.score, record.total])).toEqual([[0, 5], [5, 5]]);
+  expect(exported.assessmentAttempts[0].questions.map((question: { id: string }) => question.id)).toEqual(firstIds);
+  expect(exported.assessmentAttempts[1].questions.map((question: { id: string }) => question.id)).toEqual(secondIds);
   await page.reload();
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
-  await expect(page.getByTestId('first-score')).toHaveText('0 / 4');
+  await expect(page.getByTestId('first-score')).toHaveText('0 / 5');
+  await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
+  const thirdIds = await answerQuiz(page, true);
+  expect(thirdIds.every((id) => ![...firstIds, ...secondIds].includes(id))).toBe(true);
+});
+
+test('legacy four-question scores survive the upgrade and new five-question scores', async ({ page }) => {
+  await page.addInitScript((key) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify({ version: 1, lessons: [], assessments: [{ submittedAt: '2026-10-07T10:00:00.000Z', answers: [0, 2, 1, 0] }] }));
+  }, STORAGE_KEY);
+  await page.goto('/');
+  await page.getByRole('button', { name: '理解自测', exact: true }).click();
+  await expect(page.getByTestId('first-score')).toHaveText('4 / 4');
   await expect(page.getByTestId('latest-score')).toHaveText('4 / 4');
+  await answerQuiz(page, true);
+  await page.getByRole('button', { name: '提交自测', exact: true }).click();
+  await expect(page.getByTestId('first-score')).toHaveText('4 / 4');
+  await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
+  await page.reload();
+  await page.getByRole('button', { name: '理解自测', exact: true }).click();
+  await expect(page.getByTestId('first-score')).toHaveText('4 / 4');
+  await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
+});
+
+test('switching unfinished rounds replaces questions, clears answers and remains usable on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.getByRole('button', { name: '理解自测', exact: true }).click();
+  const history: string[][] = [];
+  for (let round = 0; round < 4; round += 1) {
+    const cards = page.getByTestId('assessment-question');
+    const ids = await cards.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')!));
+    expect(ids).toHaveLength(5);
+    expect(ids.every((id) => !history.slice(-3).flat().includes(id))).toBe(true);
+    history.push(ids);
+    await expect(page.getByRole('radio', { checked: true })).toHaveCount(0);
+    await cards.first().getByRole('radio').first().check();
+    await expect(page.getByRole('button', { name: '提交自测', exact: true })).toBeDisabled();
+    if (round < 3) await page.getByRole('button', { name: '换一组题', exact: true }).click();
+  }
+  expect(new Set(history.flat()).size).toBe(20);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);
 });
 
 test('malformed saved progress recovers without a page error', async ({ page }) => {

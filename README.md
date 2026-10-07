@@ -29,7 +29,8 @@
 ![引导实验完成界面](docs/images/guided.png)
 
 - 先记录预测再开放编辑，达到目标后冻结参数，用实际数值反馈结果；理解题支持提示与重试。
-- 四道理解自测使用新的数值情境，提交后逐题解释；首次成绩和最近成绩分别保留。
+- 理解自测题库共 20 道，每轮抽取 5 道，分别覆盖匹配得分、信息聚合、权重分配、变化规律和概念边界。题目顺序随机，最近三轮不重复；可在提交前或提交后换题，换题清空本轮答案并回到题目顶部。
+- 提交后逐题解释，首次和最近成绩分别保留。每次保存实际题目、选项、正确答案与解释的快照；以后扩充题库不会按新题重算旧成绩。旧版四题记录自动迁移，仍显示原来的四题分母。
 - 已完成实验和已提交自测保存到当前浏览器的 `localStorage`，刷新后仍可查看进度。未完成的实验和自由探索参数刷新后重新开始；不同设备或网址的记录不会自动同步。
 - “导出记录”下载匿名 JSON，包含首次预测、理解题回答序列、完成时的输入/权重/输出快照，以及自测回答和成绩。不收集姓名，不向服务器发送记录。
 - 实验与自测历史分别最多保留 30 条；各实验首次完成和首次自测会保留。重复练习不覆盖首次错误，不能把重试后的分数当作首次掌握情况。
@@ -74,9 +75,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task verify
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task test:browser
 ```
 
-`verify` 依次运行计算核心与前端的严格类型检查、28 项数学/边界/实验状态/学习流程测试、核心与网页编译以及默认实验演示；任何一步失败都会返回失败。
+`verify` 依次运行计算核心与前端的严格类型检查、34 项数学/边界/实验状态/学习流程/题库测试、核心与网页编译以及默认实验演示；任何一步失败都会返回失败。
 
-`test:browser` 对构建后的网页执行 14 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖向量编辑、拖拽与键盘、步骤播放、基线管理、三个实验全流程、错误预测与重试、自测首次成绩、进度刷新、JSON 导出、存储异常及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
+`test:browser` 对构建后的网页执行 16 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖向量编辑、拖拽与键盘、步骤播放、基线管理、三个实验全流程、错误预测与重试、自测换题与首次成绩、旧版记录迁移、进度刷新、题目快照 JSON 导出、存储异常及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
 
 ### 已有 Node.js 的环境
 
@@ -164,6 +165,7 @@ src/
 tests/attention.test.ts              数学与边界测试
 tests/lab-state.test.ts              基线、重置与输入验证测试
 tests/learning.test.ts               实验目标、流程门禁、记录与自测测试
+tests/assessment.test.ts             题库抽取、数学核对、快照与旧记录迁移
 tests/browser/lab.spec.ts            真实浏览器交互验收
 tests/browser/learning.spec.ts       引导学习与记录持久化验收
 web/                                React 界面、实验状态与 SVG 图表
@@ -180,6 +182,8 @@ docs/user-testing-template.csv      空白试用记录模板
 参见 [第一次迭代记录](docs/development/01-calculation-core.md)、[第二次迭代记录](docs/development/02-interactive-interface.md) 和 [第三次迭代记录](docs/development/03-guided-learning.md)。Git 历史将工程初始化、计算模块、交互界面与引导学习分开记录。GitHub 仓库：[ZeshanZheng/attention-lab](https://github.com/ZeshanZheng/attention-lab)。
 
 在线发布的配置与实际验收见[第四次迭代记录](docs/development/04-online-deployment.md)。
+
+题库扩充、换题与历史兼容见[第五次迭代记录](docs/development/05-assessment-bank.md)。
 
 开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 

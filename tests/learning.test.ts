@@ -4,7 +4,8 @@ import { computeAttention } from '../src/index.ts';
 import { createLabState, labReducer } from '../web/state.ts';
 import { ASSESSMENT, createLessonInput, evaluateGoal, scoreAssessment } from '../web/learning/lessons.ts';
 import { answerComprehension, beginExperiment, checkExperiment, chooseComprehension, choosePrediction, createSession } from '../web/learning/session.ts';
-import { addAssessmentRecord, addLessonRecord, completedLessons, emptyProgress, exportProgress, parseProgress } from '../web/learning/progress.ts';
+import { addAssessmentRecord, addLessonRecord, completedLessons, createAssessmentRecord, emptyProgress, exportProgress, parseProgress } from '../web/learning/progress.ts';
+import { LEGACY_QUESTIONS } from '../web/learning/assessment.ts';
 
 const startedAt = '2026-10-07T07:00:00.000Z';
 const completedAt = '2026-10-07T07:02:00.000Z';
@@ -66,7 +67,7 @@ test('observation is a frozen-in-time independent snapshot', () => {
   assert.equal(session.observation!.output[1], 2 * computeAttention(createLessonInput()).outputs[0]![1]!);
 });
 
-test('new assessment examples and scoring agree with independently checked mathematics', () => {
+test('legacy assessment examples and scoring agree with independently checked mathematics', () => {
   assert.equal(scoreAssessment(ASSESSMENT.map((question) => question.correctIndex)), 4);
   assert.equal(scoreAssessment([1, 0, 0, 1]), 0);
   const matching = computeAttention({ queries: [[1, 0]], keys: [[2, 2], [0, 3]], values: [[0], [0]] });
@@ -77,8 +78,9 @@ test('new assessment examples and scoring agree with independently checked mathe
 test('valid completed progress round-trips; corrupt, unknown-version and malformed data recover safely', () => {
   const progress = addLessonRecord(emptyProgress(), completedContentLesson());
   assert.deepEqual(parseProgress(JSON.stringify(progress)), progress);
+  assert.deepEqual(parseProgress(JSON.stringify({ ...progress, version: 1 })), progress);
   assert.deepEqual(completedLessons(progress), ['content']);
-  for (const raw of [null, 'not json', '{"version":2,"lessons":[],"assessments":[]}', '{"version":1,"lessons":[{}],"assessments":[]}']) {
+  for (const raw of [null, 'not json', '{"version":99,"lessons":[],"assessments":[]}', '{"version":1,"lessons":[{}],"assessments":[]}']) {
     assert.deepEqual(parseProgress(raw), emptyProgress());
   }
   const badSnapshot = { ...progress, lessons: [{ ...progress.lessons[0], observation: { input: {}, weights: [0, 0, 0], output: [0, 0], explanation: '' } }] };
@@ -89,7 +91,7 @@ test('history is bounded while retaining first lesson completion and first asses
   let progress = addLessonRecord(emptyProgress(), completedContentLesson());
   for (let index = 0; index < 40; index += 1) {
     progress = addLessonRecord(progress, { ...completedContentLesson(), prediction: 1 });
-    progress = addAssessmentRecord(progress, { submittedAt: completedAt, answers: index === 0 ? [1, 0, 0, 1] : [0, 2, 1, 0] });
+    progress = addAssessmentRecord(progress, createAssessmentRecord(LEGACY_QUESTIONS, index === 0 ? [1, 0, 0, 1] : [0, 2, 1, 0], completedAt));
   }
   assert.ok(progress.lessons.length <= 30);
   assert.equal(progress.lessons[0]!.prediction, 0);

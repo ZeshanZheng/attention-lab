@@ -114,8 +114,8 @@
 .assessment-answer.correct b { color: #6d9e8c; }
 .assessment-answer p { font-size: 11px; line-height: 1.9; color: #a299b1; margin-top: 5px; }
 .assessment-answer.correct p { color: #8da59b; }
-.assessment-submit { display: flex; align-items: center; gap: 15px; margin-top: 5px; }
-.assessment-submit > span { color: #a2a9b9; font-size: 10px; }
+.assessment-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 5px; }
+.assessment-submit > span { flex-basis: 100%; color: #a2a9b9; font-size: 10px; }
 .learning-summary { position: sticky; top: 24px; }
 .learning-summary h3 { font-size: 18px; color: #657089; font-weight: 550; margin: 9px 0 21px; }
 .summary-metric { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 15px 0; border-bottom: 1px solid #eef0f6; }
