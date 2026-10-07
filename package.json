@@ -3,16 +3,29 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24.12.0 <25" },
+  "engines": {
+    "node": ">=24.12.0 <25"
+  },
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "dev": "vite --host 127.0.0.1",
+    "preview": "vite preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit && tsc --project tsconfig.web.json",
     "test": "node --test tests/*.test.ts",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.build.json && vite build",
+    "test:browser": "playwright test",
     "demo": "node examples/default-experiment.ts",
     "verify": "npm run typecheck && npm test && npm run build && npm run demo"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@types/node": "24.10.1",
-    "typescript": "5.9.3"
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.3"
+  },
+  "dependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
   }
 }

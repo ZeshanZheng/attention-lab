@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('install', 'typecheck', 'test', 'build', 'demo', 'verify')]
+    [ValidateSet('install', 'typecheck', 'test', 'build', 'demo', 'verify', 'dev', 'preview', 'test:browser')]
     [string]$Task = 'verify'
 )
 $ErrorActionPreference = 'Stop'

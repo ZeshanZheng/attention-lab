@@ -1,6 +1,20 @@
 # Attention 实验室
 
-面向 AI 初学者的可控 Attention 教学实验。第一阶段已实现单头 Attention 计算核心、默认实验和数学测试；交互页面属于下一阶段。
+面向 AI 初学者的可控 Attention 教学实验。第一阶段的计算核心与第二阶段的交互网页均已完成。
+
+![Attention 实验室桌面界面](docs/images/desktop.png)
+
+## 交互网页
+
+- 独立选择“观察谁的 Query”和“编辑哪个词元”，修改 B 时仍可观察 A。
+- 输入或拖动二维 Q/K/V 向量；聚焦数值输入框时，坐标图同步切到对应类型。
+- 向量圆点支持方向键调整 0.1，Shift + 方向键调整 1；坐标范围为 −5 到 5。
+- 点积、缩放、Softmax、加权求和四个步骤，展示公式、代入数值及实际结果；支持逐步导航和自动演示。
+- 权重柱状图、输出向量图及修改前后差值，使用同一份计算结果。
+- 保存当前参数作为比较基线、恢复基线、一键重置。基线保留在当前页面中；刷新页面会回到默认实验。
+- 手机布局、键盘操作、使用说明及非法输入反馈。
+
+本阶段为自由探索原型；预测题、引导课程与学习反馈留给第三阶段。
 
 ## 当前能力
 
@@ -23,12 +37,23 @@
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task install
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task verify
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task dev
 ```
+
+打开 **http://127.0.0.1:5173**。保持运行命令所在的终端开启；按 Ctrl+C 停止开发服务器。
 
 `setup.ps1` 从 Node.js 官网下载 Node.js **24.12.0** Windows x64 压缩包，核对官方 SHA256 后解压到 `.tools/`，不修改系统 PATH。依赖与 npm 缓存均保留在项目内。首次下载需要网络；后续计算、测试和演示均在本地执行。
 
-`install` 在存在锁文件时使用 `npm ci`。`verify` 依次运行严格类型检查、16 项数学与边界测试、编译以及默认实验演示；任何一步失败都会返回失败。
+`install` 在存在锁文件时使用 `npm ci`。使用以下命令执行检查：
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task verify
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task test:browser
+```
+
+`verify` 依次运行计算核心与前端的严格类型检查、19 项数学/边界/实验状态测试、核心与网页编译以及默认实验演示；任何一步失败都会返回失败。
+
+`test:browser` 对构建后的网页执行 8 项真实浏览器验收，默认使用已安装的 Microsoft Edge 无头模式，并自动启动、关闭预览服务器。覆盖编辑 V、拖拽与方向键、步骤播放、切换 Query、基线保存/恢复/重置、非法输入及手机布局。截图保存在 `.tools/`，失败时保留测试追踪。
 
 ### 已有 Node.js 的环境
 
@@ -36,8 +61,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run.ps1 -Task verify
 
 ```sh
 npm ci
-npm run verify
+npm run dev
 ```
+
+检查与构建：
+
+```sh
+npm run verify
+npm run test:browser
+```
+
+如果没有安装 Edge，可以先执行 `npx playwright install chromium`，再通过 `PLAYWRIGHT_CHANNEL=chromium` 环境变量运行浏览器测试。PowerShell 中设置方式为 `$env:PLAYWRIGHT_CHANNEL = 'chromium'`；在 Linux/macOS 中可以执行 `PLAYWRIGHT_CHANNEL=chromium npm run test:browser`。
 
 没有环境变量要求，没有服务器或数据库要求。安装版本由 `package-lock.json` 固定。原生 TypeScript 执行负责运行示例和测试，TypeScript 编译器单独执行类型检查。
 
@@ -95,7 +129,7 @@ console.log(changed.outputs[queryIndex]);
 
 Mask 中屏蔽位置的 `maskedScores` 为 `-Infinity`。JSON 序列化会将这个值变成 `null`；保存实验时应保存有限的输入向量和布尔 Mask，再重新计算结果。
 
-编译后入口位于 `dist/index.js`，可以接入前端项目。源码不依赖 Node API；测试和命令行示例使用 Node。
+编译后计算核心入口位于 `dist/index.js`。网页构建产物单独位于 `site-dist/`，不会覆盖计算核心；可通过 `npm run preview` 或 `scripts/run.ps1 -Task preview` 在 **http://127.0.0.1:4173** 查看。源码不依赖 Node API；测试和命令行示例使用 Node。
 
 ## 项目结构
 
@@ -105,6 +139,9 @@ src/
   presets/default-experiment.ts      三词元默认教学实验
   index.ts                          公共入口
 tests/attention.test.ts              数学与边界测试
+tests/lab-state.test.ts              基线、重置与输入验证测试
+tests/browser/lab.spec.ts            真实浏览器交互验收
+web/                                React 界面、实验状态与 SVG 图表
 examples/default-experiment.ts       可运行的修改前后演示
 scripts/                            Windows 本地环境与运行脚本
 docs/development/                    本次需求、开发与验证记录
@@ -112,8 +149,8 @@ docs/development/                    本次需求、开发与验证记录
 
 ## 开发记录与比赛材料
 
-参见 [第一次迭代记录](docs/development/01-calculation-core.md)。Git 历史将工程初始化与计算模块分开记录。尚未发布 GitHub/Gitee 仓库。
+参见 [第一次迭代记录](docs/development/01-calculation-core.md) 和 [第二次迭代记录](docs/development/02-interactive-interface.md)。Git 历史将工程初始化、计算模块与交互界面分开记录。GitHub 仓库：[ZeshanZheng/attention-lab](https://github.com/ZeshanZheng/attention-lab)。
 
-开发记录只是摘要，不等同于完整 AI 对话。应保留当前会话原始对话或截图/录屏，后续阶段继续积累真实 Prompt 链；本次迭代不冒充三次核心功能迭代。
+开发记录只是摘要，不等同于完整 AI 对话。应保留当前会话原始对话或截图/录屏，后续阶段继续积累真实 Prompt 链；两次阶段迭代不冒充三次核心功能迭代。
 
 数学依据：[Attention Is All You Need](https://papers.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)。运行方式依据：[Node.js TypeScript 文档](https://nodejs.org/docs/latest-v24.x/api/typescript.html)。
