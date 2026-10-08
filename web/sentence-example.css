@@ -1,0 +1,70 @@
+.sentence-example { padding: 32px; border: 1px solid #e5dff3; border-radius: 14px; background: #fff; color: #44506a; }
+.example-heading h2 { margin-top: 10px; font-size: 26px; color: #30394f; line-height: 1.5; }
+.example-heading > p { margin-top: 12px; font-size: 17px; line-height: 1.9; }
+.example-sentence { margin-top: 24px; padding: 24px; border: 1px solid #e8e0f6; border-radius: 12px; background: #f8f5ff; }
+.example-sentence > p { font-size: 22px; line-height: 2.2; color: #363b53; }
+.example-word { padding: 2px 5px; border-radius: 5px; font-weight: 650; }
+.example-subject { color: #50657a; background: #e9eef4; }
+.example-book { color: #11786e; background: #dff4ef; }
+.example-pronoun { color: #694cc3; background: #ece5fc; }
+.example-word.is-emphasized { box-shadow: inset 0 -2px currentColor; }
+.example-connection { margin-top: 14px; font-size: 16px; font-weight: 600; color: #655197; }
+.example-scope { margin-top: 14px; color: #626979; font-size: 14px; line-height: 1.9; }
+.example-step-picker { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 26px 0 22px; }
+.example-step-picker button { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 10px; border: 1px solid #e2e4ec; border-radius: 9px; color: #596077; background: #f9faff; font-size: 16px; line-height: 1.5; }
+.example-step-picker button > span { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #ececf6; font-family: var(--mono); font-size: 14px; }
+.example-step-picker button[aria-pressed="true"] { border-color: #af9be5; background: #f0eafb; color: #6347ad; font-weight: 600; }
+.example-step-picker button[aria-pressed="true"] > span { background: #7560df; color: #fff; }
+.example-step-picker button:hover { border-color: #af9be5; }
+.example-explanation { padding: 26px; border: 1px solid #e8e6ef; border-radius: 12px; }
+.example-step-heading h3 { margin-top: 10px; font-size: 23px; line-height: 1.6; color: #354159; }
+.example-prose, .example-transcript-body { max-width: 1050px; }
+.example-prose p, .example-transcript-body p { margin-top: 16px; font-size: 17px; line-height: 2; overflow-wrap: anywhere; }
+.example-word-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
+.example-word-cards article { padding: 18px; border-radius: 10px; background: #f7f6fb; }
+.example-word-cards h4 { font-size: 20px; color: #584b7b; }
+.example-word-cards p { margin-top: 12px; font-size: 16px; line-height: 1.8; }
+.example-word-cards b { display: block; font-size: 14px; font-weight: 600; color: #685985; margin-bottom: 3px; }
+.example-projection { padding: 18px; border-radius: 10px; background: #f1f8f6; margin-top: 20px; color: #427069; }
+.example-projection > p { font-size: 16px; line-height: 1.8; }
+.example-projection > div { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 12px 0; font-size: 17px; font-family: var(--mono); }
+.example-projection small { font-size: 14px; line-height: 1.9; }
+.example-takeaway { margin-top: 22px; padding: 16px 18px; border-left: 3px solid #ad96e7; background: #f8f5ff; font-size: 16px; line-height: 1.9; }
+.example-takeaway b { color: #66508f; }
+.example-step-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 28px; }
+.example-step-controls > span { color: #69677a; font-size: 14px; text-align: center; }
+.example-transcript { padding: 18px 22px; border: 1px solid #e4dfed; border-radius: 10px; background: #fcfbff; }
+.example-transcript summary { width: fit-content; max-width: 100%; color: #624d91; cursor: pointer; font-size: 17px; line-height: 1.7; font-weight: 600; }
+.example-transcript-body { padding-top: 4px; }
+.example-transcript-body h3 { font-size: 20px; margin-top: 28px; color: #584b7b; line-height: 1.6; }
+.example-transcript-body .example-transcript-intro { font-size: 14px; color: #656a7c; }
+.example-explore { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 24px; }
+.example-explore p { font-size: 16px; line-height: 1.8; }
+.example-explore button { flex-shrink: 0; }
+.example-source { margin-top: 20px; color: #626979; font-size: 13px; line-height: 1.9; }
+.example-source a { color: #624d91; text-decoration: underline; text-underline-offset: 3px; }
+.sentence-example button:focus-visible, .example-transcript summary:focus-visible { outline: 3px solid #aa9ae8; outline-offset: 3px; }
+@media (max-width: 900px) {
+  .example-step-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .sentence-example { padding: 20px; }
+  .example-heading h2 { font-size: 22px; }
+  .example-heading > p { font-size: 16px; }
+  .example-sentence { padding: 18px; margin-top: 18px; }
+  .example-sentence > p { font-size: 20px; line-height: 2.1; }
+  .example-connection { font-size: 15px; }
+  .example-scope { font-size: 13px; }
+  .example-step-picker { gap: 10px; }
+  .example-step-picker button { font-size: 15px; padding: 12px 8px; gap: 6px; }
+  .example-step-picker button > span { width: 24px; height: 24px; }
+  .example-explanation { padding: 18px; }
+  .example-step-heading h3 { font-size: 20px; }
+  .example-prose p, .example-transcript-body p { font-size: 16px; line-height: 2; }
+  .example-word-cards { grid-template-columns: 1fr; gap: 12px; }
+  .example-step-controls { flex-wrap: wrap; }
+  .example-step-controls > span { order: 3; width: 100%; }
+  .example-transcript { padding: 16px; }
+  .example-transcript summary { font-size: 16px; }
+  .example-explore { align-items: flex-start; flex-direction: column; gap: 12px; }
+}

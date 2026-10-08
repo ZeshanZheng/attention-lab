@@ -8,7 +8,7 @@ export function HelpDialog({ onClose }: { onClose: () => void }) {
     onClick={(event) => { if (event.target === event.currentTarget) onClose(); }}>
     <div className="dialog-heading"><div><span className="eyebrow">QUICK GUIDE</span><h2 id="help-title">欢迎来到注意力实验室</h2></div><button className="icon-button" onClick={onClose} aria-label="关闭说明"><Icon name="close" /></button></div>
     <p>自由探索可以修改所有向量；引导实验会限定一个变量，先预测再验证。</p>
-    <p>页面顶部的五个按钮分别打开 Attention 引言、自由探索、实验总结、引导实验和理解自测。引言介绍背景，总结整理 Q/K/V、完整公式与例子；阅读后回到原来的实验或自测，会保留本页中的操作和答案。</p>
+    <p>页面顶部的六个按钮分别打开 Attention 引言、自由探索、小栗子🌰、实验总结、引导实验和理解自测。引言介绍背景，小栗子用“书”和“它”的例子分步讲解，并可展开完整讲稿；总结整理 Q/K/V、完整公式与例子。阅读后回到原来的实验或自测，会保留本页中的操作和答案。</p>
     <ol className="guide-list">
       <li><b>选择观察对象</b><span>页面上方选择 A、B 或 C，观察它的 Query 如何关注其他词元。</span></li>
       <li><b>改变一个向量</b><span>选中编辑词元，输入数字，或拖动 Q/K/V 的圆点。默认拖动和方向键按整数调整，可切换为 0.1 步长；直接输入可用小数。向量各坐标范围为 −5 到 5。</span></li>

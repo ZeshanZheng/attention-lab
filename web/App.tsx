@@ -12,6 +12,7 @@ import { Assessment } from './components/Assessment.tsx';
 import { AttentionHeatmap } from './components/AttentionHeatmap.tsx';
 import { ConceptSummary } from './components/ConceptSummary.tsx';
 import { LearningIntroduction } from './components/LearningIntroduction.tsx';
+import { SentenceExample } from './components/SentenceExample.tsx';
 import { LESSONS, createLessonInput, getLesson } from './learning/lessons.ts';
 import type { LessonId } from './learning/lessons.ts';
 import { addAssessmentRecord, addLessonRecord, completedLessons, exportProgress } from './learning/progress.ts';
@@ -28,7 +29,7 @@ export function App() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [announcement, setAnnouncement] = useState('');
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
-  const [readingView, setReadingView] = useState<'introduction' | 'summary' | null>(null);
+  const [readingView, setReadingView] = useState<'introduction' | 'example' | 'summary' | null>(null);
   const activeView = readingView ?? mode;
   const [session, setSession] = useState<LessonSession | null>(null);
   const freeSnapshot = useRef<LabState | null>(null);
@@ -103,7 +104,7 @@ export function App() {
     setPlaying(false);
     setMode('assessment');
   };
-  const enterReading = (view: 'introduction' | 'summary') => { setPlaying(false); setReadingView(view); };
+  const enterReading = (view: 'introduction' | 'example' | 'summary') => { setPlaying(false); setReadingView(view); };
   const downloadProgress = () => {
     const blob = new Blob([exportProgress(progress, new Date().toISOString())], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -130,7 +131,7 @@ export function App() {
   return <>
     <header className="site-header"><div className="header-inner">
       <a className="brand" href="./" aria-label="Attention Lab 首页"><svg className="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#7560df" /><path d="m11 28 9-17 9 17M15 23h10" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="29" cy="28" r="2.4" fill="#b6ebd6" /></svg><span>Attention<span className="brand-light"> Lab</span><small>注意力实验室</small></span></a>
-      <div className="header-right"><span className="mode-pill"><span className="live-dot" />{activeView === 'introduction' ? 'Attention 引言' : activeView === 'summary' ? '实验总结' : mode === 'free' ? '自由探索' : mode === 'guided' ? '引导实验' : '理解自测'}</span><button className="text-button" onClick={() => setHelpOpen(true)}><Icon name="info" size={17} />使用说明</button><a className="github-link" href="https://github.com/ZeshanZheng/attention-lab" target="_blank" rel="noreferrer" aria-label="查看 GitHub 项目（新窗口）"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.5v-2.1c-3.4.7-4.1-1.4-4.1-1.4-.5-1.3-1.2-1.6-1.2-1.6-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6.2 0-1.4.5-2.5 1.2-3.4-.1-.3-.5-1.6.2-3.3 0 0 1-.3 3.5 1.3a12 12 0 0 1 6.4 0c2.4-1.6 3.4-1.3 3.4-1.3.7 1.7.3 3 .2 3.3.8.9 1.3 2 1.3 3.4 0 4.8-2.9 5.9-5.6 6.2.4.4.8 1.1.8 2.3V22c0 .3.2.6.8.5A11.1 11.1 0 0 0 12 .9Z" /></svg></a></div>
+      <div className="header-right"><span className="mode-pill"><span className="live-dot" />{activeView === 'introduction' ? 'Attention 引言' : activeView === 'example' ? '小栗子🌰' : activeView === 'summary' ? '实验总结' : mode === 'free' ? '自由探索' : mode === 'guided' ? '引导实验' : '理解自测'}</span><button className="text-button" onClick={() => setHelpOpen(true)}><Icon name="info" size={17} />使用说明</button><a className="github-link" href="https://github.com/ZeshanZheng/attention-lab" target="_blank" rel="noreferrer" aria-label="查看 GitHub 项目（新窗口）"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.5v-2.1c-3.4.7-4.1-1.4-4.1-1.4-.5-1.3-1.2-1.6-1.2-1.6-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6.2 0-1.4.5-2.5 1.2-3.4-.1-.3-.5-1.6.2-3.3 0 0 1-.3 3.5 1.3a12 12 0 0 1 6.4 0c2.4-1.6 3.4-1.3 3.4-1.3.7 1.7.3 3 .2 3.3.8.9 1.3 2 1.3 3.4 0 4.8-2.9 5.9-5.6 6.2.4.4.8 1.1.8 2.3V22c0 .3.2.6.8.5A11.1 11.1 0 0 0 12 .9Z" /></svg></a></div>
     </div></header>
     <main className="main-shell">
       <div className="page-intro"><div><div className="intro-label"><span className="eyebrow">LEARN BY EXPLORING</span><span className="label-line" /></div><h1>动一个向量，<span>看懂注意力。</span></h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>
@@ -139,12 +140,14 @@ export function App() {
       <div ref={navigationRef} className="learning-navigation"><div className="learning-tabs" role="group" aria-label="学习模式">
         <button aria-pressed={activeView === 'introduction'} className={activeView === 'introduction' ? 'active' : ''} onClick={() => enterReading('introduction')}>Attention 引言</button>
         <button aria-pressed={activeView === 'free'} className={activeView === 'free' ? 'active' : ''} onClick={enterFree}>自由探索</button>
+        <button aria-pressed={activeView === 'example'} className={activeView === 'example' ? 'active' : ''} onClick={() => enterReading('example')}>小栗子🌰</button>
         <button aria-pressed={activeView === 'summary'} className={activeView === 'summary' ? 'active' : ''} onClick={() => enterReading('summary')}>实验总结</button>
         <button aria-pressed={activeView === 'guided'} className={activeView === 'guided' ? 'active' : ''} onClick={enterGuided}>引导实验</button>
         <button aria-pressed={activeView === 'assessment'} className={activeView === 'assessment' ? 'active' : ''} onClick={enterAssessment}>理解自测</button>
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       <div hidden={readingView !== 'introduction'}><LearningIntroduction /></div>
+      <div hidden={readingView !== 'example'}><SentenceExample onExplore={enterFree} /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       {readingView === null && mode === 'free' && <div className="learning-entry"><span><b>从观察，到理解</b>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>}
       {mode === 'guided' && session && <div hidden={readingView !== null} ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
