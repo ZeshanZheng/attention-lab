@@ -7,6 +7,7 @@ import './heatmap.css';
 import './beginner.css';
 import './introduction.css';
 import './sentence-example.css';
+import './advanced-reading.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Application root element is missing.');

@@ -29,7 +29,7 @@ const EXAMPLE_STEPS = [
     paragraphs: [
       '当“它”对“书”分配了关注，就可以进一步取回“书”的 V。我们可以把 V 理解为这个位置能够提供的内容或信息。不过需要注意，这里的 V 并不是单词最初的向量，而是当前层的输入表示经过另一组学习到的参数矩阵，计算出来的新向量。',
       '比如，“书”在自然语言中可能有不同的含义：可以指成册的著作，也可以出现在书写、书法或“尚书”等表达里。在这个句子里，“买了一本”和“读它”让“成册的著作”成为更自然的解释。模型通过训练学习词语和上下文之间的规律，并通过多层计算形成与上下文有关的表示。',
-      '这可以帮助我们想象“书”的位置提供了与阅读对象有关的信息，但 V 本身是一组数字，不能直接读成“成册的著作占 70%、其他词义占多少”的概率表。Attention 根据权重组合各个位置的 V，也不是只选中“书”，再去字典里挑一个词义。',
+      '这可以帮助我们想象“书”的位置提供了与阅读对象有关的信息，但 V 本身是一组数字。Attention 根据权重组合各个位置的 V，也不是只选中“书”，再去字典里挑一个词义。',
     ],
   },
   {
@@ -77,6 +77,6 @@ export function SentenceExample({ onExplore }: { onExplore: () => void }) {
     <div className="example-step-controls"><button className="button secondary" disabled={step === 0} onClick={() => setStep(step - 1)}>上一步</button><span>{step + 1} / 4 · 按自己的节奏阅读</span><button className="button primary" disabled={step === EXAMPLE_STEPS.length - 1} onClick={() => setStep(step + 1)}>下一步<Icon name="arrow" size={16} /></button></div>
     <details className="example-transcript"><summary>展开完整讲稿 · 连贯读一遍</summary><div className="example-transcript-body"><p className="example-transcript-intro">依据演讲稿中“书”和“它”这一页整理，保留原来的讲解顺序，将比喻与实际向量计算分开说明。</p>{EXAMPLE_STEPS.map((item, index) => <section key={item.label}><h3>{index + 1}. {item.label}</h3>{item.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</section>)}</div></details>
     <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
-    <p className="example-source">例句与讲解改编自提供的演讲稿对应页。计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
+    <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
   </section>;
 }

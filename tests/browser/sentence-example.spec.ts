@@ -27,7 +27,8 @@ test('sentence example explains four stages, exposes the full speech and preserv
   await expect(page.locator('.example-book')).toHaveClass(/is-emphasized/);
   await expect(stages.getByRole('button', { pressed: true })).toHaveText('2寻找相关位置');
   await page.getByRole('button', { name: '下一步', exact: true }).click();
-  await expect(explanation).toContainText('概率表');
+  await expect(explanation).toContainText('V 本身是一组数字');
+  await expect(explanation).not.toContainText('概率表');
   await expect(explanation).toContainText('尚书');
   await page.getByRole('button', { name: '下一步', exact: true }).click();
   await expect(explanation).toContainText('512');
@@ -41,9 +42,11 @@ test('sentence example explains four stages, exposes the full speech and preserv
   await page.locator('.example-transcript summary').click();
   const transcript = page.locator('.example-transcript-body');
   await expect(transcript.getByRole('heading')).toHaveCount(4);
-  for (const phrase of ['我去了哪里', 'Embedding', '尚书', '偏移', '二维向量', '概率表']) {
+  for (const phrase of ['我去了哪里', 'Embedding', '尚书', '偏移', '二维向量', 'V 本身是一组数字']) {
     await expect(transcript).toContainText(phrase);
   }
+  await expect(transcript).not.toContainText('成册的著作占 70%');
+  await expect(page.locator('.example-source')).not.toContainText('例句与讲解改编自');
   await stages.getByRole('button', { name: '3 读取 V 的内容', exact: true }).click();
   await page.screenshot({ path: '.tools/preview-sentence-example-desktop.png', fullPage: true });
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();

@@ -1,3 +1,5 @@
+import { TransformerArchitecture } from './TransformerArchitecture.tsx';
+
 export function LearningIntroduction() {
   return <section className="learning-introduction" aria-labelledby="attention-introduction-title">
     <div className="introduction-heading"><span className="eyebrow">开始前 · 一分钟导读</span><h2 id="attention-introduction-title">先认识 Attention：它为什么重要？</h2></div>
@@ -7,6 +9,12 @@ export function LearningIntroduction() {
       <article><h3>它在 Transformer 中做什么？</h3><p>Transformer 是一种神经网络架构。它的 Attention 子层负责在词元之间交换信息，前馈网络进一步加工每个位置的表示；它们配合残差连接与归一化，逐层更新表示。</p></article>
       <article><h3>理解它有什么帮助？</h3><p>可以把“模型利用上下文”拆成具体计算：Q/K 怎样匹配、权重怎样分配、V 怎样汇合。这样更容易读懂公式和热力图，也为继续学习多头注意力与完整 Transformer 打下基础。</p></article>
     </div>
+    <section className="introduction-architecture" aria-labelledby="architecture-introduction-title"><h3 id="architecture-introduction-title">在完整架构里，找到 Attention</h3><div className="architecture-introduction-grid"><TransformerArchitecture showQkv /><div className="architecture-introduction-text">
+      <p>这张图展示的是原始 Transformer 的编码器—解码器架构。左边的编码器处理输入序列，右边的解码器结合已生成的内容和编码器信息，逐步生成输出。</p>
+      <p><strong>红圈标出左边编码器中的 Multi-Head Attention（多头注意力）子层。</strong>它让输入序列中的各个位置交换信息；Q、K、V 来自同一序列的当前层表示，经过不同的学习到的投影得到。</p>
+      <p>可以用三个问题建立直觉：<b>K</b> 描述“我有哪些可被匹配的特征”；<b>Q</b> 描述“我在查询什么信息”；<b>V</b> 描述“别人关注我时，我能提供什么内容”。Attention 计算每个 Query 应该从哪些 Value 中取回多少信息。</p>
+      <p>图中的 N× 表示层会重复堆叠。Attention 之后还会经过残差连接、归一化和前馈网络等环节。本实验先拆开其中一个头的计算；完成基础学习后，可以在“多头注意力”和“三种 Attention”继续看这些扩展。</p>
+    </div></div></section>
     <details className="introduction-details"><summary>再了解一点：Self-Attention、多头与本实验的范围</summary>
       <div className="introduction-more">
         <h3>Self-Attention 是什么？</h3><p>Self-Attention（自注意力）的 Q、K、V 来自同一序列的表示，词元可以从这条序列中的其他位置取回信息。原始 Transformer 的解码器还使用跨注意力：用解码器的查询去读取编码器提供的信息。</p>

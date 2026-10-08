@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
-  await expect(modes.getByRole('button')).toHaveText(['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测']);
+  await expect(modes.getByRole('button')).toHaveText(['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention']);
   await expect(page.getByRole('heading', { name: '先认识 Attention：它为什么重要？' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toHaveCount(0);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
@@ -46,6 +46,8 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await expect(page.getByRole('region', { name: '当前实验目标' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await page.getByRole('button', { name: '小栗子🌰', exact: true }).click();
+  await page.getByRole('button', { name: '多头注意力', exact: true }).click();
+  await page.getByRole('button', { name: '三种 Attention', exact: true }).click();
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
   await expect(key).toHaveValue('2');
