@@ -17,3 +17,9 @@
 另外检查 1920、1280、900、390 像素宽度：导读在学习按钮之前，展开和折叠均无横向溢出；Enter 可切换补充说明，切换学习模式不丢失展开状态或改变实验输入，没有页面运行时错误。
 
 已查看[桌面导读截图](../images/introduction.png)和[手机导读截图](../images/introduction-mobile.png)。
+
+## 在线发布
+
+提交 `ab2fda52d6b584bb2825ee4100fc498066574a4d` 已通过[云端测试与部署](https://github.com/ZeshanZheng/attention-lab/actions/runs/37761708404)，包括 35 项核心/状态测试与 24 项 Chromium 浏览器验收。
+
+实际访问[公开网页](https://zeshanzheng.github.io/attention-lab/)返回 HTTP 200。在 1280 与 390 像素宽度验证导读位于学习模式按钮之前，补充说明支持点击与 Enter 展开折叠，切换模式保留展开状态且默认实验输出不变；无横向溢出或页面运行时错误。
