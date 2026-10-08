@@ -1,0 +1,43 @@
+.step-guide { margin-top: 18px; padding: 16px; background: #f8fafc; border-radius: 10px; color: #48536b; font-size: 14px; line-height: 1.9; }
+.step-guide dl, .concept-definitions { margin: 0; }
+.step-guide dl > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; margin-bottom: 8px; }
+.step-guide dt { font-weight: 650; color: #5d4a96; }
+.step-guide dd, .concept-definitions dd { margin: 0; }
+.step-guide > p { border-top: 1px solid #e6eaf1; padding-top: 12px; overflow-wrap: anywhere; }
+.beginner-example { margin: 16px 0 22px; padding: 16px; border-left: 3px solid #9983e1; border-radius: 0 8px 8px 0; background: #f7f5fd; color: #51496b; font-size: 14px; line-height: 1.95; overflow-wrap: anywhere; }
+.beginner-example p { margin-top: 8px; }
+.calculation-card .process-footer { flex-wrap: wrap; }
+.process-footer > p { flex: 1 1 170px; }
+.process-footer .process-navigation { align-self: auto; }
+.manual-next { font-size: 14px; }
+.playback-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; flex-basis: 100%; }
+.playback-controls label, .coordinate-step-control { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #536078; }
+.playback-controls select, .coordinate-step-control select { font: inherit; color: #4f426e; border: 1px solid #ddd6ef; background: #fff; border-radius: 6px; padding: 6px; max-width: 100%; }
+.coordinate-step-control { justify-content: space-between; margin-bottom: 8px; }
+.coordinate-step-note { font-size: 12px; line-height: 1.7; color: #586376; margin-bottom: 10px; }
+.coordinate-row.editable-target { outline: 2px solid #8c75db; outline-offset: 1px; background: #f2edff; }
+.guided-editor { box-shadow: 0 0 0 2px #b8a5ed; }
+.editor-card, .guided-anchor { scroll-margin-top: 170px; }
+.guided-taskbar { position: sticky; top: 8px; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px 18px; margin-bottom: 18px; border: 1px solid #bca9ea; border-radius: 10px; background: #f9f6ff; box-shadow: 0 5px 20px #3b25631a; color: #493d65; }
+.guided-taskbar p { font-size: 13px; margin-top: 5px; line-height: 1.7; }
+.taskbar-actions { display: flex; flex-shrink: 0; gap: 8px; }
+.concept-summary { margin: 24px 0; }
+.concept-summary h2 { font-size: 22px; }
+#concept-summary-title { scroll-margin-top: 24px; }
+.concept-summary > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
+.concept-definitions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.concept-definitions > div { background: #f8f7fc; padding: 16px; border-radius: 8px; font-size: 14px; line-height: 1.9; }
+.concept-definitions dt { font-weight: 650; color: #614d99; margin-bottom: 5px; }
+.assessment-answer p { font-size: 14px; margin-top: 10px; }
+@media (max-width: 700px) {
+  .concept-definitions { grid-template-columns: 1fr; }
+  .concept-summary h2 { font-size: 19px; }
+  .guided-taskbar { flex-direction: column; align-items: stretch; padding: 10px 12px; gap: 8px; }
+  .taskbar-actions { justify-content: flex-end; }
+  .guided-taskbar p { font-size: 12px; }
+  .guided-taskbar b { font-size: 14px; }
+  .editor-card, .guided-anchor { scroll-margin-top: 200px; }
+  .step-guide dl > div { grid-template-columns: 1fr; gap: 2px; }
+  .step-guide, .beginner-example { padding: 13px; }
+  .coordinate-step-control { flex-wrap: wrap; justify-content: flex-start; }
+}

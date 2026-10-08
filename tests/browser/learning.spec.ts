@@ -45,7 +45,7 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await expect(page.getByRole('button', { name: '观察词元 B', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: '保存基线', exact: true })).toBeDisabled();
   await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
-  await expect(page.getByText(/B 当前的权重是.*还需要超过 60/)).toBeVisible();
+  await expect(page.getByTestId('lesson-interaction').getByText(/B 当前的权重是.*还需要超过 60/)).toBeVisible();
   await keyX.fill('2');
   await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
   await expect(keyX).toBeDisabled();
@@ -71,6 +71,8 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
   await answerUnderstanding(page, 'competition', 1);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
+  await expect(page.getByRole('link', { name: '先看概念与公式总结 ↓' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toBeVisible();
   await page.screenshot({ path: '.tools/preview-guided.png', fullPage: true });
 
   const downloadPromise = page.waitForEvent('download');
@@ -120,6 +122,8 @@ test('assessment gives per-question feedback and preserves first score independe
   await page.getByRole('button', { name: '提交自测', exact: true }).click();
   await expect(page.getByTestId('assessment-score')).toHaveText('0 / 5');
   await expect(page.getByText(/正确答案：/)).toHaveCount(5);
+  await expect(page.locator('.assessment-answer').filter({ hasText: '先明确概念：' })).toHaveCount(5);
+  await expect(page.locator('.assessment-answer').filter({ hasText: '为什么其他选项不对：' })).toHaveCount(5);
   await page.getByRole('button', { name: '换一组题，再测一次', exact: true }).click();
   await expect(page.getByRole('heading', { name: '换一组题，看看是否真正理解', exact: true })).toBeFocused();
   await expect(page.getByRole('radio', { checked: true })).toHaveCount(0);

@@ -10,6 +10,7 @@ import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
 import { AttentionHeatmap } from './components/AttentionHeatmap.tsx';
+import { ConceptSummary } from './components/ConceptSummary.tsx';
 import { LESSONS, createLessonInput, getLesson } from './learning/lessons.ts';
 import type { LessonId } from './learning/lessons.ts';
 import { addAssessmentRecord, addLessonRecord, completedLessons, exportProgress } from './learning/progress.ts';
@@ -21,25 +22,40 @@ import { useLearningProgress } from './learning/useLearningProgress.ts';
 export function App() {
   const [state, dispatch] = useReducer(labReducer, undefined, createLabState);
   const [playing, setPlaying] = useState(false);
+  const [playbackSeconds, setPlaybackSeconds] = useState(10);
+  const [coordinateStep, setCoordinateStep] = useState(1);
   const [helpOpen, setHelpOpen] = useState(false);
   const [announcement, setAnnouncement] = useState('');
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
   const [session, setSession] = useState<LessonSession | null>(null);
   const freeSnapshot = useRef<LabState | null>(null);
+  const editorRef = useRef<HTMLElement>(null);
+  const guidedRef = useRef<HTMLDivElement>(null);
   const { progress, setProgress, storageAvailable } = useLearningProgress();
   const completed = completedLessons(progress);
   const result = useMemo(() => computeAttention(state.input), [state.input]);
   const baselineResult = useMemo(() => computeAttention(state.baseline), [state.baseline]);
   const hasChanges = useMemo(() => JSON.stringify(state.input) !== JSON.stringify(state.baseline), [state.input, state.baseline]);
+  const activeLesson = session ? getLesson(session.lessonId) : null;
+  const locateEditor = () => {
+    editorRef.current?.scrollIntoView({ block: 'start' });
+    editorRef.current?.querySelector<HTMLInputElement>('input:not(:disabled)')?.focus({ preventScroll: true });
+  };
+
+  useEffect(() => {
+    if (mode !== 'guided' || !session) return;
+    if (session.phase === 'experiment') locateEditor();
+    else guidedRef.current?.scrollIntoView({ block: 'start' });
+  }, [mode, session?.phase, session?.lessonId]);
 
   useEffect(() => {
     if (!playing) return;
     const timer = window.setTimeout(() => {
       if (state.step === 3) setPlaying(false);
       else dispatch({ type: 'select-step', step: state.step + 1 });
-    }, 1800);
+    }, playbackSeconds * 1000);
     return () => window.clearTimeout(timer);
-  }, [playing, state.step]);
+  }, [playing, state.step, playbackSeconds]);
 
   useEffect(() => {
     if (!announcement) return;
@@ -87,6 +103,13 @@ export function App() {
     if (mode === 'guided' && session) { startLesson(session.lessonId); setAnnouncement('已重新开始本实验，已完成进度保留'); }
     else { dispatch({ type: 'reset' }); setAnnouncement('已恢复初始实验，基线也已重置'); }
   };
+  const checkCurrentExperiment = () => {
+    if (!session) return;
+    const next = checkExperiment(session, state.input);
+    setSession(next);
+    if (next.phase === 'explain') { setPlaying(false); dispatch({ type: 'allow-lesson-editing', enabled: false }); }
+    else setAnnouncement(next.goalFeedback?.feedback ?? '继续修改，再检查结果');
+  };
 
   return <>
     <header className="site-header"><div className="header-inner">
@@ -104,24 +127,27 @@ export function App() {
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       {mode === 'free' && <div className="learning-entry"><span><b>从观察，到理解</b>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>}
-      {mode === 'guided' && session && <GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
+      {mode === 'guided' && session && <div ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
         onPredict={(choice) => setSession(choosePrediction(session, choice))}
         onBegin={() => { const next = beginExperiment(session); setSession(next); dispatch({ type: 'allow-lesson-editing', enabled: next.phase === 'experiment' }); }}
-        onCheck={() => { const next = checkExperiment(session, state.input); setSession(next); if (next.phase === 'explain') { setPlaying(false); dispatch({ type: 'allow-lesson-editing', enabled: false }); } }}
+        onCheck={checkCurrentExperiment} onLocate={locateEditor}
         onAnswerChoice={(choice) => setSession(chooseComprehension(session, choice))}
         onAnswer={() => { const outcome = answerComprehension(session, new Date().toISOString()); setSession(outcome.session); if (outcome.record) setProgress((previous) => addLessonRecord(previous, outcome.record!)); }}
-        onAssessment={enterAssessment} />}
+        onAssessment={enterAssessment} /></div>}
+      {mode === 'guided' && session?.phase === 'complete' && (session.lessonId === 'competition' || completed.length === 3) && <ConceptSummary />}
       {mode === 'assessment' && <Assessment progress={progress} onGuided={enterGuided} onExport={downloadProgress}
         onSubmit={(record) => setProgress((previous) => addAssessmentRecord(previous, record))} />}
       {mode !== 'assessment' && <>
+      {mode === 'guided' && session?.phase === 'experiment' && activeLesson && <div className="guided-taskbar" role="region" aria-label="当前实验目标"><div><b>现在修改：词元 {TOKEN_NAMES[activeLesson.token]} 的 {activeLesson.kind === 'keys' ? 'K' : 'V'}</b><p>{activeLesson.task}</p>{session.goalFeedback && <p role="status">{session.goalFeedback.feedback}</p>}</div><div className="taskbar-actions"><button className="button secondary" onClick={locateEditor}>定位输入框</button><button className="button primary" onClick={checkCurrentExperiment}>检查当前修改</button></div></div>}
       <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
         {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} disabled={mode === 'guided'} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
       </div></div><div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div></div>
-      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} playing={playing} onStep={selectStep}
+      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} playing={playing} onStep={selectStep} playbackSeconds={playbackSeconds} onSpeed={setPlaybackSeconds}
         onPlay={() => { if (!playing && state.step === 3) dispatch({ type: 'select-step', step: 0 }); setPlaying(!playing); }} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
       <AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
       <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { setPlaying(false); dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
+      {mode === 'free' && <ConceptSummary />}
       </>}
       <footer className="page-footer"><p>人为设定的教学向量 · 输出为聚合向量，不是下一词预测</p><span>小规模，可手算，可探索。</span></footer>
     </main>

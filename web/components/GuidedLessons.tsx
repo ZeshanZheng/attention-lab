@@ -5,9 +5,10 @@ import type { LessonSession } from '../learning/session.ts';
 import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
 
-export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onCheck, onAnswerChoice, onAnswer, onAssessment }: {
+export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onCheck, onLocate, onAnswerChoice, onAnswer, onAssessment }: {
   session: LessonSession; completed: readonly LessonId[];
   onStart: (id: LessonId) => void; onPredict: (choice: number) => void; onBegin: () => void; onCheck: () => void;
+  onLocate: () => void;
   onAnswerChoice: (choice: number) => void; onAnswer: () => void; onAssessment: () => void;
 }) {
   const [hintLevel, setHintLevel] = useState(0);
@@ -37,7 +38,8 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
         {session.phase === 'predict' && <><QuestionChoices question={lesson.prediction} value={session.predictionChoice} onChange={onPredict} />
           <div className="lesson-action-row"><span>先记录你的判断，再开放编辑。</span><button className="button primary" disabled={session.predictionChoice === null} onClick={onBegin}>记录预测，开始实验<Icon name="arrow" size={16} /></button></div></>}
         {session.phase === 'experiment' && <><div className="recorded-prediction"><span>你的预测已记录</span><p>{lesson.prediction.options[session.prediction!]}</p></div>
-          <p className="experiment-instruction">在下方输入框或坐标图中修改指定向量，然后检查结果。基线固定为本实验的初始参数。</p>
+          <p className="experiment-instruction">已开放词元 {lesson.token === 0 ? 'A' : 'B'} 的 {lesson.kind === 'keys' ? 'K' : 'V'} 输入框，紫色边框标出可修改的一行。点击数字直接输入，或拖动坐标圆点；顶部目标栏会持续显示任务。</p>
+          <button className="button secondary" onClick={onLocate}>前往可修改的输入框<Icon name="arrow" size={16} /></button>
           {session.goalFeedback && <div className="learning-feedback pending" role="status">{session.goalFeedback.feedback}</div>}
           <div className="lesson-action-row"><span>以实际计算结果判断目标是否达成。</span><button className="button primary" onClick={onCheck}>检查实验结果<Icon name="arrow" size={16} /></button></div></>}
         {(session.phase === 'explain' || session.phase === 'complete') && <>
@@ -47,6 +49,7 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
             {session.comprehensionCorrect === false && <div className="learning-feedback pending" role="status"><b>再想一想</b><p>{lesson.comprehension.retryHint}首次回答会保留在学习记录中。</p></div>}
             <div className="lesson-action-row"><span>解释清楚，才算完成这次实验。</span><button className="button primary" disabled={session.comprehensionChoice === null} onClick={onAnswer}>提交理解题</button></div></>}
           {session.phase === 'complete' && <><div className="completion-explanation"><b>理解题已通过</b><p>{lesson.comprehension.explanation}</p><small>理解题作答 {session.comprehensionAnswers.length} 次 · 完成进度已更新</small></div>
+            {!nextLesson && <a className="text-button" href="#concept-summary-title">先看概念与公式总结 ↓</a>}
             <div className="lesson-action-row"><button className="text-button" onClick={() => { setHintLevel(0); onStart(lesson.id); }}>重新实验</button><button className="button primary" onClick={() => { setHintLevel(0); if (nextLesson) onStart(nextLesson.id); else onAssessment(); }}>{nextLesson ? '下一个实验' : '进入理解自测'}<Icon name="arrow" size={16} /></button></div></>}
         </>}
       </div>

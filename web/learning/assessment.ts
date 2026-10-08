@@ -1,5 +1,6 @@
 import { ASSESSMENT } from './lessons.ts';
 import type { Question } from './lessons.ts';
+import { BEGINNER_EXPLANATIONS } from './explanations.ts';
 
 export const TOPICS = ['matching', 'aggregation', 'normalization', 'invariance', 'interpretation'] as const;
 export type AssessmentTopic = typeof TOPICS[number];
@@ -11,7 +12,7 @@ export const ROUND_SIZE = TOPICS.length;
 
 // Preserve the exact original questions for historical answers.
 export const LEGACY_QUESTIONS: readonly AssessmentQuestion[] = ASSESSMENT.map((question, index) => ({ ...question, topic: TOPICS[index]! }));
-export const QUESTION_BANK: readonly AssessmentQuestion[] = [
+const BASE_QUESTIONS: readonly AssessmentQuestion[] = [
   ...LEGACY_QUESTIONS,
   { id: 'matching-y', topic: 'matching', prompt: 'Q = (0, 1)，K_A = (3, 0)，K_B = (0, 2)。哪个词元的匹配得分更高？',
     options: ['A，因为它的 x 更大', 'B，因为与 Q 的点积是 2', '二者相同'], correctIndex: 1,
@@ -62,6 +63,8 @@ export const QUESTION_BANK: readonly AssessmentQuestion[] = [
     options: ['0 到 4 之间', '一定大于 4', '一定小于 0'], correctIndex: 0,
     explanation: '权重非负且和为 1，输出是两个 V 的加权平均，因此 x 不会超出 0 到 4 的范围。', retryHint: '把输出写成 α×0 + (1−α)×4。' },
 ];
+export const QUESTION_BANK: readonly AssessmentQuestion[] = BASE_QUESTIONS.map((question) => ({ ...question,
+  explanation: BEGINNER_EXPLANATIONS[question.id]?.join('\n') ?? question.explanation }));
 
 /** One per concept; four variants allow three recent rounds without repeats. */
 export function createAssessment(recentRounds: readonly (readonly string[])[] = [], random: () => number = Math.random): AssessmentQuestion[] {

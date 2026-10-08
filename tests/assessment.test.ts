@@ -3,8 +3,24 @@ import test from 'node:test';
 import { computeAttention, softmax } from '../src/index.ts';
 import { LEGACY_QUESTIONS, QUESTION_BANK, TOPICS, createAssessment, scoreAnswers } from '../web/learning/assessment.ts';
 import { addAssessmentRecord, createAssessmentRecord, emptyProgress, exportProgress, parseProgress } from '../web/learning/progress.ts';
+import { BEGINNER_EXPLANATIONS } from '../web/learning/explanations.ts';
 
 const submittedAt = '2026-10-07T10:00:00.000Z';
+test('all twenty beginner explanations survive storage and export without replacing legacy snapshots', () => {
+  assert.deepEqual(Object.keys(BEGINNER_EXPLANATIONS).sort(), QUESTION_BANK.map((question) => question.id).sort());
+  for (const question of QUESTION_BANK) {
+    assert.ok(question.explanation.includes('先明确概念：'));
+    assert.ok(question.explanation.includes('为什么其他选项不对：'));
+    const progress = addAssessmentRecord(emptyProgress(), createAssessmentRecord([question], [question.correctIndex], submittedAt));
+    assert.equal(parseProgress(JSON.stringify(progress)).assessments[0]!.questions[0]!.explanation, question.explanation);
+    assert.equal(JSON.parse(exportProgress(progress, submittedAt)).assessmentAttempts[0].questions[0].explanation, question.explanation);
+  }
+  assert.ok(!LEGACY_QUESTIONS[0]!.explanation.includes('先明确概念：'));
+  const before = softmax([1, 0])[0]!;
+  const after = softmax([2, 0])[0]!;
+  assert.equal((before * 100).toFixed(1), '73.1');
+  assert.equal((after * 100).toFixed(1), '88.1');
+});
 function randomGenerator(seed: number) {
   return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
 }

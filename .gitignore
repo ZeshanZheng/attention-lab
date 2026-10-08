@@ -8,3 +8,6 @@ playwright-report/
 .env
 .env.*
 !.env.example
+# Local participant responses; the public blank workbook lives in docs/.
+/*.xlsx
+/attention-lab-learning*.json

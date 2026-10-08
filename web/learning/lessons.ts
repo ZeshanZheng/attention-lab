@@ -32,7 +32,7 @@ export const LESSONS: readonly Lesson[] = [
     task: '保持 Q、V 和其他 K 不变，只修改 B 的 K，让 A 分给 B 的权重超过 60%。',
     kind: 'keys', token: 1, step: 0,
     prediction: {
-      id: 'focus-prediction', prompt: '如果把 B 的 K 从 (0, 1) 改为 (2, 1)，A 的注意力权重会怎样变化？',
+      id: 'focus-prediction', prompt: '如果把 B 的 K 从 (0, 1) 改为 (2, 1)，A 关注 A、B、C 的比例会怎样变化？',
       options: ['B 的权重上升，A 和 C 的权重下降', '三个词元的权重都会上升', '权重不变，只有输出发生变化'],
       correctIndex: 0, explanation: 'Q_A = (1, 0)，因此 B 的点积从 0 增至 2。Softmax 将更大的比例分给 B，A、C 的比例随之下降。',
       retryHint: '先比较 Q_A 与 K_B 的点积，再想想所有权重之和。',

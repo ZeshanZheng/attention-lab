@@ -6,7 +6,7 @@
 
 ## 自动更新
 
-推送到 `main` 或在 Actions 手动运行 **Deploy Attention Lab** 时，工作流依次安装锁文件依赖、执行严格类型检查与 34 项测试、构建网页、运行 21 项 Chromium 浏览器测试，再发布到 Pages。失败的检查会阻止此次发布。
+推送到 `main` 或在 Actions 手动运行 **Deploy Attention Lab** 时，工作流依次安装锁文件依赖、执行严格类型检查与 35 项测试、构建网页、运行 24 项 Chromium 浏览器测试，再发布到 Pages。失败的检查会阻止此次发布。
 
 构建使用 Node.js 24.12.0。GitHub Pages 发布来源为 **GitHub Actions**，无需添加第三方服务的密钥。网页和学习计算不使用服务器 API。
 

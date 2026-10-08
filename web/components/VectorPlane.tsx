@@ -8,7 +8,8 @@ import type { EditPolicy, VectorKind } from '../state.ts';
 const CENTER = 140;
 const UNIT = 23;
 const kinds = { queries: 'Q', keys: 'K', values: 'V' } as const;
-const snap = (value: number) => Math.max(-VECTOR_LIMIT, Math.min(VECTOR_LIMIT, Math.round(value * 10) / 10));
+const snap = (value: number, step: number) => Math.max(-VECTOR_LIMIT, Math.min(VECTOR_LIMIT, Math.round(Math.round(value / step) * step * 10) / 10));
+const move = (value: number, offset: number) => Math.max(-VECTOR_LIMIT, Math.min(VECTOR_LIMIT, Number((value + offset).toFixed(10))));
 
 interface Props {
   vectors: Matrix;
@@ -17,11 +18,12 @@ interface Props {
   observedQuery: Vector;
   observedToken: number;
   editPolicy: EditPolicy | null;
+  coordinateStep: number;
   onSelect: (token: number) => void;
   onChange: (token: number, vector: readonly [number, number]) => void;
 }
 
-export function VectorPlane({ vectors, kind, selectedToken, observedQuery, observedToken, editPolicy, onSelect, onChange }: Props) {
+export function VectorPlane({ vectors, kind, selectedToken, observedQuery, observedToken, editPolicy, coordinateStep, onSelect, onChange }: Props) {
   const dragging = useRef<{ token: number; pointerId: number } | null>(null);
   const editable = (token: number) => editPolicy === null || editPolicy.enabled && token === editPolicy.token && kind === editPolicy.kind;
   const onPointerMove = (event: PointerEvent<SVGSVGElement>) => {
@@ -29,7 +31,7 @@ export function VectorPlane({ vectors, kind, selectedToken, observedQuery, obser
     const transform = event.currentTarget.getScreenCTM();
     if (!transform) return;
     const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(transform.inverse());
-    onChange(dragging.current.token, [snap((point.x - CENTER) / UNIT), snap((CENTER - point.y) / UNIT)]);
+    onChange(dragging.current.token, [snap((point.x - CENTER) / UNIT, coordinateStep), snap((CENTER - point.y) / UNIT, coordinateStep)]);
   };
   const startDrag = (event: PointerEvent<SVGCircleElement>, token: number) => {
     if (event.button !== 0 || !editable(token)) return;
@@ -43,7 +45,7 @@ export function VectorPlane({ vectors, kind, selectedToken, observedQuery, obser
   };
   const moveWithKeyboard = (event: KeyboardEvent<SVGCircleElement>, token: number) => {
     if (!editable(token)) return;
-    const delta = event.shiftKey ? 1 : 0.1;
+    const delta = event.shiftKey ? 1 : coordinateStep;
     const vector = vectors[token]!;
     const offsets: Record<string, readonly [number, number]> = {
       ArrowLeft: [-delta, 0], ArrowRight: [delta, 0], ArrowUp: [0, delta], ArrowDown: [0, -delta],
@@ -53,7 +55,7 @@ export function VectorPlane({ vectors, kind, selectedToken, observedQuery, obser
       event.preventDefault();
       onSelect(token);
       const offset = offsets[event.key]!;
-      onChange(token, [snap(vector[0]! + offset[0]), snap(vector[1]! + offset[1])]);
+      onChange(token, [offset[0] ? move(vector[0]!, offset[0]) : vector[0]!, offset[1] ? move(vector[1]!, offset[1]) : vector[1]!]);
     }
   };
   const finishDrag = () => { dragging.current = null; };
@@ -92,6 +94,6 @@ export function VectorPlane({ vectors, kind, selectedToken, observedQuery, obser
       })}
       <circle cx={CENTER} cy={CENTER} r="3" fill="#9099ad" pointerEvents="none" />
     </svg>
-    <p className="micro-copy" id="drag-help">拖动圆点改变向量 · 方向键微调{kind === 'keys' && <span>虚线圆圈：正在观察的 Q{TOKEN_NAMES[observedToken]}</span>}</p>
+    <p className="micro-copy" id="drag-help">拖动或方向键调整 {coordinateStep} · Shift + 方向键调整 1{kind === 'keys' && <span>虚线圆圈：正在观察的 Q{TOKEN_NAMES[observedToken]}</span>}</p>
   </div>;
 }
