@@ -19,3 +19,9 @@
 另在 1920、1280、900、390 像素宽度验证五个按钮、独立内容显示、展开说明、自由参数和未提交自测答案保留，均无横向溢出或页面运行时错误。
 
 参见[桌面引言页面](../images/reading-navigation.png)、[手机引言页面](../images/reading-navigation-mobile.png)和[独立实验总结](../images/reading-summary.png)。
+
+## 在线发布
+
+提交 `cb2ad9a6278162b39e1f346440c8d63851007835` 已通过[云端测试与部署](https://github.com/ZeshanZheng/attention-lab/actions/runs/37764645369)，包含 35 项核心/状态测试与 27 项 Chromium 浏览器验收。
+
+实际访问[公开网页](https://zeshanzheng.github.io/attention-lab/)返回 HTTP 200。在 1280 与 390 像素宽度确认五个按钮顺序、独立引言和总结显示、选中状态和说明展开；阅读往返后自由探索向量和输出、自测题目和未提交答案均保留。无横向溢出或页面运行时错误。
