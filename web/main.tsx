@@ -5,6 +5,7 @@ import './styles.css';
 import './learning.css';
 import './heatmap.css';
 import './beginner.css';
+import './introduction.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Application root element is missing.');

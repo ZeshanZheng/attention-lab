@@ -8,6 +8,7 @@
 
 ## 交互网页
 
+- 学习模式按钮前提供一分钟导读，介绍 Attention 的背景、在 Transformer 中的作用和学习收益。补充说明可展开，解释自注意力、多头、编码器层的简化信息流及本实验范围，并附原始论文链接。
 - 独立选择“观察谁的 Query”和“编辑哪个词元”，修改 B 时仍可观察 A。
 - 输入或拖动二维 Q/K/V 向量；聚焦数值输入框时，坐标图同步切到对应类型。
 - 向量输入按钮、拖动和方向键默认按整数调整，可切换到 0.1 步长；Shift + 方向键调整 1，直接输入仍可使用小数。切换步长不修改当前向量；坐标范围为 −5 到 5。
@@ -199,6 +200,8 @@ docs/user-testing-template.xlsx     带样式和填写说明的 Excel 空白模�
 字号与文字对比度调整见[第七次迭代记录](docs/development/07-readable-typography.md)。
 
 两位同学的试用反馈、新手教学说明与操作引导改进见[第八次迭代记录](docs/development/08-beginner-feedback.md)。
+
+Attention 背景导读、Transformer 中的位置及学习路线见[第九次迭代记录](docs/development/09-attention-introduction.md)。
 
 开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 

@@ -11,6 +11,7 @@ import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
 import { AttentionHeatmap } from './components/AttentionHeatmap.tsx';
 import { ConceptSummary } from './components/ConceptSummary.tsx';
+import { LearningIntroduction } from './components/LearningIntroduction.tsx';
 import { LESSONS, createLessonInput, getLesson } from './learning/lessons.ts';
 import type { LessonId } from './learning/lessons.ts';
 import { addAssessmentRecord, addLessonRecord, completedLessons, exportProgress } from './learning/progress.ts';
@@ -120,6 +121,7 @@ export function App() {
       <div className="page-intro"><div><div className="intro-label"><span className="eyebrow">LEARN BY EXPLORING</span><span className="label-line" /></div><h1>动一个向量，<span>看懂注意力。</span></h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>
         {mode !== 'assessment' && <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>}
       </div>
+      <LearningIntroduction />
       <div className="learning-navigation"><div className="learning-tabs" role="group" aria-label="学习模式">
         <button aria-pressed={mode === 'free'} className={mode === 'free' ? 'active' : ''} onClick={enterFree}>自由探索</button>
         <button aria-pressed={mode === 'guided'} className={mode === 'guided' ? 'active' : ''} onClick={() => { if (mode !== 'guided') enterGuided(); }}>引导实验</button>
