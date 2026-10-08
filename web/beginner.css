@@ -22,7 +22,7 @@
 .guided-taskbar p { font-size: 13px; margin-top: 5px; line-height: 1.7; }
 .taskbar-actions { display: flex; flex-shrink: 0; gap: 8px; }
 .concept-summary { margin: 24px 0; }
-.concept-summary h2 { font-size: 22px; }
+.concept-summary h2 { font-size: 22px; margin-top: 8px; }
 #concept-summary-title { scroll-margin-top: 24px; }
 .concept-summary > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
 .concept-definitions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }

@@ -5,10 +5,11 @@ import type { LessonSession } from '../learning/session.ts';
 import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
 
-export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onCheck, onLocate, onAnswerChoice, onAnswer, onAssessment }: {
+export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onCheck, onLocate, onAnswerChoice, onAnswer, onAssessment, onSummary }: {
   session: LessonSession; completed: readonly LessonId[];
   onStart: (id: LessonId) => void; onPredict: (choice: number) => void; onBegin: () => void; onCheck: () => void;
   onLocate: () => void;
+  onSummary: () => void;
   onAnswerChoice: (choice: number) => void; onAnswer: () => void; onAssessment: () => void;
 }) {
   const [hintLevel, setHintLevel] = useState(0);
@@ -49,7 +50,7 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
             {session.comprehensionCorrect === false && <div className="learning-feedback pending" role="status"><b>再想一想</b><p>{lesson.comprehension.retryHint}首次回答会保留在学习记录中。</p></div>}
             <div className="lesson-action-row"><span>解释清楚，才算完成这次实验。</span><button className="button primary" disabled={session.comprehensionChoice === null} onClick={onAnswer}>提交理解题</button></div></>}
           {session.phase === 'complete' && <><div className="completion-explanation"><b>理解题已通过</b><p>{lesson.comprehension.explanation}</p><small>理解题作答 {session.comprehensionAnswers.length} 次 · 完成进度已更新</small></div>
-            {!nextLesson && <a className="text-button" href="#concept-summary-title">先看概念与公式总结 ↓</a>}
+            {!nextLesson && <button className="text-button" onClick={onSummary}>查看实验总结</button>}
             <div className="lesson-action-row"><button className="text-button" onClick={() => { setHintLevel(0); onStart(lesson.id); }}>重新实验</button><button className="button primary" onClick={() => { setHintLevel(0); if (nextLesson) onStart(nextLesson.id); else onAssessment(); }}>{nextLesson ? '下一个实验' : '进入理解自测'}<Icon name="arrow" size={16} /></button></div></>}
         </>}
       </div>

@@ -14,6 +14,7 @@ test('each calculation step teaches its purpose and example follows edited input
   await page.getByRole('button', { name: '4 加权求和', exact: true }).click();
   await expect(page.getByTestId('step-guide')).toContainText('不会改变前面的权重');
   await expect(page.getByTestId('beginner-example')).toContainText('输出 x：');
+  await page.getByRole('button', { name: '实验总结', exact: true }).click();
   await page.locator('.concept-summary').screenshot({ path: '.tools/preview-concept-summary.png' });
 });
 

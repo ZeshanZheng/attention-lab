@@ -71,8 +71,10 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
   await answerUnderstanding(page, 'competition', 1);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
-  await expect(page.getByRole('link', { name: '先看概念与公式总结 ↓' })).toBeVisible();
+  await page.getByRole('button', { name: '查看实验总结', exact: true }).click();
   await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toBeVisible();
+  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.screenshot({ path: '.tools/preview-guided.png', fullPage: true });
 
   const downloadPromise = page.waitForEvent('download');

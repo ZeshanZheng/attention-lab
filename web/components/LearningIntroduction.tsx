@@ -18,6 +18,6 @@ export function LearningIntroduction() {
         <p className="introduction-sources">背景出处，可选阅读：<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noreferrer">早期机器翻译注意力研究（2014）</a><span> · </span><a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文（2017）</a>。</p>
       </div>
     </details>
-    <p className="introduction-route"><b>建议顺序：</b>先用“自由探索”观察变化，再做“引导实验”验证预测，最后用“理解自测”检查掌握情况。</p>
+    <p className="introduction-route"><b>建议顺序：</b>先用“自由探索”观察变化，对照“实验总结”理解公式，再做“引导实验”验证预测，最后用“理解自测”检查掌握情况。</p>
   </section>;
 }

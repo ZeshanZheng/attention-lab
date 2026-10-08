@@ -1,5 +1,6 @@
 export function ConceptSummary() {
   return <section className="card concept-summary" aria-labelledby="concept-summary-title">
+    <span className="eyebrow">实验总结 · 概念、公式与计算例子</span>
     <h2 id="concept-summary-title">把三个实验串起来：Attention 到底在算什么？</h2>
     <p>词元是参与计算的一个文本单位；这里用 A、B、C 代替真实文字。向量是一组数字，二维向量有 x、y 两个坐标。我们直接编辑人为设定的向量，观察计算关系。</p>
     <dl className="concept-definitions"><div><dt>Q · Query · 查询</dt><dd>当前词元在寻找什么信息。它与每个 K 比较。</dd></div><div><dt>K · Key · 键</dt><dd>每个词元用于被匹配的特征。Q/K 一起决定关注谁。</dd></div><div><dt>V · Value · 值</dt><dd>每个词元实际提供的内容。按关注比例取回并合并。</dd></div></dl>
