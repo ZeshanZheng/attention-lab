@@ -13,6 +13,6 @@ export function TransformerArchitecture({ location = 'encoder', showQkv = false,
       <img src={`${import.meta.env.BASE_URL}images/transformer-architecture.png`} width="561" height="825" alt={`原始 Transformer 编码器与解码器架构图，红圈标出${highlight.label}`} />
       <svg className="architecture-highlight" viewBox="0 0 561 825" aria-hidden="true"><ellipse cx={highlight.x} cy={highlight.y} rx={highlight.rx} ry={highlight.ry} />{showQkv && <text x="148" y="568">Q K V</text>}</svg>
     </div>
-    <figcaption>{showHighlightCaption && <>红圈：{highlight.label}。</>}<a href={`${import.meta.env.BASE_URL}images/transformer-architecture.png`} target="_blank" rel="noreferrer">查看原图</a><span>图源：Vaswani 等，Attention Is All You Need，Figure 1。</span></figcaption>
+    <figcaption>{showHighlightCaption && <>红圈：{highlight.label}。</>}<span>图源：Vaswani 等，Attention Is All You Need，Figure 1。</span></figcaption>
   </figure>;
 }

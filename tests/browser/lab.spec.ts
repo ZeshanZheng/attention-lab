@@ -123,18 +123,20 @@ test('invalid numeric input is explained and cannot change the calculation', asy
   await expect(input).toHaveValue('1');
 });
 
-test('mobile layout fits the screen, remains interactive, and help closes with Escape', async ({ page }) => {
+test('mobile help page opens from the header and returns to the existing experiment', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
-  await page.getByRole('button', { name: '使用说明', exact: true }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog')).toHaveCount(0);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
+  await page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true }).click();
+  await expect(page.getByRole('region', { name: '欢迎来到注意力实验室', exact: true })).toBeVisible();
+  await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  await page.getByRole('button', { name: '开始探索', exact: true }).click();
+  await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('4');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
   await page.screenshot({ path: '.tools/preview-mobile.png', fullPage: true });
 });

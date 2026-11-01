@@ -5,7 +5,7 @@ import { TOKEN_NAMES } from './format.ts';
 import { VectorEditor } from './components/VectorEditor.tsx';
 import { Calculation } from './components/Calculation.tsx';
 import { Results } from './components/Results.tsx';
-import { HelpDialog } from './components/HelpDialog.tsx';
+import { HelpPage } from './components/HelpPage.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
@@ -23,13 +23,12 @@ import type { LessonSession } from './learning/session.ts';
 import type { LabState } from './state.ts';
 import { useLearningProgress } from './learning/useLearningProgress.ts';
 
-type ReadingView = 'introduction' | 'example' | 'summary' | 'multihead' | 'types';
-const VIEW_LABELS = { introduction: 'Attention 引言', example: '小栗子🌰', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', free: '自由探索', guided: '引导实验', assessment: '理解自测' };
+type ReadingView = 'help' | 'introduction' | 'example' | 'summary' | 'multihead' | 'types';
+const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '小栗子🌰', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', free: '自由探索', guided: '引导实验', assessment: '理解自测' };
 
 export function App() {
   const [state, dispatch] = useReducer(labReducer, undefined, createLabState);
   const [coordinateStep, setCoordinateStep] = useState(1);
-  const [helpOpen, setHelpOpen] = useState(false);
   const [announcement, setAnnouncement] = useState('');
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
   const [readingView, setReadingView] = useState<ReadingView | null>('introduction');
@@ -121,10 +120,11 @@ export function App() {
   return <>
     <header className="site-header"><div className="header-inner">
       <a className="brand" href="./" aria-label="Attention Lab 首页"><svg className="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#7560df" /><path d="m11 28 9-17 9 17M15 23h10" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="29" cy="28" r="2.4" fill="#b6ebd6" /></svg><span>Attention<span className="brand-light"> Lab</span><small>注意力实验室</small></span></a>
-      <div className="header-right"><span className="mode-pill"><span className="live-dot" />{VIEW_LABELS[activeView]}</span><button className="text-button" onClick={() => setHelpOpen(true)}><Icon name="info" size={17} />使用说明</button><a className="github-link" href="https://github.com/ZeshanZheng/attention-lab" target="_blank" rel="noreferrer" aria-label="查看 GitHub 项目（新窗口）"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.5v-2.1c-3.4.7-4.1-1.4-4.1-1.4-.5-1.3-1.2-1.6-1.2-1.6-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6.2 0-1.4.5-2.5 1.2-3.4-.1-.3-.5-1.6.2-3.3 0 0 1-.3 3.5 1.3a12 12 0 0 1 6.4 0c2.4-1.6 3.4-1.3 3.4-1.3.7 1.7.3 3 .2 3.3.8.9 1.3 2 1.3 3.4 0 4.8-2.9 5.9-5.6 6.2.4.4.8 1.1.8 2.3V22c0 .3.2.6.8.5A11.1 11.1 0 0 0 12 .9Z" /></svg></a></div>
+      <div className="header-right"><span className="mode-pill"><span className="live-dot" />{VIEW_LABELS[activeView]}</span><button className="text-button" onClick={() => enterReading('help')}><Icon name="info" size={17} />使用说明</button><a className="github-link" href="https://github.com/ZeshanZheng/attention-lab" target="_blank" rel="noreferrer" aria-label="查看 GitHub 项目（新窗口）"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .9a11.1 11.1 0 0 0-3.5 21.6c.6.1.8-.3.8-.5v-2.1c-3.4.7-4.1-1.4-4.1-1.4-.5-1.3-1.2-1.6-1.2-1.6-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6.2 0-1.4.5-2.5 1.2-3.4-.1-.3-.5-1.6.2-3.3 0 0 1-.3 3.5 1.3a12 12 0 0 1 6.4 0c2.4-1.6 3.4-1.3 3.4-1.3.7 1.7.3 3 .2 3.3.8.9 1.3 2 1.3 3.4 0 4.8-2.9 5.9-5.6 6.2.4.4.8 1.1.8 2.3V22c0 .3.2.6.8.5A11.1 11.1 0 0 0 12 .9Z" /></svg></a></div>
     </div></header>
     <main className="main-shell">
       <div ref={navigationRef} className="learning-navigation"><div className="learning-tabs" role="group" aria-label="学习模式">
+        <button aria-pressed={activeView === 'help'} className={activeView === 'help' ? 'active' : ''} onClick={() => enterReading('help')}>使用说明</button>
         <button aria-pressed={activeView === 'introduction'} className={activeView === 'introduction' ? 'active' : ''} onClick={() => enterReading('introduction')}>Attention 引言</button>
         <button aria-pressed={activeView === 'example'} className={activeView === 'example' ? 'active' : ''} onClick={() => enterReading('example')}>小栗子🌰</button>
         <button aria-pressed={activeView === 'free'} className={activeView === 'free' ? 'active' : ''} onClick={enterFree}>自由探索</button>
@@ -139,6 +139,7 @@ export function App() {
         {mode === 'free' && <div><div className="intro-label"><span className="eyebrow">LEARN BY EXPLORING</span><span className="label-line" /></div><h1>通过改变一个向量来看懂注意力</h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>}
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
       </div>}
+      <div hidden={readingView !== 'help'}><HelpPage onExplore={enterFree} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction /></div>
       <div hidden={readingView !== 'example'}><SentenceExample onExplore={enterFree} /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
@@ -173,6 +174,5 @@ export function App() {
       </div>}
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
-    {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
   </>;
 }

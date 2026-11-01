@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
   await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 引言');
@@ -19,6 +19,9 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await page.getByRole('button', { name: '保存基线', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('3');
   await page.getByRole('button', { name: '3 Softmax', exact: true }).click();
+  await modes.getByRole('button', { name: '使用说明', exact: true }).click();
+  await expect(page.getByRole('region', { name: '欢迎来到注意力实验室', exact: true })).toBeVisible();
+  await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
   await modes.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 引言');
   await expect(modes.getByRole('button', { pressed: true })).toBeFocused();
@@ -53,6 +56,7 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await expect(page.locator('.lesson-hint')).toBeVisible();
   await page.getByRole('button', { name: '实验总结', exact: true }).click();
   await expect(page.getByRole('region', { name: '当前实验目标' })).toHaveCount(0);
+  await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: '使用说明', exact: true }).click();
   await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await page.getByRole('button', { name: '小栗子🌰', exact: true }).click();
   await page.getByRole('button', { name: '多头注意力', exact: true }).click();

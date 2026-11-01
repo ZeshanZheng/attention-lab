@@ -27,7 +27,7 @@ test('architecture images load and advanced reading preserves free parameters an
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(nav.getByRole('button', { name, exact: true })).toHaveCount(1);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
@@ -71,7 +71,7 @@ for (const width of [320, 390]) {
     const questions = page.getByTestId('assessment-question');
     const ids = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
     await questions.first().getByRole('radio').first().check();
-    for (const name of ['Attention 引言', '实验总结', '多头注意力', '三种 Attention']) {
+    for (const name of ['使用说明', 'Attention 引言', '实验总结', '多头注意力', '三种 Attention']) {
       await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name, exact: true }).click();
       await expect(page.getByRole('radio')).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
