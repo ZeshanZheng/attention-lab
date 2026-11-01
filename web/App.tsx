@@ -34,7 +34,7 @@ export function App() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [announcement, setAnnouncement] = useState('');
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
-  const [readingView, setReadingView] = useState<ReadingView | null>(null);
+  const [readingView, setReadingView] = useState<ReadingView | null>('introduction');
   const activeView = readingView ?? mode;
   const [session, setSession] = useState<LessonSession | null>(null);
   const freeSnapshot = useRef<LabState | null>(null);

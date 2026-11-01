@@ -4,6 +4,7 @@ test('default experiment renders correct results without browser errors', async 
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await expect(page).toHaveTitle('Attention Lab · 注意力实验室');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 0.568)');
   await expect(page.getByTestId('weight-0')).toHaveText('57.6%');
@@ -16,6 +17,7 @@ test('default experiment renders correct results without browser errors', async 
 
 test('editing only B value doubles output y without changing attention weights', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
   await expect(page.getByRole('group', { name: 'V 二维向量编辑器', exact: true })).toBeVisible();
@@ -33,6 +35,7 @@ test('editing only B value doubles output y without changing attention weights',
 
 test('saving and restoring a baseline keeps the snapshot independent, reset returns defaults', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   const valueY = page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true });
   await valueY.fill('4');
@@ -51,6 +54,7 @@ test('saving and restoring a baseline keeps the snapshot independent, reset retu
 
 test('dragging and keyboard adjustment update K while keeping the observed Query fixed', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const plane = page.getByRole('group', { name: 'K 二维向量编辑器', exact: true });
   const handle = page.getByTestId('vector-handle-1');
   await handle.scrollIntoViewIfNeeded();
@@ -73,6 +77,7 @@ test('dragging and keyboard adjustment update K while keeping the observed Query
 test('all calculation steps, navigation and automatic playback work', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-08T08:00:00Z') });
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.clock.pauseAt(new Date('2026-10-08T08:01:00Z'));
   await page.clock.fastForward(60_000);
   await expect(page.getByRole('button', { name: '1 点积', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -99,6 +104,7 @@ test('all calculation steps, navigation and automatic playback work', async ({ p
 
 test('changing the observed query updates current and baseline results consistently', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('button', { name: '观察词元 B', exact: true }).click();
   await expect(page.getByTestId('output-vector')).toContainText('(0.000, 1.007)');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.000, 1.007)');
@@ -109,6 +115,7 @@ test('changing the observed query updates current and baseline results consisten
 
 test('invalid numeric input is explained and cannot change the calculation', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const input = page.getByRole('spinbutton', { name: '词元 A 的 Q x', exact: true });
   await input.fill('6');
   await expect(input).toHaveAttribute('aria-invalid', 'true');
@@ -121,6 +128,7 @@ test('invalid numeric input is explained and cannot change the calculation', asy
 test('mobile layout fits the screen, remains interactive, and help closes with Escape', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
   await page.getByRole('button', { name: '使用说明', exact: true }).click();

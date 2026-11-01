@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('each calculation step teaches its purpose and example follows edited input', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await expect(page.getByTestId('step-guide')).toContainText('不是百分比');
   await page.getByRole('spinbutton', { name: '词元 A 的 Q x', exact: true }).fill('2');
   await expect(page.getByTestId('beginner-example')).toContainText('2.0 × 1.0 + 0.0 × 0.0 = 2.000');
@@ -44,6 +45,7 @@ test('mobile guided experiment locates unlocked input, keeps task visible and ch
 
 test('integer and decimal adjustments preserve other coordinates and allow typed decimals', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const step = page.getByRole('combobox', { name: '坐标调整步长' });
   const handle = page.getByTestId('vector-handle-0');
   await expect(step).toHaveValue('1');

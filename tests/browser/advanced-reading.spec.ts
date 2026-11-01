@@ -24,6 +24,7 @@ test('architecture images load and advanced reading preserves free parameters an
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
   await expect(nav.getByRole('button')).toHaveText(['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention']);

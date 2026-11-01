@@ -97,6 +97,7 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
 
 test('mode switching preserves free exploration, and guided reset keeps completed learning records', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('button', { name: '编辑词元 C', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 C 的 V x', exact: true }).fill('-3');
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
@@ -196,6 +197,7 @@ test('malformed saved progress recovers without a page error', async ({ page }) 
   await page.addInitScript((key) => localStorage.setItem(key, '{not-json'), STORAGE_KEY);
   await page.goto('/');
   await expect(page.getByTestId('saved-progress')).toHaveText('实验进度 0 / 3');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 0.568)');
   expect(errors).toEqual([]);
 });

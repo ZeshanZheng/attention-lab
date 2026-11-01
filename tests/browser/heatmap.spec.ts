@@ -15,6 +15,7 @@ test('all nine heatmap cells show the computed weights and normalize separately 
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const expected = computeAttention(createDefaultExperiment().input);
   await expect(page.getByTestId('attention-heatmap').getByRole('button')).toHaveCount(9);
   for (let row = 0; row < 3; row += 1) {
@@ -39,6 +40,7 @@ test('all nine heatmap cells show the computed weights and normalize separately 
 
 test('click and keyboard selection synchronize Query, bars and formulas without changing the editing token', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByTestId('heatmap-cell-1-2').click();
   await expect(page.getByRole('button', { name: '观察词元 B', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('button', { name: '编辑词元 A', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -58,6 +60,7 @@ test('click and keyboard selection synchronize Query, bars and formulas without 
 
 test('Q and K edits update the appropriate rows, and baselines and restore remain consistent', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const original = await matrixSnapshot(page);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true }).fill('2');
@@ -88,6 +91,7 @@ test('Q and K edits update the appropriate rows, and baselines and restore remai
 
 test('editing only V changes output while every heatmap weight and color stays unchanged', async ({ page }) => {
   await page.goto('/');
+  await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const before = await matrixSnapshot(page);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');

@@ -4,6 +4,10 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
   await expect(modes.getByRole('button')).toHaveText(['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention']);
+  await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 引言');
+  await expect(page.getByRole('heading', { name: '先认识 Attention：它为什么重要？' })).toBeVisible();
+  await expect(page.getByRole('spinbutton')).toHaveCount(0);
+  await modes.getByRole('button', { name: '自由探索', exact: true }).click();
   await expect(page.getByRole('heading', { name: '先认识 Attention：它为什么重要？' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toHaveCount(0);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
@@ -62,6 +66,8 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
 test('mobile reading navigation preserves unfinished quiz questions and selected answers', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
+  await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('Attention 引言');
+  await expect(page.getByRole('heading', { name: '先认识 Attention：它为什么重要？' })).toBeVisible();
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   const cards = page.getByTestId('assessment-question');
   const ids = await cards.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
