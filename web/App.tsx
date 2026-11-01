@@ -180,7 +180,6 @@ export function App() {
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
       <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { setPlaying(false); dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
       </div>}
-      <footer className="page-footer"><p>人为设定的教学向量 · 输出为聚合向量，不是下一词预测</p><span>小规模，可手算，可探索。</span></footer>
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
     {helpOpen && <HelpDialog onClose={() => setHelpOpen(false)} />}
