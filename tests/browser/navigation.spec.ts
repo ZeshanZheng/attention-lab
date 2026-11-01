@@ -26,7 +26,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.locator('.free-experiment-scope')).toHaveCount(0);
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '重置实验' })).toHaveCount(0);
-  await page.locator('.introduction-details summary').click();
+  await expect(page.locator('.architecture-attention-note')).toBeVisible();
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('实验总结');
   await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toBeVisible();
@@ -39,7 +39,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
   await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await modes.getByRole('button', { name: 'Attention 引言', exact: true }).click();
-  await expect(page.locator('.introduction-details')).toHaveAttribute('open', '');
+  await expect(page.locator('.architecture-attention-note')).toBeVisible();
   await page.screenshot({ path: '.tools/preview-navigation-introduction.png', fullPage: true });
 });
 

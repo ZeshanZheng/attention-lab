@@ -29,6 +29,7 @@
 .introduction-architecture { margin-top: 28px; padding-top: 24px; border-top: 1px solid #e5dff1; }
 .introduction-architecture > h3 { color: #4d416b; font-size: 22px; line-height: 1.6; }
 .architecture-introduction-grid { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 20px; }
+.architecture-introduction-copy { display: grid; gap: 20px; min-width: 0; }
 .architecture-introduction-text { padding: 18px 20px; border-radius: 10px; background: #f7f4fc; }
 .architecture-introduction-text p { font-size: 17px; line-height: 2; margin-bottom: 18px; }
 .architecture-introduction-text p:last-child { margin-bottom: 0; }

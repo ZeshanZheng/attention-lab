@@ -19,6 +19,7 @@
 .introduction-flow li span { font-size: 12px; margin-top: 4px; }
 .introduction-flow .attention-flow-focus { background: #eee7fc; border-color: #c1abe9; color: #614291; font-weight: 650; }
 .introduction-more .introduction-flow-note { color: #5a6274; font-size: 13px; }
+.introduction-sources { margin-top: 20px; font-size: 14px; line-height: 1.95; }
 .introduction-sources a { color: #624991; text-decoration: underline; text-underline-offset: 3px; }
 .introduction-route { margin-top: 15px; font-size: 13px; line-height: 1.9; color: #5b5670; }
 .free-experiment-scope { margin-bottom: 20px; padding: 18px 22px; border: 1px solid #e5dff3; border-radius: 12px; background: #fff; color: #44506a; }
