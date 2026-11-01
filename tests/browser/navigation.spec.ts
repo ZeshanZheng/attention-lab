@@ -6,8 +6,9 @@ test('reading pages have independent navigation and preserve free vectors, basel
   const expectedModes = ['使用说明', 'Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
   await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
-  await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 引言');
-  await expect(page.locator('#attention-introduction-title')).toBeVisible();
+  await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
+  await expect(page.locator('#help-title')).toBeVisible();
+  await expect(page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true })).toHaveCount(0);
   await expect(page.locator('.free-experiment-scope')).toHaveCount(0);
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await modes.getByRole('button', { name: '自由探索', exact: true }).click();
@@ -75,8 +76,12 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
 test('mobile reading navigation preserves unfinished quiz questions and selected answers', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('Attention 引言');
-  await expect(page.locator('#attention-introduction-title')).toBeVisible();
+  await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
+  await expect(page.locator('#help-title')).toBeVisible();
+  await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
+  await expect(page.locator('#help-title')).toBeVisible();
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   const cards = page.getByTestId('assessment-question');
   const ids = await cards.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
