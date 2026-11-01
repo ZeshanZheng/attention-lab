@@ -126,8 +126,8 @@ export function App() {
     <main className="main-shell">
       <div ref={navigationRef} className="learning-navigation"><div className="learning-tabs" role="group" aria-label="学习模式">
         <button aria-pressed={activeView === 'introduction'} className={activeView === 'introduction' ? 'active' : ''} onClick={() => enterReading('introduction')}>Attention 引言</button>
-        <button aria-pressed={activeView === 'free'} className={activeView === 'free' ? 'active' : ''} onClick={enterFree}>自由探索</button>
         <button aria-pressed={activeView === 'example'} className={activeView === 'example' ? 'active' : ''} onClick={() => enterReading('example')}>小栗子🌰</button>
+        <button aria-pressed={activeView === 'free'} className={activeView === 'free' ? 'active' : ''} onClick={enterFree}>自由探索</button>
         <button aria-pressed={activeView === 'summary'} className={activeView === 'summary' ? 'active' : ''} onClick={() => enterReading('summary')}>实验总结</button>
         <button aria-pressed={activeView === 'guided'} className={activeView === 'guided' ? 'active' : ''} onClick={enterGuided}>引导实验</button>
         <button aria-pressed={activeView === 'assessment'} className={activeView === 'assessment' ? 'active' : ''} onClick={enterAssessment}>理解自测</button>
