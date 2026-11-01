@@ -74,7 +74,7 @@ test('dragging and keyboard adjustment update K while keeping the observed Query
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true })).toHaveValue('2.1');
 });
 
-test('all calculation steps, navigation and automatic playback work', async ({ page }) => {
+test('calculation steps change only through manual navigation', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-08T08:00:00Z') });
   await page.goto('/');
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
@@ -88,18 +88,16 @@ test('all calculation steps, navigation and automatic playback work', async ({ p
   await expect(page.getByTestId('weight-sum')).toHaveText('1.000');
   await page.getByRole('button', { name: '下一步', exact: true }).click();
   await expect(page.getByRole('button', { name: '下一步', exact: true })).toBeDisabled();
-  await expect(page.getByRole('combobox', { name: '每步停留时间' })).toHaveValue('10');
-  await page.getByRole('combobox', { name: '每步停留时间' }).selectOption('5');
-  await page.getByRole('button', { name: '自动演示', exact: true }).click();
-  await expect(page.getByText('向量之间，有多匹配？', { exact: true })).toBeVisible();
-  await page.clock.fastForward(4999);
+  await expect(page.getByRole('combobox', { name: '每步停留时间' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '自动演示', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '暂停', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: '上一步', exact: true }).click();
+  await page.clock.fastForward(60_000);
+  await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '1 点积', exact: true }).click();
+  await page.clock.fastForward(60_000);
   await expect(page.getByRole('button', { name: '1 点积', exact: true })).toHaveAttribute('aria-pressed', 'true');
-  await page.clock.fastForward(1);
-  await expect(page.getByText('让得分保持合适的尺度', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '暂停', exact: true }).click();
-  await expect(page.getByRole('button', { name: '自动演示', exact: true })).toBeVisible();
-  await page.clock.fastForward(20_000);
-  await expect(page.getByRole('button', { name: '2 缩放', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText('向量之间，有多匹配？', { exact: true })).toBeVisible();
 });
 
 test('changing the observed query updates current and baseline results consistently', async ({ page }) => {

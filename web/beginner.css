@@ -13,9 +13,8 @@
 .process-footer > p { flex: 1 1 170px; }
 .process-footer .process-navigation { align-self: auto; }
 .manual-next { font-size: 14px; }
-.playback-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; flex-basis: 100%; }
-.playback-controls label, .coordinate-step-control { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #536078; }
-.playback-controls select, .coordinate-step-control select { font: inherit; color: #4f426e; border: 1px solid #ddd6ef; background: #fff; border-radius: 6px; padding: 6px; max-width: 100%; }
+.coordinate-step-control { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #536078; }
+.coordinate-step-control select { font: inherit; color: #4f426e; border: 1px solid #ddd6ef; background: #fff; border-radius: 6px; padding: 6px; max-width: 100%; }
 .coordinate-step-control { justify-content: space-between; margin-bottom: 8px; }
 .coordinate-step-note { font-size: 12px; line-height: 1.7; color: #586376; margin-bottom: 10px; }
 .coordinate-row.editable-target { outline: 2px solid #8c75db; outline-offset: 1px; background: #f2edff; }

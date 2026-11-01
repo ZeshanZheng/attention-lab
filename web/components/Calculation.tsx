@@ -14,11 +14,7 @@ interface Props {
   result: AttentionResult;
   query: number;
   step: number;
-  playing: boolean;
   onStep: (step: number) => void;
-  onPlay: () => void;
-  playbackSeconds: number;
-  onSpeed: (seconds: number) => void;
 }
 
 const STEP_GUIDES = [
@@ -28,7 +24,7 @@ const STEP_GUIDES = [
   { input: '每个词元的权重 α，以及它携带的 V（值）向量。', output: '一个新的向量 o，表示取回的信息。', purpose: '让关注较多的词元贡献较多内容，再合并成输出；只改 V 会影响这一步，不会改变前面的权重。', symbols: 'α 是上一阶段的比例，v 是该词元的 V。先用比例乘 V 的每个坐标，再分别把所有 x 和所有 y 相加；不是直接把 V 全部相加。' },
 ] as const;
 
-export function Calculation({ input, result, query, step, playing, onStep, onPlay, playbackSeconds, onSpeed }: Props) {
+export function Calculation({ input, result, query, step, onStep }: Props) {
   const current = STEPS[step]!;
   const scores = result.scaledScores[query]!;
   const maximum = Math.max(...scores);
@@ -69,9 +65,9 @@ export function Calculation({ input, result, query, step, playing, onStep, onPla
       {step === 2 && <p>A 的指数值约为 {formatNumber(exponentials[0]!)}，这一行的指数值总和约为 {formatNumber(denominator)}。两者相除，得到 A 的权重 {formatNumber(result.weights[query]![0]!)}，即 {formatNumber(result.weights[query]![0]! * 100, 1)}%。计算使用完整精度。</p>}
       {step === 3 && <p>输出 x：{TOKEN_NAMES.map((_, index) => `${formatNumber(result.weights[query]![index]!)} × (${formatNumber(input.values[index]![0]!, 1)})`).join(' + ')} ≈ {formatNumber(result.outputs[query]![0]!)}。y 也按同样方式单独相加，最终得到 {formatVector(result.outputs[query]!)}。</p>}
     </div>
-    <div className="process-footer"><p><span className="live-dot" />默认手动阅读，准备好再点下一步</p><div className="process-navigation">
+    <div className="process-footer"><p><span className="live-dot" />按自己的节奏阅读，准备好再点下一步</p><div className="process-navigation">
       <button className="icon-button previous" aria-label="上一步" disabled={step === 0} onClick={() => onStep(step - 1)}><Icon name="arrow" /></button>
       <button className="button primary manual-next" aria-label="下一步" disabled={step === 3} onClick={() => onStep(step + 1)}>下一步<Icon name="arrow" size={16} /></button>
-    </div><div className="playback-controls"><button className="button subtle play-button" onClick={onPlay}><Icon name={playing ? 'pause' : 'play'} size={15} />{playing ? '暂停' : '自动演示'}</button><label>每步停留<select aria-label="每步停留时间" value={playbackSeconds} onChange={(event) => onSpeed(Number(event.target.value))}><option value={5}>5 秒</option><option value={10}>10 秒</option><option value={20}>20 秒</option></select></label></div></div>
+    </div></div>
   </section>;
 }

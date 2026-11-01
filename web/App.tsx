@@ -28,8 +28,6 @@ const VIEW_LABELS = { introduction: 'Attention 引言', example: '小栗子🌰'
 
 export function App() {
   const [state, dispatch] = useReducer(labReducer, undefined, createLabState);
-  const [playing, setPlaying] = useState(false);
-  const [playbackSeconds, setPlaybackSeconds] = useState(10);
   const [coordinateStep, setCoordinateStep] = useState(1);
   const [helpOpen, setHelpOpen] = useState(false);
   const [announcement, setAnnouncement] = useState('');
@@ -65,26 +63,16 @@ export function App() {
   }, [readingView]);
 
   useEffect(() => {
-    if (!playing) return;
-    const timer = window.setTimeout(() => {
-      if (state.step === 3) setPlaying(false);
-      else dispatch({ type: 'select-step', step: state.step + 1 });
-    }, playbackSeconds * 1000);
-    return () => window.clearTimeout(timer);
-  }, [playing, state.step, playbackSeconds]);
-
-  useEffect(() => {
     if (!announcement) return;
     const timer = window.setTimeout(() => setAnnouncement(''), 4000);
     return () => window.clearTimeout(timer);
   }, [announcement]);
 
-  const selectStep = (step: number) => { setPlaying(false); dispatch({ type: 'select-step', step }); };
+  const selectStep = (step: number) => dispatch({ type: 'select-step', step });
   const startLesson = (id: LessonId) => {
     setReadingView(null);
     if (mode === 'free') freeSnapshot.current = state;
     const lesson = getLesson(id);
-    setPlaying(false);
     dispatch({ type: 'load-lesson', input: createLessonInput(), kind: lesson.kind, token: lesson.token, step: lesson.step });
     setSession(createSession(id, new Date().toISOString()));
     setMode('guided');
@@ -98,7 +86,6 @@ export function App() {
   const enterFree = () => {
     setReadingView(null);
     if (mode === 'free') return;
-    setPlaying(false);
     dispatch({ type: 'resume-free', state: freeSnapshot.current ?? createLabState() });
     setSession(null);
     setMode('free');
@@ -106,10 +93,9 @@ export function App() {
   const enterAssessment = () => {
     setReadingView(null);
     if (mode === 'free') freeSnapshot.current = state;
-    setPlaying(false);
     setMode('assessment');
   };
-  const enterReading = (view: ReadingView) => { setPlaying(false); setReadingView(view); };
+  const enterReading = (view: ReadingView) => setReadingView(view);
   const downloadProgress = () => {
     const blob = new Blob([exportProgress(progress, new Date().toISOString())], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -121,7 +107,6 @@ export function App() {
     setAnnouncement('已导出匿名学习记录');
   };
   const resetExperiment = () => {
-    setPlaying(false);
     if (mode === 'guided' && session) { startLesson(session.lessonId); setAnnouncement('已重新开始本实验，已完成进度保留'); }
     else { dispatch({ type: 'reset' }); setAnnouncement('已恢复初始实验，基线也已重置'); }
   };
@@ -129,7 +114,7 @@ export function App() {
     if (!session) return;
     const next = checkExperiment(session, state.input);
     setSession(next);
-    if (next.phase === 'explain') { setPlaying(false); dispatch({ type: 'allow-lesson-editing', enabled: false }); }
+    if (next.phase === 'explain') dispatch({ type: 'allow-lesson-editing', enabled: false });
     else setAnnouncement(next.goalFeedback?.feedback ?? '继续修改，再检查结果');
   };
 
@@ -174,11 +159,10 @@ export function App() {
       <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
         {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} disabled={mode === 'guided'} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
       </div></div><div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div></div>
-      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} playing={playing} onStep={selectStep} playbackSeconds={playbackSeconds} onSpeed={setPlaybackSeconds}
-        onPlay={() => { if (!playing && state.step === 3) dispatch({ type: 'select-step', step: 0 }); setPlaying(!playing); }} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
+      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} onStep={selectStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
       <AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
-      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { setPlaying(false); dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
+      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
       </div>}
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
