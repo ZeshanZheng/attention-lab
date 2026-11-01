@@ -1,3 +1,6 @@
+.free-exploration-intro h1 { color: #000; }
+.page-intro.experiment-actions-only { justify-content: flex-end; }
+.experiment-actions-only .intro-actions { padding-top: 0; }
 .step-guide { margin-top: 18px; padding: 16px; background: #f8fafc; border-radius: 10px; color: #48536b; font-size: 14px; line-height: 1.9; }
 .step-guide dl, .concept-definitions { margin: 0; }
 .step-guide dl > div { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 10px; margin-bottom: 8px; }
