@@ -29,7 +29,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '先认识 Attention：它为什么重要？' })).toHaveCount(0);
   await modes.getByRole('button', { name: '小栗子🌰', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '用一个小例子，理解 Attention', exact: true })).toBeVisible();
+  await expect(page.getByRole('region', { name: '小栗子🌰 · 从句子走进计算', exact: true })).toBeVisible();
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await modes.getByRole('button', { name: '自由探索', exact: true }).click();
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');

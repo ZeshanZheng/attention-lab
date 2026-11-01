@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('sentence example explains four stages, exposes the full speech and preserves reading and experiment state', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
-  await expect(page.getByRole('heading', { name: '用一个小例子，理解 Attention', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: '小栗子🌰 · 从句子走进计算', exact: true })).toHaveCount(0);
   await modes.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
