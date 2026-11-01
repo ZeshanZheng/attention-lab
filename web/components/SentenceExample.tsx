@@ -74,8 +74,7 @@ export function SentenceExample({ onExplore }: { onExplore: () => void }) {
       </>}
       <p className="example-takeaway"><b>这一步记住：</b>{current.takeaway}</p>
     </article>
-    <div className="example-step-controls"><button className="button secondary" disabled={step === 0} onClick={() => setStep(step - 1)}>上一步</button><span>{step + 1} / 4 · 按自己的节奏阅读</span><button className="button primary" disabled={step === EXAMPLE_STEPS.length - 1} onClick={() => setStep(step + 1)}>下一步<Icon name="arrow" size={16} /></button></div>
-    <details className="example-transcript"><summary>展开完整讲稿 · 连贯读一遍</summary><div className="example-transcript-body"><p className="example-transcript-intro">依据演讲稿中“书”和“它”这一页整理，保留原来的讲解顺序，将比喻与实际向量计算分开说明。</p>{EXAMPLE_STEPS.map((item, index) => <section key={item.label}><h3>{index + 1}. {item.label}</h3>{item.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</section>)}</div></details>
+    <div className="example-step-controls"><button className="button secondary" disabled={step === 0} onClick={() => setStep(step - 1)}>上一步</button><span>{step + 1} / 4</span><button className="button primary" disabled={step === EXAMPLE_STEPS.length - 1} onClick={() => setStep(step + 1)}>下一步<Icon name="arrow" size={16} /></button></div>
     <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
     <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
   </section>;

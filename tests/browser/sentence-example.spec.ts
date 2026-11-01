@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('sentence example explains four stages, exposes the full speech and preserves reading and experiment state', async ({ page }) => {
+test('sentence example explains four stages and preserves reading and experiment state', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
   await expect(page.getByRole('region', { name: '小栗子🌰 · 从句子走进计算', exact: true })).toHaveCount(0);
@@ -20,6 +20,7 @@ test('sentence example explains four stages, exposes the full speech and preserv
   const stages = page.getByRole('group', { name: '例子讲解步骤' });
   const explanation = page.getByRole('article', { name: '当前例子讲解' });
   await expect(explanation).toContainText('Embedding');
+  await expect(explanation).toContainText('我去了哪里');
   await expect(explanation).toContainText('训练中学习到的参数矩阵');
   await expect(page.getByRole('button', { name: '上一步', exact: true })).toBeDisabled();
   await expect(page.getByRole('heading', { name: '1. 认识 Q 和 K', exact: true })).toHaveCount(0);
@@ -40,20 +41,15 @@ test('sentence example explains four stages, exposes the full speech and preserv
   await stages.getByRole('button', { name: '1 认识 Q 和 K', exact: true }).focus();
   await page.keyboard.press('Enter');
   await expect(stages.getByRole('button', { pressed: true })).toHaveText('1认识 Q 和 K');
-  await page.locator('.example-transcript summary').click();
-  const transcript = page.locator('.example-transcript-body');
-  await expect(transcript.getByRole('heading')).toHaveCount(4);
-  for (const phrase of ['我去了哪里', 'Embedding', '尚书', '偏移', '二维向量', 'V 本身是一组数字']) {
-    await expect(transcript).toContainText(phrase);
-  }
-  await expect(transcript).not.toContainText('成册的著作占 70%');
+  await expect(page.locator('.example-transcript')).toHaveCount(0);
+  await expect(page.locator('.example-step-controls > span')).toHaveText('1 / 4');
   await expect(page.locator('.example-source')).not.toContainText('例句与讲解改编自');
   await stages.getByRole('button', { name: '3 读取 V 的内容', exact: true }).click();
   await page.screenshot({ path: '.tools/preview-sentence-example-desktop.png', fullPage: true });
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await exampleButton.click();
   await expect(stages.getByRole('button', { pressed: true })).toHaveText('3读取 V 的内容');
-  await expect(page.locator('.example-transcript')).toHaveAttribute('open', '');
+  await expect(explanation).toContainText('V 本身是一组数字');
   await page.getByRole('button', { name: '去自由探索', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('自由探索');
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');
@@ -76,12 +72,10 @@ for (const width of [320, 390]) {
       await button.click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
     }
-    await page.locator('.example-transcript summary').click();
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
-    const bodySize = await page.locator('.example-transcript-body section p').first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
+    const bodySize = await page.locator('.example-prose p').first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
     expect(bodySize).toBeGreaterThanOrEqual(16);
     if (width === 390) {
-      await page.locator('.example-transcript summary').click();
       await stages.getByRole('button').first().click();
       await page.screenshot({ path: '.tools/preview-sentence-example-mobile.png', fullPage: true });
     }
