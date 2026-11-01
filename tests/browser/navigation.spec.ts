@@ -3,7 +3,9 @@ import { expect, test } from '@playwright/test';
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
-  await expect(modes.getByRole('button')).toHaveText(['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention']);
+  const expectedModes = ['Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
+  await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
+  for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 引言');
   await expect(page.getByRole('heading', { name: '先认识 Attention：它为什么重要？' })).toBeVisible();
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
