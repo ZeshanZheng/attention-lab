@@ -144,7 +144,14 @@ export function App() {
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       <div hidden={readingView !== 'multihead'}><MultiHeadAttention /></div>
       <div hidden={readingView !== 'types'}><AttentionTypes /></div>
-      {readingView === null && mode === 'free' && <div className="learning-entry"><span><b>从观察，到理解</b>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>}
+      {readingView === null && mode === 'free' && <>
+        <section className="free-experiment-scope" aria-labelledby="free-experiment-scope-title">
+          <h2 id="free-experiment-scope-title">关于这个小实验</h2>
+          <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息；先理解一个头，更容易理解这些扩展。</p>
+          <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，没有训练语言模型。输出是聚合向量，得到下一个词还需要其他模块；热力图显示分配比例，单看它不足以解释模型的全部行为。</p>
+        </section>
+        <div className="learning-entry"><span><b>从观察，到理解</b>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>
+      </>}
       {mode === 'guided' && session && <div hidden={readingView !== null} ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
         onPredict={(choice) => setSession(choosePrediction(session, choice))}
         onBegin={() => { const next = beginExperiment(session); setSession(next); dispatch({ type: 'allow-lesson-editing', enabled: next.phase === 'experiment' }); }}

@@ -21,7 +21,12 @@
 .introduction-more .introduction-flow-note { color: #5a6274; font-size: 13px; }
 .introduction-sources a { color: #624991; text-decoration: underline; text-underline-offset: 3px; }
 .introduction-route { margin-top: 15px; font-size: 13px; line-height: 1.9; color: #5b5670; }
+.free-experiment-scope { margin-bottom: 20px; padding: 18px 22px; border: 1px solid #e5dff3; border-radius: 12px; background: #fff; color: #44506a; }
+.free-experiment-scope h2 { font-size: 17px; color: #30394f; }
+.free-experiment-scope p { margin-top: 9px; font-size: 15px; line-height: 1.95; }
 @media (max-width: 700px) {
+  .free-experiment-scope { padding: 16px; }
+  .free-experiment-scope p { font-size: 14px; }
   .learning-introduction { padding: 20px; }
   .introduction-heading h2 { font-size: 20px; line-height: 1.6; }
   .introduction-cards { grid-template-columns: 1fr; gap: 15px; margin-top: 16px; }
