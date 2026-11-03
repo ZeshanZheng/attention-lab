@@ -1,9 +1,11 @@
+import { MultiHeadMatrix } from './MultiHeadMatrix.tsx';
+
 export function MultiHeadAttention() {
   return <section className="card advanced-reading" aria-labelledby="multi-head-title">
     <span className="eyebrow">进阶阅读 · 从一个头到多个头</span>
     <h2 id="multi-head-title">多头注意力：同时从不同角度读取信息</h2>
     <p className="reading-lead">单头得到一张注意力矩阵，多头则并行计算多组关注关系，再汇合各个头的结果。</p>
-    <figure className="multi-head-figure"><img src={`${import.meta.env.BASE_URL}images/multi-head-matrices.png`} alt="多张单头匹配矩阵叠在一起，示意多个注意力头各自计算一组关注关系" width="1920" height="1080" /><figcaption>多个 head，对应多组注意力计算。各个头有不同的投影参数，可以产生不同的权重矩阵。图中列为 Query、行为 Key，是实验总结表格的转置画法；格子的匹配得分还需经过缩放与 Softmax 才成为权重。<a href={`${import.meta.env.BASE_URL}images/multi-head-matrices.png`} target="_blank" rel="noreferrer">查看大图</a></figcaption></figure>
+    <MultiHeadMatrix />
     <div className="reading-speech"><h3>为什么叫 Multi-Head Attention？</h3>
       <p>所谓“多头”，可以理解为模型同时并行地做多次注意力计算。每一个头都有自己独立的一组参数矩阵，相当于从不同角度观察输入句子。每个头分别生成 Q、K、V，再进行点积、缩放、Softmax 和对 V 的加权求和。</p>
       <p>比如，有的头可能更关注句子的语法结构，判断词和词之间在语法上是什么关系；有的头可能更关注代词，帮助关联它与前面的对象；还有的头可能关注与情绪表达相关的信息，例如偏积极或偏负面的词语。</p>

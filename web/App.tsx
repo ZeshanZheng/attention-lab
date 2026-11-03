@@ -6,6 +6,7 @@ import { VectorEditor } from './components/VectorEditor.tsx';
 import { Calculation } from './components/Calculation.tsx';
 import { Results } from './components/Results.tsx';
 import { HelpPage } from './components/HelpPage.tsx';
+import type { HelpModule } from './components/HelpPage.tsx';
 import { ModuleInstructions } from './components/ModuleInstructions.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
@@ -97,6 +98,12 @@ export function App() {
     setMode('assessment');
   };
   const enterReading = (view: ReadingView) => setReadingView(view);
+  const openHelpModule = (view: HelpModule) => {
+    if (view === 'free') enterFree();
+    else if (view === 'guided') enterGuided();
+    else if (view === 'assessment') enterAssessment();
+    else enterReading(view);
+  };
   const downloadProgress = () => {
     const blob = new Blob([exportProgress(progress, new Date().toISOString())], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -141,7 +148,7 @@ export function App() {
         {mode === 'free' && <div><div className="intro-label"><span className="eyebrow">LEARN BY EXPLORING</span><span className="label-line" /></div><h1>通过改变一个向量来看懂注意力</h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>}
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
       </div>}
-      <div hidden={readingView !== 'help'}><HelpPage onExplore={enterFree} /></div>
+      <div hidden={readingView !== 'help'}><HelpPage onExplore={enterFree} onNavigate={openHelpModule} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction /></div>
       <div hidden={readingView !== 'example'}><SentenceExample onExplore={enterFree} /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>

@@ -40,8 +40,11 @@ test('architecture images load and advanced reading preserves free parameters an
   await nav.getByRole('button', { name: '多头注意力', exact: true }).click();
   await expect(page.locator('.mode-pill')).toHaveText('多头注意力');
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
-  await expect(page.locator('.multi-head-figure img')).toBeVisible();
-  expect(await page.locator('.multi-head-figure img').evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  const headMatrix = page.getByRole('table', { name: '头 1 · 点积匹配得分矩阵' });
+  await expect(headMatrix).toBeVisible();
+  await expect(headMatrix.locator('tbody td')).toHaveCount(64);
+  await expect(headMatrix.locator('tbody tr').nth(2).locator('td').first()).toHaveText('Q3 · K1');
+  expect(await headMatrix.locator('tbody td').first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThanOrEqual(18);
   await expect(page.locator('.advanced-reading:visible')).toContainText('输出投影 Wₒ');
   await expect(page.locator('.advanced-reading:visible')).toContainText('模型并不会提前规定');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();

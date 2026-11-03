@@ -13,6 +13,12 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true })).toHaveCount(0);
   await expect(page.locator('.free-experiment-scope')).toHaveCount(0);
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
+  for (const name of expectedModes.filter((name) => name !== '使用说明')) {
+    await page.getByRole('button', { name: `打开${name}`, exact: true }).click();
+    await expect(modes.getByRole('button', { pressed: true })).toHaveText(name);
+    await expect(page.locator('#help-title')).toBeHidden();
+    await modes.getByRole('button', { name: '使用说明', exact: true }).click();
+  }
   await page.getByRole('button', { name: '开始探索', exact: true }).click();
   await expect(page.locator('#attention-introduction-title')).toBeHidden();
   await expect(page.locator('.free-experiment-scope')).toBeVisible();
