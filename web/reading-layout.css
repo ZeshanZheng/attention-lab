@@ -1,0 +1,22 @@
+:root { --reading-inset: 32px; }
+
+.help-page,
+.learning-introduction,
+.sentence-example,
+.advanced-reading,
+.single-head-matrix,
+.concept-summary,
+.free-experiment-scope {
+  width: 100%;
+  padding: var(--reading-inset);
+}
+
+.main-shell p,
+.reading-speech,
+.example-prose {
+  max-width: none;
+}
+
+@media (max-width: 700px) {
+  :root { --reading-inset: 20px; }
+}

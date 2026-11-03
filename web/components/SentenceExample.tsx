@@ -45,12 +45,6 @@ const EXAMPLE_STEPS = [
   },
 ] as const;
 
-const WORD_CARDS = [
-  { word: '我', key: '人称代词，句子的主体', query: '我做了什么？我去了哪里？' },
-  { word: '书', key: '名词，能被买、被读的物品', query: '与哪些人或动作有关？' },
-  { word: '它', key: '代词，指代某个对象', query: '我代表的是什么东西？' },
-] as const;
-
 export function SentenceExample({ onExplore }: { onExplore: () => void }) {
   const [step, setStep] = useState(0);
   const current = EXAMPLE_STEPS[step]!;
@@ -68,14 +62,13 @@ export function SentenceExample({ onExplore }: { onExplore: () => void }) {
     <article className="example-explanation" aria-label="当前例子讲解" aria-live="polite">
       <div className="example-step-heading"><span className="eyebrow">第 {step + 1} 步 / 4</span><h3>{current.title}</h3></div>
       <div className="example-prose">{current.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
-      {step === 0 && <>
-        <div className="example-word-cards" aria-label="用自然语言比喻 Q 和 K">{WORD_CARDS.map((item) => <article key={item.word}><h4>“{item.word}”</h4><p><b>K · 用于匹配的特征</b>{item.key}</p><p><b>Q · 查询相关信息</b>{item.query}</p></article>)}</div>
-        <div className="example-projection"><p>同一个输入表示 X，经过不同的学习到的变换</p><div><span>Q = X W<sub>Q</sub></span><span>K = X W<sub>K</sub></span><span>V = X W<sub>V</sub></span></div><small>X 是当前层的输入表示；W 是训练中学习到的参数矩阵。Q、K、V 同源，数值通常不同。</small></div>
-      </>}
+      {step === 0 && <div className="example-projection"><p>同一个输入表示 X，经过不同的学习到的变换</p><div><span>Q = X W<sub>Q</sub></span><span>K = X W<sub>K</sub></span><span>V = X W<sub>V</sub></span></div><small>X 是当前层的输入表示；W 是训练中学习到的参数矩阵。Q、K、V 同源，数值通常不同。</small></div>}
       <p className="example-takeaway"><b>这一步记住：</b>{current.takeaway}</p>
     </article>
     <div className="example-step-controls"><button className="button secondary" disabled={step === 0} onClick={() => setStep(step - 1)}>上一步</button><span>{step + 1} / 4</span><button className="button primary" disabled={step === EXAMPLE_STEPS.length - 1} onClick={() => setStep(step + 1)}>下一步<Icon name="arrow" size={16} /></button></div>
-    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
-    <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
+    {step === EXAMPLE_STEPS.length - 1 && <>
+      <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
+      <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
+    </>}
   </section>;
 }

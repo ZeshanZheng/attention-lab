@@ -17,13 +17,8 @@
 .example-step-picker button:hover { border-color: #af9be5; }
 .example-explanation { padding: 26px; border: 1px solid #e8e6ef; border-radius: 12px; }
 .example-step-heading h3 { margin-top: 10px; font-size: 23px; line-height: 1.6; color: #354159; }
-.example-prose { max-width: 1050px; }
+.example-prose { max-width: none; }
 .example-prose p { margin-top: 16px; font-size: 17px; line-height: 2; overflow-wrap: anywhere; }
-.example-word-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 22px; }
-.example-word-cards article { padding: 18px; border-radius: 10px; background: #f7f6fb; }
-.example-word-cards h4 { font-size: 20px; color: #584b7b; }
-.example-word-cards p { margin-top: 12px; font-size: 16px; line-height: 1.8; }
-.example-word-cards b { display: block; font-size: 14px; font-weight: 600; color: #685985; margin-bottom: 3px; }
 .example-projection { padding: 18px; border-radius: 10px; background: #f1f8f6; margin-top: 20px; color: #427069; }
 .example-projection > p { font-size: 16px; line-height: 1.8; }
 .example-projection > div { display: flex; flex-wrap: wrap; gap: 12px 28px; margin: 12px 0; font-size: 17px; font-family: var(--mono); }
@@ -54,7 +49,6 @@
   .example-explanation { padding: 18px; }
   .example-step-heading h3 { font-size: 20px; }
   .example-prose p { font-size: 16px; line-height: 2; }
-  .example-word-cards { grid-template-columns: 1fr; gap: 12px; }
   .example-step-controls { flex-wrap: wrap; }
   .example-step-controls > span { order: 3; width: 100%; }
   .example-explore { align-items: flex-start; flex-direction: column; gap: 12px; }
