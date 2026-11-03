@@ -2,7 +2,7 @@ import { Icon } from './Icon.tsx';
 
 const MODULE_OVERVIEW = [
   { title: 'Attention 引言', description: '介绍注意力机制的背景、在 Transformer 中的位置及作用，建立整体认识。' },
-  { title: '小栗子🌰', description: '用“书”和“它”的指代例子，分步解释 Q、K、V 如何配合，帮助直观理解。' },
+  { title: '小栗子🌰', description: '用“书”和“它”的指代例子，连贯解释 Q、K、V 如何配合，帮助直观理解。' },
   { title: '自由探索', description: '自由修改或拖动向量，实时观察匹配得分、注意力权重和输出的变化。' },
   { title: '实验总结', description: '整理单头注意力矩阵、核心公式与计算例子，把操作现象和数学原理联系起来。' },
   { title: '引导实验', description: '按“先预测、再修改、再验证”的流程完成任务，理解不同向量的作用。' },

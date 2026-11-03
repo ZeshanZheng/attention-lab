@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('sentence example explains four stages and preserves reading and experiment state', async ({ page }) => {
+test('sentence example presents one continuous explanation and preserves experiment state', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });
   await expect(page.getByRole('region', { name: '小栗子🌰 · 从句子走进计算', exact: true })).toHaveCount(0);
@@ -17,47 +17,40 @@ test('sentence example explains four stages and preserves reading and experiment
   await expect(page.locator('.mode-pill')).toHaveText('小栗子🌰');
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '重置实验', exact: true })).toHaveCount(0);
-  const stages = page.getByRole('group', { name: '例子讲解步骤' });
-  const explanation = page.getByRole('article', { name: '当前例子讲解' });
+  const explanation = page.getByRole('article', { name: '例子完整讲解' });
+  await expect(explanation.getByRole('heading')).toHaveText([
+    '每个词，怎样描述自己和寻找信息？',
+    '“它”拿着自己的 Q，去和各个 K 匹配',
+    '找到了相关位置，它能提供什么信息？',
+    '让“它”的表示带上来自上下文的信息',
+  ]);
+  await expect(page.getByRole('group', { name: '例子讲解步骤' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '上一步', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '下一步', exact: true })).toHaveCount(0);
   await expect(explanation).toContainText('Embedding');
   await expect(explanation).toContainText('我去了哪里');
   await expect(explanation).toContainText('训练中学习到的参数矩阵');
   await expect(page.locator('.example-word-cards')).toHaveCount(0);
   await expect(page.locator('.example-projection')).toBeVisible();
-  await expect(page.locator('.example-explore, .example-source')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '上一步', exact: true })).toBeDisabled();
-  await expect(page.getByRole('heading', { name: '1. 认识 Q 和 K', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: '下一步', exact: true }).click();
   await expect(explanation).toContainText('缩放，再经过 Softmax');
   await expect(page.locator('.example-book')).toHaveClass(/is-emphasized/);
-  await expect(stages.getByRole('button', { pressed: true })).toHaveText('2寻找相关位置');
-  await expect(page.locator('.example-explore, .example-source')).toHaveCount(0);
-  await page.getByRole('button', { name: '下一步', exact: true }).click();
   await expect(explanation).toContainText('V 本身是一组数字');
   await expect(explanation).not.toContainText('概率表');
   await expect(explanation).toContainText('尚书');
-  await expect(page.locator('.example-explore, .example-source')).toHaveCount(0);
-  await page.getByRole('button', { name: '下一步', exact: true }).click();
   await expect(explanation).toContainText('512');
   await expect(explanation).toContainText('二维向量');
   await expect(explanation).toContainText('偏移');
   await expect(page.locator('.example-explore')).toBeVisible();
   await expect(page.locator('.example-source a')).toHaveText('Transformer 原论文 §3.2');
-  await expect(page.getByRole('button', { name: '下一步', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: '上一步', exact: true }).click();
-  await stages.getByRole('button', { name: '1 认识 Q 和 K', exact: true }).focus();
-  await page.keyboard.press('Enter');
-  await expect(stages.getByRole('button', { pressed: true })).toHaveText('1认识 Q 和 K');
   await expect(page.locator('.example-transcript')).toHaveCount(0);
-  await expect(page.locator('.example-step-controls > span')).toHaveText('1 / 4');
-  await stages.getByRole('button', { name: '3 读取 V 的内容', exact: true }).click();
+  await expect(page.locator('.example-prose .example-topic > p')).toHaveCount(13);
+  const articleBounds = await explanation.boundingBox();
+  const entryBounds = await page.locator('.example-explore').boundingBox();
+  expect(articleBounds!.y + articleBounds!.height).toBeLessThan(entryBounds!.y);
   await page.screenshot({ path: '.tools/preview-sentence-example-desktop.png', fullPage: true });
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await exampleButton.click();
-  await expect(stages.getByRole('button', { pressed: true })).toHaveText('3读取 V 的内容');
   await expect(explanation).toContainText('V 本身是一组数字');
-  await expect(page.locator('.example-explore, .example-source')).toHaveCount(0);
-  await page.getByRole('button', { name: '下一步', exact: true }).click();
   await page.getByRole('button', { name: '去自由探索', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('自由探索');
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');
@@ -75,16 +68,12 @@ for (const width of [320, 390]) {
     await questions.first().getByRole('radio').first().check();
     await page.getByRole('button', { name: '小栗子🌰', exact: true }).click();
     await expect(page.getByRole('radio')).toHaveCount(0);
-    const stages = page.getByRole('group', { name: '例子讲解步骤' });
-    for (const button of await stages.getByRole('button').all()) {
-      await button.click();
-      expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
-    }
+    await expect(page.getByRole('article', { name: '例子完整讲解' }).getByRole('heading')).toHaveCount(4);
+    await expect(page.locator('.example-step-picker, .example-step-controls')).toHaveCount(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
     const bodySize = await page.locator('.example-prose p').first().evaluate((node) => parseFloat(getComputedStyle(node).fontSize));
     expect(bodySize).toBeGreaterThanOrEqual(16);
     if (width === 390) {
-      await stages.getByRole('button').first().click();
       await page.screenshot({ path: '.tools/preview-sentence-example-mobile.png', fullPage: true });
     }
     await page.getByRole('button', { name: '理解自测', exact: true }).click();

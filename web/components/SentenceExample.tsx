@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Icon } from './Icon.tsx';
 
-const EXAMPLE_STEPS = [
+const EXAMPLE_SECTIONS = [
   {
     label: '认识 Q 和 K',
     title: '每个词，怎样描述自己和寻找信息？',
@@ -46,29 +45,22 @@ const EXAMPLE_STEPS = [
 ] as const;
 
 export function SentenceExample({ onExplore }: { onExplore: () => void }) {
-  const [step, setStep] = useState(0);
-  const current = EXAMPLE_STEPS[step]!;
-
   return <section className="sentence-example" aria-labelledby="sentence-example-title">
     <div className="example-heading"><span className="eyebrow" id="sentence-example-title">小栗子🌰 · 从句子走进计算</span><p className="example-scope">这是指代关系的教学示意，未运行真实语言模型，也未计算这句话的实际权重。我们按词语讲解；真实模型使用的词元划分取决于分词器。</p></div>
     <div className="example-sentence" aria-label="例句">
-      <p><span className={`example-word example-subject ${step === 0 ? 'is-emphasized' : ''}`}>我</span>今天买了一本<span className={`example-word example-book ${step > 0 ? 'is-emphasized' : ''}`}>书</span>，上午去了图书馆，然后下午又去了咖啡厅，晚上才开始读<span className="example-word example-pronoun is-emphasized">它</span>。</p>
-      <div className="example-connection">{step === 0 ? '先认识“我”“书”“它”的 Q 和 K' : step === 1 ? '“它”的 Q → 匹配“书”的 K' : step === 2 ? '关注“书”的位置 → 取回它的 V' : '按权重汇合信息 → 更新“它”的表示'}</div>
+      <p><span className="example-word example-subject">我</span>今天买了一本<span className="example-word example-book is-emphasized">书</span>，上午去了图书馆，然后下午又去了咖啡厅，晚上才开始读<span className="example-word example-pronoun is-emphasized">它</span>。</p>
+      <div className="example-connection">Q/K 匹配 → 分配注意力权重 → 汇合 V → 融入上下文</div>
     </div>
-    <p className="example-question">“晚上才开始读它”——这里的“它”，指的是什么？跟着四步讲解，看看 Q、K、V 怎样联系起来。</p>
-    <div className="example-step-picker" role="group" aria-label="例子讲解步骤">
-      {EXAMPLE_STEPS.map((item, index) => <button key={item.label} aria-pressed={step === index} onClick={() => setStep(index)}><span>{index + 1}</span>{item.label}</button>)}
-    </div>
-    <article className="example-explanation" aria-label="当前例子讲解" aria-live="polite">
-      <div className="example-step-heading"><span className="eyebrow">第 {step + 1} 步 / 4</span><h3>{current.title}</h3></div>
-      <div className="example-prose">{current.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
-      {step === 0 && <div className="example-projection"><p>同一个输入表示 X，经过不同的学习到的变换</p><div><span>Q = X W<sub>Q</sub></span><span>K = X W<sub>K</sub></span><span>V = X W<sub>V</sub></span></div><small>X 是当前层的输入表示；W 是训练中学习到的参数矩阵。Q、K、V 同源，数值通常不同。</small></div>}
-      <p className="example-takeaway"><b>这一步记住：</b>{current.takeaway}</p>
+    <p className="example-question">“晚上才开始读它”——这里的“它”，指的是什么？结合下面的讲解，看看 Q、K、V 怎样联系起来。</p>
+    <article className="example-explanation" aria-label="例子完整讲解">
+      <div className="example-prose">{EXAMPLE_SECTIONS.map((item, index) => <section className="example-topic" key={item.label} aria-label={item.label}>
+        <h3>{item.title}</h3>
+        {item.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        {index === 0 && <div className="example-projection"><p>同一个输入表示 X，经过不同的学习到的变换</p><div><span>Q = X W<sub>Q</sub></span><span>K = X W<sub>K</sub></span><span>V = X W<sub>V</sub></span></div><small>X 是当前层的输入表示；W 是训练中学习到的参数矩阵。Q、K、V 同源，数值通常不同。</small></div>}
+      </section>)}</div>
+      <p className="example-takeaway"><b>记住这条主线：</b>{EXAMPLE_SECTIONS.map((item) => item.takeaway).join(' ')}</p>
     </article>
-    <div className="example-step-controls"><button className="button secondary" disabled={step === 0} onClick={() => setStep(step - 1)}>上一步</button><span>{step + 1} / 4</span><button className="button primary" disabled={step === EXAMPLE_STEPS.length - 1} onClick={() => setStep(step + 1)}>下一步<Icon name="arrow" size={16} /></button></div>
-    {step === EXAMPLE_STEPS.length - 1 && <>
-      <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
-      <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
-    </>}
+    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
+    <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
   </section>;
 }
