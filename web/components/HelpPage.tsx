@@ -1,19 +1,22 @@
 import { Icon } from './Icon.tsx';
 
+const MODULE_OVERVIEW = [
+  { title: 'Attention 引言', description: '介绍注意力机制的背景、在 Transformer 中的位置及作用，建立整体认识。' },
+  { title: '小栗子🌰', description: '用“书”和“它”的指代例子，分步解释 Q、K、V 如何配合，帮助直观理解。' },
+  { title: '自由探索', description: '自由修改或拖动向量，实时观察匹配得分、注意力权重和输出的变化。' },
+  { title: '实验总结', description: '整理单头注意力矩阵、核心公式与计算例子，把操作现象和数学原理联系起来。' },
+  { title: '引导实验', description: '按“先预测、再修改、再验证”的流程完成任务，理解不同向量的作用。' },
+  { title: '理解自测', description: '通过答题和解析检查掌握情况，发现容易混淆的概念。' },
+  { title: '多头注意力', description: '介绍多个注意力头如何并行计算、拼接并组合结果，进一步理解信息聚合。' },
+  { title: '三种 Attention', description: '对比编码器自注意力、解码器遮罩自注意力和交叉注意力的用途、信息来源与可见范围。' },
+] as const;
+
 export function HelpPage({ onExplore }: { onExplore: () => void }) {
   return <section className="help-page" aria-labelledby="help-title">
     <div className="help-heading"><span className="eyebrow">使用说明 · 开始之前</span><h2 id="help-title">欢迎来到注意力实验室</h2></div>
-    <p>自由探索可以修改所有向量；引导实验会限定一个变量，先预测再验证。</p>
-    <p>页面顶部可切换 Attention 引言、小栗子🌰、自由探索、实验总结、引导实验、理解自测、多头注意力和三种 Attention。引言介绍背景与架构，小栗子分步讲解“书”和“它”；总结先展示单头矩阵，再整理公式与数值例子。多头注意力和三种 Attention 提供进阶阅读。阅读后回到原来的实验或自测，会保留本页中的操作和答案。</p>
-    <ol className="guide-list">
-      <li><b>选择观察对象</b><span>页面上方选择 A、B 或 C，观察它的 Query 如何关注其他词元。</span></li>
-      <li><b>改变一个向量</b><span>选中编辑词元，输入数字，或拖动 Q/K/V 的圆点。默认拖动和方向键按整数调整，可切换为 0.1 步长；直接输入可用小数。向量各坐标范围为 −5 到 5。</span></li>
-      <li><b>沿着四步计算走一遍</b><span>每一步说明输入、结果、用途和符号含义，并用当前数值举例。点击步骤标签，或使用“上一步”“下一步”，按自己的节奏阅读。</span></li>
-      <li><b>比较修改前后</b><span>默认基线是初始实验。也可以保存当前参数作为新基线，或恢复基线继续实验。</span></li>
-    </ol>
-    <div className="dialog-note"><b>怎样读热力图</b><p>行表示谁的 Query 在关注，列表示被关注的 Key；颜色越深，权重越大，每行的权重之和为 1。点选、悬停或用 Tab 聚焦一格，可以查看实际权重、点积和基线差值。自由探索中点击单元格会切换观察 Query；引导实验固定观察 A。只改 V 不会改变热力图。</p></div>
-    <div className="dialog-note"><b>三次引导实验与理解自测</b><p>进入“引导实验”，按预测、修改、解释和理解题的顺序完成任务。记录预测后会定位并聚焦可编辑输入框，紫色边框标出开放的向量；顶部目标栏保留任务，也能直接检查修改。完成三个实验后可以查看概念与公式总结。自测题库有 20 道，每轮抽取 5 道；点击“换一组题”会清空未提交答案，最近三轮的题目不重复。已完成进度与自测题目、成绩保存在当前浏览器，可导出匿名记录；旧版四题成绩仍保留。未完成实验重新进入时从预测开始，重置实验保留学习进度。</p></div>
-    <div className="dialog-note"><b>这是一个简化的教学模型</b><p>向量由人为设置，直接编辑 Q/K/V。点积是匹配得分，不是余弦相似度；输出是聚合向量，不是下一词预测。本实验没有加入训练、位置编码和多头机制。</p></div>
+    <p>先了解各模块的功能与用途，再从页面顶部选择想学习的内容。详细操作说明放在对应模块中，可展开查看。</p>
+    <div className="help-module-list">{MODULE_OVERVIEW.map((module) => <article key={module.title}><h3>{module.title}</h3><p>{module.description}</p></article>)}</div>
+    <p>阅读后回到原来的实验或自测，会保留本页中的操作和答案。</p>
     <button className="button primary" onClick={onExplore}>开始探索<Icon name="arrow" /></button>
   </section>;
 }

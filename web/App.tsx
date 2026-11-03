@@ -6,6 +6,7 @@ import { VectorEditor } from './components/VectorEditor.tsx';
 import { Calculation } from './components/Calculation.tsx';
 import { Results } from './components/Results.tsx';
 import { HelpPage } from './components/HelpPage.tsx';
+import { ModuleInstructions } from './components/ModuleInstructions.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
@@ -52,6 +53,7 @@ export function App() {
   useEffect(() => {
     if (readingView !== null || mode !== 'guided' || !session) return;
     if (session.phase === 'experiment') locateEditor();
+    else if (session.phase === 'explain' || session.phase === 'complete') guidedRef.current?.querySelector<HTMLElement>('.lesson-interaction')?.scrollIntoView({ block: 'start' });
     else guidedRef.current?.scrollIntoView({ block: 'start' });
   }, [mode, readingView, session?.phase, session?.lessonId]);
 
@@ -150,7 +152,16 @@ export function App() {
           <h2 id="free-experiment-scope-title">关于这个小实验</h2>
           <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息；先理解一个头，更容易理解这些扩展。</p>
           <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，没有训练语言模型。输出是聚合向量，得到下一个词还需要其他模块；热力图显示分配比例，单看它不足以解释模型的全部行为。</p>
+          <p>点积是匹配得分，不是余弦相似度。本实验没有加入训练、位置编码和多头机制。</p>
         </section>
+        <ModuleInstructions title="自由探索操作说明">
+          <ol className="guide-list">
+            <li><b>选择观察对象</b><span>页面上方选择 A、B 或 C，观察它的 Query 如何关注其他词元。</span></li>
+            <li><b>改变一个向量</b><span>选中编辑词元，输入数字，或拖动 Q/K/V 的圆点。默认拖动和方向键按整数调整，可切换为 0.1 步长；直接输入可用小数。向量各坐标范围为 −5 到 5。</span></li>
+            <li><b>沿着四步计算走一遍</b><span>每一步说明输入、结果、用途和符号含义，并用当前数值举例。点击步骤标签，或使用“上一步”“下一步”，按自己的节奏阅读。</span></li>
+            <li><b>比较修改前后</b><span>默认基线是初始实验。也可以保存当前参数作为新基线，或恢复基线继续实验。</span></li>
+          </ol>
+        </ModuleInstructions>
         <div className="learning-entry"><span><b>从观察，到理解</b>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>
       </>}
       {mode === 'guided' && session && <div hidden={readingView !== null} ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}

@@ -2,18 +2,28 @@
 .help-heading .eyebrow { color: #6b588e; }
 .help-heading h2 { font-size: 25px; line-height: 1.6; margin-top: 8px; color: #30394f; }
 .help-page > p { margin-top: 14px; font-size: 17px; line-height: 1.95; }
-.help-page .guide-list { margin: 26px 0; }
-.help-page .guide-list li { margin: 22px 0; padding-left: 42px; }
-.help-page .guide-list li:before { width: 28px; height: 28px; font-size: 15px; line-height: 28px; }
-.help-page .guide-list b { font-size: 18px; line-height: 1.6; color: #4d416b; }
-.help-page .guide-list span { font-size: 17px; line-height: 1.95; color: #44506a; }
-.help-page .dialog-note { padding: 20px; margin-bottom: 20px; background: #f8f6fc; }
-.help-page .dialog-note > b { font-size: 18px; color: #4d416b; }
-.help-page .dialog-note p { font-size: 17px; line-height: 1.95; color: #44506a; margin-top: 9px; }
-.help-page > .button { margin-top: 4px; }
+.help-module-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
+.help-module-list article { padding: 20px; border-radius: 10px; background: #f8f6fc; }
+.help-module-list h3 { font-size: 18px; line-height: 1.6; color: #4d416b; }
+.help-module-list p { font-size: 17px; line-height: 1.95; color: #44506a; margin-top: 8px; }
+.help-page > .button { margin-top: 18px; }
+.module-instructions { margin: 18px 0; padding: 16px 20px; border: 1px solid #e5dff3; border-radius: 10px; background: #fff; color: #44506a; }
+.module-instructions > summary { cursor: pointer; color: #654e9a; font-size: 17px; font-weight: 600; line-height: 1.8; }
+.module-instructions > summary:focus-visible { outline: 3px solid #aa9ae8; outline-offset: 3px; border-radius: 3px; }
+.module-instructions-body > p { margin-top: 12px; font-size: 17px; line-height: 1.95; overflow-wrap: anywhere; }
+.module-instructions .guide-list { margin: 12px 0 0; }
+.module-instructions .guide-list li { margin: 18px 0; padding-left: 40px; }
+.module-instructions .guide-list li:last-child { margin-bottom: 0; }
+.module-instructions .guide-list li:before { width: 28px; height: 28px; font-size: 15px; line-height: 28px; }
+.module-instructions .guide-list b { font-size: 18px; line-height: 1.6; color: #4d416b; }
+.module-instructions .guide-list span { font-size: 17px; line-height: 1.95; color: #44506a; }
+.heatmap-intro .module-instructions { padding: 12px 14px; }
+.heatmap-intro .module-instructions-body > p { font-size: 15px; }
 @media (max-width: 700px) {
   .help-page { padding: 20px; }
   .help-heading h2 { font-size: 22px; }
-  .help-page > p, .help-page .guide-list span, .help-page .dialog-note p { font-size: 16px; }
-  .help-page .dialog-note { padding: 16px; }
+  .help-module-list { grid-template-columns: 1fr; gap: 14px; }
+  .help-module-list article { padding: 16px; }
+  .help-page > p, .help-module-list p, .module-instructions-body > p, .module-instructions .guide-list span { font-size: 16px; }
+  .module-instructions { padding: 14px 16px; }
 }

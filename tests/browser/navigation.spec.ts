@@ -8,6 +8,8 @@ test('reading pages have independent navigation and preserve free vectors, basel
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
   await expect(page.locator('#help-title')).toBeVisible();
+  await expect(page.locator('.help-module-list article')).toHaveCount(8);
+  await expect(page.locator('.help-page .guide-list')).toHaveCount(0);
   await expect(page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true })).toHaveCount(0);
   await expect(page.locator('.free-experiment-scope')).toHaveCount(0);
   await expect(page.getByRole('spinbutton')).toHaveCount(0);

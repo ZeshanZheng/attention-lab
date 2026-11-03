@@ -4,6 +4,7 @@ import type { LessonId } from '../learning/lessons.ts';
 import type { LessonSession } from '../learning/session.ts';
 import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
+import { ModuleInstructions } from './ModuleInstructions.tsx';
 
 export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onCheck, onLocate, onAnswerChoice, onAnswer, onAssessment, onSummary }: {
   session: LessonSession; completed: readonly LessonId[];
@@ -20,6 +21,10 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
 
   return <section className="guided-learning" aria-labelledby="guided-title">
     <div className="learning-heading"><div><span className="eyebrow">GUIDED EXPERIMENTS</span><h2 id="guided-title">三次小实验，建立注意力直觉</h2></div><span className="learning-count" data-testid="lesson-progress">已完成 {completed.length} / 3</span></div>
+    <ModuleInstructions title="引导实验操作说明">
+      <p>自由探索可以修改所有向量；引导实验会限定一个变量，先预测再验证。进入“引导实验”，按预测、修改、解释和理解题的顺序完成任务。记录预测后会定位并聚焦可编辑输入框，紫色边框标出开放的向量；顶部目标栏保留任务，也能直接检查修改。完成三个实验后可以查看概念与公式总结。</p>
+      <p>已完成进度保存在当前浏览器。未完成实验重新进入时从预测开始，重置实验保留学习进度；阅读其他页面后返回，会保留本页中的实验阶段与操作。</p>
+    </ModuleInstructions>
     <div className="lesson-picker" aria-label="选择引导实验">
       {LESSONS.map((item) => <button key={item.id} aria-label={`实验 ${item.number}：${item.title}`} aria-pressed={item.id === lesson.id}
         className={`lesson-card ${item.id === lesson.id ? 'active' : ''} ${completed.includes(item.id) ? 'done' : ''}`}
