@@ -8,7 +8,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
   await expect(page.locator('#help-title')).toBeVisible();
-  await expect(page.getByRole('button', { name: '开始探索', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '打开自由探索', exact: true })).toBeVisible();
   await expect(page.locator('.help-page .guide-list')).toHaveCount(0);
   await expect(page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true })).toHaveCount(0);
   await expect(page.locator('.free-experiment-scope')).toHaveCount(0);
@@ -19,7 +19,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
     await expect(page.locator('#help-title')).toBeHidden();
     await modes.getByRole('button', { name: '使用说明', exact: true }).click();
   }
-  await page.getByRole('button', { name: '开始探索', exact: true }).click();
+  await page.getByRole('button', { name: '打开自由探索', exact: true }).click();
   await expect(page.locator('#attention-introduction-title')).toBeHidden();
   await expect(page.locator('.free-experiment-scope')).toBeVisible();
   await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toHaveCount(0);

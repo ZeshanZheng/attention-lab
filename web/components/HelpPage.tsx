@@ -13,7 +13,7 @@ const MODULE_OVERVIEW = [
 
 export type HelpModule = typeof MODULE_OVERVIEW[number]['id'];
 
-export function HelpPage({ onExplore, onNavigate }: { onExplore: () => void; onNavigate: (module: HelpModule) => void }) {
+export function HelpPage({ onNavigate }: { onNavigate: (module: HelpModule) => void }) {
   return <section className="help-page" aria-labelledby="help-title">
     <div className="help-heading"><span className="eyebrow">使用说明 · 开始之前</span><h2 id="help-title">欢迎来到注意力实验室</h2></div>
     <p>先了解各模块的功能与用途，点击下方模块即可进入对应页面。</p>
@@ -21,6 +21,5 @@ export function HelpPage({ onExplore, onNavigate }: { onExplore: () => void; onN
       <span className="help-module-title">{module.title}<Icon name="arrow" size={18} /></span>
       <span className="help-module-description">{module.description}</span>
     </button>)}</div>
-    <button className="button primary" onClick={onExplore}>开始探索<Icon name="arrow" /></button>
   </section>;
 }

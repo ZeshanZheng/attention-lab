@@ -135,7 +135,7 @@ test('mobile help page opens from navigation and returns to the existing experim
   await expect(page.getByRole('region', { name: '欢迎来到注意力实验室', exact: true })).toBeVisible();
   await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
-  await page.getByRole('button', { name: '开始探索', exact: true }).click();
+  await page.getByRole('button', { name: '打开自由探索', exact: true }).click();
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('4');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
   await page.screenshot({ path: '.tools/preview-mobile.png', fullPage: true });
