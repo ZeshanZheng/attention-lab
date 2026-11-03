@@ -35,7 +35,7 @@
 .architecture-introduction-text p:last-child { margin-bottom: 0; }
 .architecture-introduction-text strong, .architecture-introduction-text b { color: #65518f; }
 .multi-head-figure { margin: 22px 0 0; padding: 18px; border: 1px solid #e5e1ee; border-radius: 10px; background: #fff; }
-.multi-head-figure img { display: block; width: 100%; height: auto; }
+.multi-head-figure img { display: block; width: 90%; height: auto; margin-inline: auto; }
 .multi-head-figure figcaption { font-size: 15px; line-height: 1.9; margin-top: 12px; color: #60697a; }
 .multi-head-figure figcaption a { margin-left: 10px; }
 .multi-head-flow { display: grid; grid-template-columns: minmax(100px, .8fr) minmax(220px, 2fr) repeat(2, minmax(100px, 1fr)); gap: 24px; align-items: center; margin: 26px 0; }

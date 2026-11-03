@@ -9,7 +9,6 @@ import './introduction.css';
 import './sentence-example.css';
 import './advanced-reading.css';
 import './help-page.css';
-import './multi-head-matrix.css';
 import './reading-layout.css';
 import './header.css';
 
