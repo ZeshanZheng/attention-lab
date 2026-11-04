@@ -17,6 +17,5 @@ export function LearningIntroduction() {
         <p>Attention（注意力）是一类机制，Self-Attention（自注意力）是其中一种。Self-Attention 的 Q、K、V 来自同一序列的表示，词元可以从这条序列中的其他位置取回信息。原始 Transformer 的解码器还使用Cross-Attention（交叉注意力）：用解码器的查询去读取编码器提供的信息。</p>
     </div></div></div></section>
     <p className="introduction-sources">背景出处，可选阅读：<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noreferrer">早期机器翻译注意力研究（2014）</a><span> · </span><a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文（2017）</a>。</p>
-    <p className="introduction-route"><b>建议学习顺序：</b>先总体看一个小例子，再用“自由探索”观察变化，对照“实验总结”理解公式，再做“引导实验”验证预测，最后用“理解自测”检查掌握情况。</p>
   </section>;
 }
