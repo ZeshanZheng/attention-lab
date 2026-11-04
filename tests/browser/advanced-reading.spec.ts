@@ -32,6 +32,21 @@ test('architecture images load and advanced reading preserves free parameters an
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(nav.getByRole('button', { name, exact: true })).toHaveCount(1);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
+  const qkv = page.locator('.introduction-qkv');
+  const calculation = page.getByRole('region', { name: '一次 Attention，按这四步计算', exact: true });
+  const architecture = page.locator('.introduction-architecture');
+  const orderedSections = await Promise.all([qkv.boundingBox(), calculation.boundingBox(), architecture.boundingBox()]);
+  expect(orderedSections[0]!.y + orderedSections[0]!.height).toBeLessThan(orderedSections[1]!.y);
+  expect(orderedSections[1]!.y + orderedSections[1]!.height).toBeLessThan(orderedSections[2]!.y);
+  await expect(qkv.locator('dt')).toHaveText(['Q · Query · 查询', 'K · Key · 键', 'V · Value · 值']);
+  await expect(page.locator('.introduction-next-example')).toContainText('接下来用“书”和“它”的例子');
+  const context = page.locator('.architecture-context');
+  await expect(context).toHaveJSProperty('open', false);
+  await expect(context.locator('p').first()).toBeHidden();
+  await context.locator('summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(context).toHaveJSProperty('open', true);
+  await expect(context.locator('p').first()).toBeVisible();
   const introImage = page.locator('.introduction-architecture img');
   await expect(introImage).toBeVisible();
   expect(await introImage.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -62,6 +77,8 @@ test('architecture images load and advanced reading preserves free parameters an
   await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();
   await expect(picker.getByRole('button', { pressed: true })).toHaveText('3编码器—解码器跨注意力');
+  await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
+  await expect(context).toHaveJSProperty('open', true);
   expect(errors).toEqual([]);
 });
 
