@@ -7,6 +7,13 @@ test('welcome is a separate first screen, enters help by keyboard, and returns a
   await expect(welcome).toBeVisible();
   await expect(welcome.getByRole('heading')).toHaveText('欢迎您来到注意力实验室！');
   await expect(welcome.locator('p')).toHaveText('通过修改向量、观察计算和完成实验，理解 Q、K、V 如何配合，掌握注意力从匹配到信息聚合的过程。');
+  for (const text of [welcome.getByRole('heading'), welcome.locator('p')]) {
+    expect(await text.evaluate((node) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return range.getClientRects().length;
+    })).toBe(1);
+  }
   await expect(page.getByRole('button')).toHaveCount(1);
   await expect(page.getByRole('banner')).toHaveCount(0);
   await expect(page.getByRole('group', { name: '学习模式' })).toHaveCount(0);
