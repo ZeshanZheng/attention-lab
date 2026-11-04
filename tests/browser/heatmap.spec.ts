@@ -1,3 +1,4 @@
+import { openLab } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { computeAttention, createDefaultExperiment } from '../../src/index.ts';
@@ -14,7 +15,7 @@ async function matrixSnapshot(page: Page) {
 test('all nine heatmap cells show the computed weights and normalize separately for each Query', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const expected = computeAttention(createDefaultExperiment().input);
   await expect(page.getByTestId('attention-heatmap').getByRole('button')).toHaveCount(9);
@@ -39,7 +40,7 @@ test('all nine heatmap cells show the computed weights and normalize separately 
 });
 
 test('click and keyboard selection synchronize Query, bars and formulas without changing the editing token', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByTestId('heatmap-cell-1-2').click();
   await expect(page.getByRole('button', { name: '观察词元 B', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -59,7 +60,7 @@ test('click and keyboard selection synchronize Query, bars and formulas without 
 });
 
 test('Q and K edits update the appropriate rows, and baselines and restore remain consistent', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const original = await matrixSnapshot(page);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
@@ -90,7 +91,7 @@ test('Q and K edits update the appropriate rows, and baselines and restore remai
 });
 
 test('editing only V changes output while every heatmap weight and color stays unchanged', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   const before = await matrixSnapshot(page);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
@@ -101,7 +102,7 @@ test('editing only V changes output while every heatmap weight and color stays u
 
 test('mobile inspection preserves guided Query restrictions and fits the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   await page.getByTestId('heatmap-cell-1-2').click();
   await expect(page.getByTestId('heatmap-detail')).toContainText('B 在关注 C');

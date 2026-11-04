@@ -1,3 +1,4 @@
+import { enterLab, openLab } from './open-lab.ts';
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
@@ -34,7 +35,7 @@ async function answerQuiz(page: Page, correct: boolean) {
 test('all three guided lessons enforce the learning flow, retain first mistakes, export and persist progress', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   const keyX = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
   await expect(keyX).toBeDisabled();
@@ -89,6 +90,7 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   expect(exported.lessonAttempts[0].observation.input.keys[1]).toEqual([2, 1]);
 
   await page.reload();
+  await enterLab(page);
   await expect(page.getByTestId('saved-progress')).toHaveText('实验进度 3 / 3');
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
@@ -96,7 +98,7 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
 });
 
 test('mode switching preserves free exploration, and guided reset keeps completed learning records', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('button', { name: '编辑词元 C', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 C 的 V x', exact: true }).fill('-3');
@@ -118,7 +120,7 @@ test('mode switching preserves free exploration, and guided reset keeps complete
 });
 
 test('assessment gives per-question feedback and preserves first score independently of retries', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   await expect(page.getByRole('button', { name: '提交自测', exact: true })).toBeDisabled();
   const firstIds = await answerQuiz(page, false);
@@ -146,6 +148,7 @@ test('assessment gives per-question feedback and preserves first score independe
   expect(exported.assessmentAttempts[0].questions.map((question: { id: string }) => question.id)).toEqual(firstIds);
   expect(exported.assessmentAttempts[1].questions.map((question: { id: string }) => question.id)).toEqual(secondIds);
   await page.reload();
+  await enterLab(page);
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   await expect(page.getByTestId('first-score')).toHaveText('0 / 5');
   await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
@@ -157,7 +160,7 @@ test('legacy four-question scores survive the upgrade and new five-question scor
   await page.addInitScript((key) => {
     if (!localStorage.getItem(key)) localStorage.setItem(key, JSON.stringify({ version: 1, lessons: [], assessments: [{ submittedAt: '2026-10-07T10:00:00.000Z', answers: [0, 2, 1, 0] }] }));
   }, STORAGE_KEY);
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   await expect(page.getByTestId('first-score')).toHaveText('4 / 4');
   await expect(page.getByTestId('latest-score')).toHaveText('4 / 4');
@@ -166,6 +169,7 @@ test('legacy four-question scores survive the upgrade and new five-question scor
   await expect(page.getByTestId('first-score')).toHaveText('4 / 4');
   await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
   await page.reload();
+  await enterLab(page);
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   await expect(page.getByTestId('first-score')).toHaveText('4 / 4');
   await expect(page.getByTestId('latest-score')).toHaveText('5 / 5');
@@ -173,7 +177,7 @@ test('legacy four-question scores survive the upgrade and new five-question scor
 
 test('switching unfinished rounds replaces questions, clears answers and remains usable on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
   const history: string[][] = [];
   for (let round = 0; round < 4; round += 1) {
@@ -195,7 +199,7 @@ test('malformed saved progress recovers without a page error', async ({ page }) 
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await page.addInitScript((key) => localStorage.setItem(key, '{not-json'), STORAGE_KEY);
-  await page.goto('/');
+  await openLab(page);
   await expect(page.getByTestId('saved-progress')).toHaveText('实验进度 0 / 3');
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 0.568)');
@@ -206,7 +210,7 @@ test('when local storage is unavailable, learning remains usable and export is o
   await page.addInitScript(() => {
     Object.defineProperty(Storage.prototype, 'setItem', { value: () => { throw new DOMException('Storage unavailable', 'QuotaExceededError'); } });
   });
-  await page.goto('/');
+  await openLab(page);
   await expect(page.getByText('浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   await predict(page, 'focus', 0);
@@ -221,7 +225,7 @@ test('when local storage is unavailable, learning remains usable and export is o
 
 test('mobile guided learning and quiz have no horizontal overflow and can complete an experiment', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   await page.getByRole('button', { name: '实验 2：改变传递内容', exact: true }).click();
   await predict(page, 'content', 1);

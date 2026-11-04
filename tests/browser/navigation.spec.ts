@@ -1,7 +1,8 @@
+import { enterLab, openLab } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('module footers follow navigation order and preserve experiment and unfinished quiz state', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
   const order = await modes.getByRole('button').allTextContents();
   let quizIds: (string | null)[] = [];
@@ -30,7 +31,7 @@ test('module footers follow navigation order and preserve experiment and unfinis
 });
 
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
   const expectedModes = ['使用说明', 'Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
   await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
@@ -87,7 +88,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
 });
 
 test('reading pages preserve an in-progress guided lesson, hints and locked parameters', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   await page.getByRole('radio', { name: 'B 的权重上升，A 和 C 的权重下降', exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
@@ -114,11 +115,12 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
 
 test('mobile reading navigation preserves unfinished quiz questions and selected answers', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
+  await openLab(page);
   await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
   await expect(page.locator('#help-title')).toBeVisible();
   await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await page.reload();
+  await enterLab(page);
   await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
   await expect(page.locator('#help-title')).toBeVisible();
   await page.getByRole('button', { name: '理解自测', exact: true }).click();

@@ -1,7 +1,8 @@
+import { openLab } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('sentence example presents one continuous explanation and preserves experiment state', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
   await expect(page.getByRole('region', { name: '小栗子🌰', exact: true })).toHaveCount(0);
   await modes.getByRole('button', { name: '自由探索', exact: true }).click();
@@ -64,7 +65,7 @@ test('sentence example presents one continuous explanation and preserves experim
 for (const width of [320, 390]) {
   test(`sentence example is readable at ${width}px and preserves unfinished assessment answers`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto('/');
+    await openLab(page);
     await page.getByRole('button', { name: '理解自测', exact: true }).click();
     const questions = page.getByTestId('assessment-question');
     const ids = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));

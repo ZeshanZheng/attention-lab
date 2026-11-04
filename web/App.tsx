@@ -6,6 +6,7 @@ import { VectorEditor } from './components/VectorEditor.tsx';
 import { Calculation } from './components/Calculation.tsx';
 import { Results } from './components/Results.tsx';
 import { HelpPage } from './components/HelpPage.tsx';
+import { WelcomePage } from './components/WelcomePage.tsx';
 import { ModuleInstructions } from './components/ModuleInstructions.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
@@ -30,6 +31,11 @@ type LearningView = keyof typeof VIEW_LABELS;
 const MODULE_ORDER = ['help', 'introduction', 'example', 'free', 'summary', 'guided', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
 export function App() {
+  const [entered, setEntered] = useState(false);
+  return entered ? <Laboratory /> : <WelcomePage onEnter={() => setEntered(true)} />;
+}
+
+function Laboratory() {
   const [state, dispatch] = useReducer(labReducer, undefined, createLabState);
   const [coordinateStep, setCoordinateStep] = useState(1);
   const [announcement, setAnnouncement] = useState('');

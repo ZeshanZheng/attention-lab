@@ -15,10 +15,8 @@ export type HelpModule = typeof MODULE_OVERVIEW[number]['id'];
 
 export function HelpPage({ onNavigate }: { onNavigate: (module: HelpModule) => void }) {
   return <section className="help-page" aria-labelledby="help-title">
-    <div className="help-heading"><h2 id="help-title">欢迎您来到注意力实验室！</h2></div>
-    <p className="help-learning-goal">通过修改向量、观察计算和完成实验，理解 Q、K、V 如何配合，掌握注意力从匹配到信息聚合的过程。</p>
-    <section className="help-attention-overview" aria-labelledby="help-attention-title">
-      <h3 id="help-attention-title">认识 Attention（注意力机制）</h3>
+    <section className="help-attention-overview">
+      <div className="help-heading"><h2 id="help-title">认识 Attention（注意力机制）</h2></div>
       <p className="introduction-lead">当我们理解一句话时，往往需要把一个词和上下文联系起来。Attention 让模型计算“应该从哪些位置取回多少信息”，再按比例组合这些信息，为当前词元补充上下文。</p>
       <div className="introduction-cards">
         <article><h4>1.它从哪里来？</h4><p>注意力机制早已用于机器翻译，帮助模型在生成译文时参考相关的原文位置。2017 年提出的 Transformer 将注意力机制放在架构的核心，让不同位置的信息可以直接建立联系。</p></article>

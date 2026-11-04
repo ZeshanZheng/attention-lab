@@ -1,7 +1,8 @@
+import { openLab } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('single-head matrix precedes the existing summary and explains Query rows and Key columns', async ({ page }) => {
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '实验总结', exact: true }).click();
   const matrix = page.getByRole('table', { name: '点积匹配得分矩阵 · 缩放与 Softmax 之前' });
   await expect(matrix).toBeVisible();
@@ -23,7 +24,7 @@ test('single-head matrix precedes the existing summary and explains Query rows a
 test('architecture images load and advanced reading preserves free parameters and selected attention type', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await openLab(page);
   await page.getByRole('button', { name: '自由探索', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
@@ -67,7 +68,7 @@ test('architecture images load and advanced reading preserves free parameters an
 for (const width of [320, 390]) {
   test(`advanced pages fit ${width}px and preserve unsubmitted quiz answers`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto('/');
+    await openLab(page);
     await page.getByRole('button', { name: '理解自测', exact: true }).click();
     const questions = page.getByTestId('assessment-question');
     const ids = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
