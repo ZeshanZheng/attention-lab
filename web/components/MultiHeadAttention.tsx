@@ -2,7 +2,6 @@ import { MultiHeadMatrix } from './MultiHeadMatrix.tsx';
 
 export function MultiHeadAttention() {
   return <section className="card advanced-reading" aria-labelledby="multi-head-title">
-    <span className="eyebrow">进阶阅读 · 从一个头到多个头</span>
     <h2 id="multi-head-title">多头注意力：同时从不同角度读取信息</h2>
     <p className="reading-lead">单头得到一张注意力矩阵，多头则并行计算多组关注关系，再汇合各个头的结果。</p>
     <MultiHeadMatrix />

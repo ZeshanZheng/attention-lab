@@ -33,11 +33,11 @@ export function Calculation({ input, result, query, step, onStep }: Props) {
   const rowValues = step === 0 ? result.rawScores[query]! : step === 1 ? scores : result.weights[query]!;
   const guide = STEP_GUIDES[step]!;
   return <section className="card calculation-card" aria-labelledby="calculation-title">
-    <div className="card-heading"><div><span className="eyebrow">02 / PROCESS</span><h2 id="calculation-title">一步步看懂计算</h2></div><span className="step-counter">0{step + 1}<span> / 04</span></span></div>
+    <div className="card-heading"><div><h2 id="calculation-title">一步步看懂计算</h2></div><span className="step-counter">0{step + 1}<span> / 04</span></span></div>
     <div className="step-tabs" aria-label="计算步骤">
       {STEPS.map((item, index) => <button key={item.name} className={`${step === index ? 'active' : ''} ${index < step ? 'completed' : ''}`} aria-label={`${index + 1} ${item.name}`} aria-pressed={step === index} onClick={() => onStep(index)}><span>{index < step ? '✓' : index + 1}</span>{item.name}</button>)}
     </div>
-    <div className="step-intro"><span className="eyebrow purple">{current.tag}</span><h3>{current.title}</h3><p>{current.description}</p></div>
+    <div className="step-intro"><h3>{current.title}</h3><p>{current.description}</p></div>
     <div className="formula-box"><span className="formula-label">计算公式</span><div className="math-formula">{current.formula}</div></div>
     <div className="step-guide" data-testid="step-guide"><dl><div><dt>用什么算</dt><dd>{guide.input}</dd></div><div><dt>得到什么</dt><dd>{guide.output}</dd></div><div><dt>有什么用</dt><dd>{guide.purpose}</dd></div></dl><p><b>符号怎么读：</b>{guide.symbols}</p></div>
     <div className="active-query"><span className="token-square" style={{ background: TOKEN_COLORS[query] }}>Q{TOKEN_NAMES[query]}</span><span>当前查询向量</span><code>{formatVector(input.queries[query]!, 1)}</code></div>

@@ -2,7 +2,7 @@ import { TransformerArchitecture } from './TransformerArchitecture.tsx';
 
 export function LearningIntroduction() {
   return <section className="learning-introduction" aria-labelledby="attention-introduction-title">
-    <div className="introduction-heading"><span className="eyebrow">Attention 引言 · 架构与原理</span><h2 id="attention-introduction-title">在 Transformer 架构里的 Attention</h2></div>
+    <div className="introduction-heading"><h2 id="attention-introduction-title">在 Transformer 架构里的 Attention</h2></div>
     <section className="introduction-architecture" aria-labelledby="attention-introduction-title"><div className="architecture-introduction-grid"><TransformerArchitecture showQkv showHighlightCaption={false} /><div className="architecture-introduction-copy"><div className="architecture-introduction-text">
       <p>这张图展示的是原始 Transformer 架构的编码器—解码器架构。左边的编码器处理输入序列，右边的解码器结合已生成的内容和编码器信息，逐步生成输出。</p>
       <p>红圈标出左边编码器中的 Multi-Head Attention（多头注意力）子层。它让输入序列中的各个位置交换信息；Q、K、V 来自同一序列的当前层表示，经过不同的学习到的投影得到。（Q、K、V 分别是英文单词 Query（查询）、Key（键）和 Value（值）的首字母缩写。）Attention 计算每个 Query 应该从哪些 Value 中取回多少信息。</p>

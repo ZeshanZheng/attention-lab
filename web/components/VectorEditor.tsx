@@ -34,7 +34,7 @@ export function VectorEditor({ state, dispatch, editorRef, coordinateStep, onCoo
   const token = state.editingTokenIndex;
   const kind = vectorKinds.find((item) => item.key === state.vectorKind)!;
   return <section ref={editorRef} className={`card editor-card ${state.editPolicy?.enabled ? 'guided-editor' : ''}`} aria-labelledby="editor-title">
-    <div className="card-heading"><div><span className="eyebrow">01 / INPUT</span><h2 id="editor-title">编辑输入向量</h2></div><span className="quiet-tag">二维</span></div>
+    <div className="card-heading"><div><h2 id="editor-title">编辑输入向量</h2></div><span className="quiet-tag">二维</span></div>
     <p className="section-label">编辑哪个词元</p>
     <div className="token-picker" aria-label="编辑词元">
       {TOKEN_NAMES.map((name, index) => <button key={name} className={`token-button ${index === token ? 'selected' : ''}`} aria-pressed={index === token} disabled={state.editPolicy !== null && index !== state.editPolicy.token} aria-label={`编辑词元 ${name}`} onClick={() => dispatch({ type: 'select-token', index })}>

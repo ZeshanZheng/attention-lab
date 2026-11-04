@@ -46,8 +46,8 @@ const EXAMPLE_CLOSING_PARAGRAPHS = [
 ] as const;
 
 export function SentenceExample() {
-  return <section className="sentence-example" aria-labelledby="sentence-example-title">
-    <div className="example-heading"><span className="eyebrow" id="sentence-example-title">小栗子🌰 · 从句子走进计算</span><p className="example-scope">这是指代关系的教学示意，未运行真实语言模型，也未计算这句话的实际权重。我们按词语讲解；真实模型使用的词元划分取决于分词器。</p></div>
+  return <section className="sentence-example" aria-label="小栗子🌰">
+    <div className="example-heading"><p className="example-scope">这是指代关系的教学示意，未运行真实语言模型，也未计算这句话的实际权重。我们按词语讲解；真实模型使用的词元划分取决于分词器。</p></div>
     <div className="example-sentence" aria-label="例句">
       <p><span className="example-word example-subject">我</span>今天买了一本<span className="example-word example-book is-emphasized">书</span>，上午去了图书馆，然后下午又去了咖啡厅，晚上才开始读<span className="example-word example-pronoun is-emphasized">它</span>。</p>
       <div className="example-connection">Q/K 匹配 → 分配注意力权重 → 汇合 V → 融入上下文</div>

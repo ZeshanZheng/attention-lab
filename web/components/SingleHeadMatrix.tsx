@@ -2,7 +2,6 @@ const MATRIX_TOKENS = ['我', '今', '天', '买', '了', '一', '本', '书'];
 
 export function SingleHeadMatrix() {
   return <section className="card single-head-matrix" aria-labelledby="single-head-matrix-title">
-    <span className="eyebrow">实验总结 · 从一行计算到整张矩阵</span>
     <h2 id="single-head-matrix-title">单头注意力：这张矩阵怎样读？</h2>
     <p className="reading-lead">把“我今天买了一本书”展开，看看每个 Query 怎样与所有 Key 匹配。</p>
     <div className="reading-table-scroll" tabIndex={0} role="region" aria-label="单头匹配得分矩阵，可横向滚动">

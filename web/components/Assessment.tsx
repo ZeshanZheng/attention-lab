@@ -29,7 +29,7 @@ export function Assessment({ progress, onSubmit, onGuided, onExport }: {
   };
   const recordScore = (record: AssessmentRecord) => `${scoreAnswers(record.questions, record.answers)} / ${record.questions.length}`;
   return <section className="assessment-section" aria-labelledby="assessment-title">
-    <div className="learning-heading"><div><span className="eyebrow">CHECK YOUR UNDERSTANDING</span><h2 id="assessment-title" ref={headingRef} tabIndex={-1}>换一组题，看看是否真正理解</h2><p>题库 {QUESTION_BANK.length} 道，每轮 {ROUND_SIZE} 道，覆盖五类概念。最近三轮不重复，提交后查看答案与解释。</p></div></div>
+    <div className="learning-heading"><div><h2 id="assessment-title" ref={headingRef} tabIndex={-1}>换一组题，看看是否真正理解</h2><p>题库 {QUESTION_BANK.length} 道，每轮 {ROUND_SIZE} 道，覆盖五类概念。最近三轮不重复，提交后查看答案与解释。</p></div></div>
     <ModuleInstructions title="自测与记录说明">
       <p>自测题库有 {QUESTION_BANK.length} 道，每轮抽取 {ROUND_SIZE} 道；点击“换一组题”会清空未提交答案，最近三轮的题目不重复。已完成进度与自测题目、成绩保存在当前浏览器，可导出匿名记录；旧版四题成绩仍保留。</p>
     </ModuleInstructions>
@@ -48,7 +48,7 @@ export function Assessment({ progress, onSubmit, onGuided, onExport }: {
         <button className="button secondary" onClick={nextQuiz}>换一组题<Icon name="reset" size={16} /></button>
         <span>完成全部 {ROUND_SIZE} 题后提交；换题会清空本轮未提交的答案。</span>
       </> : <button className="button secondary" onClick={nextQuiz}>换一组题，再测一次<Icon name="reset" size={16} /></button>}</div>
-    </div><aside className="card learning-summary" aria-label="学习记录摘要"><span className="eyebrow">YOUR LEARNING</span><h3>把观察，变成理解</h3>
+    </div><aside className="card learning-summary" aria-label="学习记录摘要"><h3>把观察，变成理解</h3>
       <div className="summary-metric"><span>已完成实验</span><b>{completedLessons(progress).length}<small> / 3</small></b></div>
       <div className="summary-metric"><span>首次自测</span><b data-testid="first-score">{first ? recordScore(first) : '尚未作答'}</b></div>
       <div className="summary-metric"><span>最近自测</span><b data-testid="latest-score">{latest ? recordScore(latest) : '尚未作答'}</b></div>

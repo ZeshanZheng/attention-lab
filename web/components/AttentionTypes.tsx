@@ -12,7 +12,6 @@ export function AttentionTypes() {
   const [selected, setSelected] = useState<AttentionLocation>('encoder');
   const current = ATTENTION_TYPES.find((item) => item.id === selected)!;
   return <section className="card advanced-reading" aria-labelledby="attention-types-title">
-    <span className="eyebrow">进阶阅读 · Q/K/V 来自哪里，能读取哪些位置</span>
     <h2 id="attention-types-title">原始 Transformer 中的三种 Attention</h2>
     <p className="reading-lead">它们使用相同的注意力计算，区别在于 Q/K/V 的来源，以及哪些位置允许被关注。</p>
     <div className="attention-type-picker" role="group" aria-label="选择架构中的注意力位置">{ATTENTION_TYPES.map((item, index) => <button key={item.id} aria-pressed={selected === item.id} onClick={() => setSelected(item.id)}><span>{index + 1}</span>{item.name}</button>)}</div>

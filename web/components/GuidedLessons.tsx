@@ -20,7 +20,7 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
   const nextLesson = LESSONS.find((item) => item.number === lesson.number + 1);
 
   return <section className="guided-learning" aria-labelledby="guided-title">
-    <div className="learning-heading"><div><span className="eyebrow">GUIDED EXPERIMENTS</span><h2 id="guided-title">三次小实验，建立注意力直觉</h2></div><span className="learning-count" data-testid="lesson-progress">已完成 {completed.length} / 3</span></div>
+    <div className="learning-heading"><div><h2 id="guided-title">三次小实验，建立注意力直觉</h2></div><span className="learning-count" data-testid="lesson-progress">已完成 {completed.length} / 3</span></div>
     <ModuleInstructions title="引导实验操作说明">
       <p>自由探索可以修改所有向量；引导实验会限定一个变量，先预测再验证。进入“引导实验”，按预测、修改、解释和理解题的顺序完成任务。记录预测后会定位并聚焦可编辑输入框，紫色边框标出开放的向量；顶部目标栏保留任务，也能直接检查修改。完成三个实验后可以查看概念与公式总结。</p>
       <p>已完成进度保存在当前浏览器。未完成实验重新进入时从预测开始，重置实验保留学习进度；阅读其他页面后返回，会保留本页中的实验阶段与操作。</p>
@@ -34,7 +34,7 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
       </button>)}
     </div>
     <div className="lesson-workspace">
-      <div className="lesson-task"><span className="eyebrow purple">EXPERIMENT 0{lesson.number}</span><h3>{lesson.title}</h3><p>{lesson.task}</p>
+      <div className="lesson-task"><h3>{lesson.title}</h3><p>{lesson.task}</p>
         <ol className="lesson-path">{['先预测', '动手修改', '解释结果', '完成实验'].map((label, index) => <li key={label} className={index === phaseIndex ? 'active' : index < phaseIndex ? 'done' : ''}><span>{index < phaseIndex ? '✓' : index + 1}</span>{label}</li>)}</ol>
         <div className="learning-constraint"><Icon name="info" size={15} /><span>固定观察 A · 仅开放词元 {lesson.token === 0 ? 'A' : 'B'} 的 {lesson.kind === 'keys' ? 'K' : 'V'}</span></div>
         {session.phase === 'experiment' && <><button className="text-button hint-button" onClick={() => setHintLevel(Math.min(hintLevel + 1, 2))}>{hintLevel === 0 ? '给我一点提示' : hintLevel === 1 ? '再给一点提示' : '提示已展开'}</button>

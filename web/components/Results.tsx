@@ -40,7 +40,7 @@ export function Results({ current, baseline, query, hasChanges }: { current: Att
     : '参数已调整，但当前 Query 的权重和输出保持不变。试着观察另一个词元。';
 
   return <section className="card results-card" aria-labelledby="results-title">
-    <div className="card-heading"><div><span className="eyebrow">03 / OUTPUT</span><h2 id="results-title">观察结果变化</h2></div><span className="live-badge"><span className="live-dot" />实时</span></div>
+    <div className="card-heading"><div><h2 id="results-title">观察结果变化</h2></div><span className="live-badge"><span className="live-dot" />实时</span></div>
     <div className="result-heading"><h3>注意力权重</h3><span>Q{TOKEN_NAMES[query]} → 所有 K</span></div>
     <div className="chart-legend"><span><i className="legend-current" />当前</span><span><i className="legend-baseline" />基线</span></div>
     <div className="weight-chart" aria-label="当前注意力权重与基线对比">

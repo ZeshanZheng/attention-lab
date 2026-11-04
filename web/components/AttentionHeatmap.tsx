@@ -28,7 +28,7 @@ export function AttentionHeatmap({ current, baseline, query, onSelectQuery }: {
   const inspect = (row: number, column: number) => setInspection({ row, column, observedQuery: query });
 
   return <section className="card heatmap-card" aria-labelledby="heatmap-title">
-    <div className="heatmap-intro"><span className="eyebrow">04 / ATTENTION MATRIX</span><h2 id="heatmap-title">注意力权重热力图</h2>
+    <div className="heatmap-intro"><h2 id="heatmap-title">注意力权重热力图</h2>
       <p>一张图，看见三个词元的关注关系。颜色越深，分配的权重越大。</p>
       <div className="heatmap-axis-guide"><span><b>行 · Query</b>谁在关注</span><span><b>列 · Key</b>关注谁</span></div>
       <p className="heatmap-instruction">{onSelectQuery ? '悬停或聚焦查看数值；点击一格，同步观察这一行的 Query。' : '引导实验固定观察 A；点选其他单元格仍可查看数值。'}</p>
@@ -59,7 +59,7 @@ export function AttentionHeatmap({ current, baseline, query, onSelectQuery }: {
       <p className="heatmap-rounding">每行权重之和为 1，百分比显示已四舍五入。</p>
     </div>
     <div className="heatmap-reading" aria-live="polite" aria-atomic="true" data-testid="heatmap-detail">
-      <span className="eyebrow">READ ONE CELL</span><h3>{TOKEN_NAMES[cell.row]} 在关注 {TOKEN_NAMES[cell.column]}</h3>
+      <h3>{TOKEN_NAMES[cell.row]} 在关注 {TOKEN_NAMES[cell.column]}</h3>
       <p>Q<sub>{TOKEN_NAMES[cell.row]}</sub> → K<sub>{TOKEN_NAMES[cell.column]}</sub> · <span>{cell.row === query ? '当前观察行' : '查看其他行'}</span></p>
       <dl><div><dt>当前权重</dt><dd data-testid="heatmap-current">{formatNumber(weight * 100, 1)}%</dd></div>
         <div><dt>基线权重</dt><dd data-testid="heatmap-baseline">{formatNumber(previous * 100, 1)}%</dd></div>

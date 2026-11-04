@@ -139,7 +139,7 @@ export function App() {
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       {readingView === null && mode !== 'assessment' && <div className={`page-intro ${mode === 'free' ? 'free-exploration-intro' : 'experiment-actions-only'}`}>
-        {mode === 'free' && <div><div className="intro-label"><span className="eyebrow">LEARN BY EXPLORING</span><span className="label-line" /></div><h1>通过改变一个向量来看懂注意力</h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>}
+        {mode === 'free' && <div><h1>通过改变一个向量来看懂注意力</h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>}
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
       </div>}
       <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>

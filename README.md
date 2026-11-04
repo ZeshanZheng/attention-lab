@@ -264,6 +264,8 @@ Attention 背景导读、Transformer 中的位置及学习路线见[第九次迭
 
 认识 Attention 移到默认首页及欢迎文案发布检查修复见[第三十三次迭代记录](docs/development/33-home-attention-overview.md)。
 
+使用说明学习目标、建议路线与各模块小字标签精简见[第三十四次迭代记录](docs/development/34-help-goal-route-and-heading-cleanup.md)。
+
 开发记录只是摘要，不等同于完整 AI 对话。应保留三个阶段的原始对话或截图/录屏，按比赛要求展示真实 Prompt、修改建议、约束与修复过程；三个功能阶段本身不能替代完整 Prompt 链。
 
 数学依据：[Attention Is All You Need](https://papers.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)。运行方式依据：[Node.js TypeScript 文档](https://nodejs.org/docs/latest-v24.x/api/typescript.html)。

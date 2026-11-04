@@ -1,12 +1,14 @@
 .help-page { padding: 30px; border: 1px solid #e5dff3; border-radius: 14px; background: #fff; color: #44506a; }
-.help-heading .eyebrow { color: #6b588e; }
-.help-heading h2 { font-size: 25px; line-height: 1.6; margin-top: 8px; color: #30394f; }
+.help-heading h2 { font-size: 25px; line-height: 1.6; margin-top: 0; color: #30394f; }
 .help-page > p { margin-top: 14px; font-size: 17px; line-height: 1.95; }
 .help-attention-overview { margin-top: 24px; padding-bottom: 24px; border-bottom: 1px solid #e5dff3; }
 .help-attention-overview > h3 { font-size: 23px; line-height: 1.6; color: #30394f; }
 .help-attention-overview .introduction-lead { font-size: 17px; }
 .help-attention-overview .introduction-cards h4 { font-size: 18px; font-weight: 650; line-height: 1.6; color: #4d416b; }
 .help-attention-overview .introduction-cards p { font-size: 17px; }
+.help-learning-route { margin-top: 24px; padding: 18px 20px; border-radius: 10px; background: #f8f6fc; }
+.help-learning-route h3 { font-size: 18px; line-height: 1.6; color: #4d416b; }
+.help-learning-route p { margin-top: 10px; font-size: 17px; line-height: 1.95; overflow-wrap: anywhere; }
 .help-module-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 24px; }
 .help-module-card { padding: 20px; border: 1px solid transparent; border-radius: 10px; background: #f8f6fc; text-align: left; min-width: 0; }
 .help-module-card:hover { border-color: #c6b7e7; background: #f0eafa; }
@@ -30,6 +32,8 @@
   .help-heading h2 { font-size: 22px; }
   .help-attention-overview > h3 { font-size: 20px; }
   .help-attention-overview .introduction-lead, .help-attention-overview .introduction-cards p { font-size: 16px; }
+  .help-learning-route { padding: 16px; }
+  .help-learning-route p { font-size: 16px; }
   .help-module-list { grid-template-columns: 1fr; gap: 14px; }
   .help-module-card { padding: 16px; }
   .help-page > p, .help-module-description, .module-instructions-body > p, .module-instructions .guide-list span { font-size: 16px; }
