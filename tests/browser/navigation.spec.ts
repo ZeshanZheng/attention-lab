@@ -1,5 +1,34 @@
 import { expect, test } from '@playwright/test';
 
+test('module footers follow navigation order and preserve experiment and unfinished quiz state', async ({ page }) => {
+  await page.goto('/');
+  const modes = page.getByRole('group', { name: '学习模式' });
+  const order = await modes.getByRole('button').allTextContents();
+  let quizIds: (string | null)[] = [];
+  for (let index = 0; index < order.length; index++) {
+    const current = order[index]!;
+    await expect(modes.getByRole('button', { pressed: true })).toHaveText(current);
+    if (current === '自由探索') await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
+    if (current === '理解自测') {
+      const questions = page.getByTestId('assessment-question');
+      quizIds = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
+      await questions.first().getByRole('radio').first().check();
+    }
+    const next = order[(index + 1) % order.length]!;
+    const label = index === order.length - 1 ? '返回使用说明' : `进入${next}模块`;
+    const footer = page.getByRole('navigation', { name: '下一模块' });
+    await footer.getByRole('button', { name: label, exact: true }).click();
+    await expect(modes.getByRole('button', { pressed: true })).toHaveText(next);
+    if (next !== '引导实验') await expect(modes.getByRole('button', { pressed: true })).toBeFocused();
+  }
+  await modes.getByRole('button', { name: '理解自测', exact: true }).click();
+  const questions = page.getByTestId('assessment-question');
+  expect(await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')))).toEqual(quizIds);
+  await expect(questions.first().getByRole('radio').first()).toBeChecked();
+  await modes.getByRole('button', { name: '自由探索', exact: true }).click();
+  await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
+});
+
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
   await page.goto('/');
   const modes = page.getByRole('group', { name: '学习模式' });

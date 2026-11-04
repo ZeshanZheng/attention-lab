@@ -43,7 +43,10 @@ test('sentence example presents one continuous explanation and preserves experim
   await expect(page.locator('.example-explore')).toBeVisible();
   await expect(page.locator('.example-source a')).toHaveText('Transformer 原论文 §3.2');
   await expect(page.locator('.example-transcript')).toHaveCount(0);
-  await expect(page.locator('.example-prose .example-topic > p')).toHaveCount(13);
+  await expect(page.locator('.example-prose .example-topic > p, .example-closing > p')).toHaveCount(13);
+  const takeawayBounds = await page.locator('.example-takeaway').boundingBox();
+  const closingBounds = await page.locator('.example-closing').boundingBox();
+  expect(takeawayBounds!.y + takeawayBounds!.height).toBeLessThan(closingBounds!.y);
   const articleBounds = await explanation.boundingBox();
   const entryBounds = await page.locator('.example-explore').boundingBox();
   expect(articleBounds!.y + articleBounds!.height).toBeLessThan(entryBounds!.y);
@@ -51,7 +54,7 @@ test('sentence example presents one continuous explanation and preserves experim
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await exampleButton.click();
   await expect(explanation).toContainText('V 本身是一组数字');
-  await page.getByRole('button', { name: '去自由探索', exact: true }).click();
+  await page.getByRole('button', { name: '进入自由探索模块', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('自由探索');
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');

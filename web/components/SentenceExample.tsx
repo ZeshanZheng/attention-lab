@@ -1,5 +1,3 @@
-import { Icon } from './Icon.tsx';
-
 const EXAMPLE_SECTIONS = [
   {
     label: '认识 Q 和 K',
@@ -38,13 +36,16 @@ const EXAMPLE_SECTIONS = [
     paragraphs: [
       '让我们把整个过程串起来：“它”通过自己的 Q 和各个位置的 K 做匹配，在这个直觉例子里，我们希望它更多地关注“书”，再按关注比例取回各个位置的 V。加权汇合后的结果会参与更新“它”的表示，使这个位置融入与“书”有关的上下文信息。',
       '可以把这种更新形容为“向量朝着成册的著作这个含义产生了一定的偏移”：原来单看“它”不清楚指谁，现在它的表示有机会带上阅读对象的信息。这是帮助理解的比喻，不对应空间里一条固定的“书的词义方向”。模型需要结合多层计算，才有可能在任务中正确处理这种指代关系。',
-      '这个例子是为了让大家更直观地理解注意力机制的工作原理。在实际 Transformer 中，Q、K、V 都是数学向量，整个过程由向量运算完成；它们的维度取决于模型配置，而不是固定的 512 维。本网页使用二维向量，把这些计算缩小到可以观察、可以手算的规模。',
-      '在自注意力中，序列里的每个词元都会给可见位置分配不同的注意力权重，再按权重汇合信息。不同的关注方式会带来不同的聚合结果，帮助模型利用上下文处理语言。这就是这个例子想说明的 Attention：匹配相关位置，分配关注比例，再组合信息。但是输出仍然是向量，模型还要经过其他环节才能给出最终答案。',
     ],
   },
 ] as const;
 
-export function SentenceExample({ onExplore }: { onExplore: () => void }) {
+const EXAMPLE_CLOSING_PARAGRAPHS = [
+  '这个例子是为了让大家更直观地理解注意力机制的工作原理。在实际 Transformer 中，Q、K、V 都是数学向量，整个过程由向量运算完成；它们的维度取决于模型配置，而不是固定的 512 维。本网页使用二维向量，把这些计算缩小到可以观察、可以手算的规模。',
+  '在自注意力中，序列里的每个词元都会给可见位置分配不同的注意力权重，再按权重汇合信息。不同的关注方式会带来不同的聚合结果，帮助模型利用上下文处理语言。这就是这个例子想说明的 Attention：匹配相关位置，分配关注比例，再组合信息。但是输出仍然是向量，模型还要经过其他环节才能给出最终答案。',
+] as const;
+
+export function SentenceExample() {
   return <section className="sentence-example" aria-labelledby="sentence-example-title">
     <div className="example-heading"><span className="eyebrow" id="sentence-example-title">小栗子🌰 · 从句子走进计算</span><p className="example-scope">这是指代关系的教学示意，未运行真实语言模型，也未计算这句话的实际权重。我们按词语讲解；真实模型使用的词元划分取决于分词器。</p></div>
     <div className="example-sentence" aria-label="例句">
@@ -59,8 +60,9 @@ export function SentenceExample({ onExplore }: { onExplore: () => void }) {
         {index === 0 && <div className="example-projection"><p>同一个输入表示 X，经过不同的学习到的变换</p><div><span>Q = X W<sub>Q</sub></span><span>K = X W<sub>K</sub></span><span>V = X W<sub>V</sub></span></div><small>X 是当前层的输入表示；W 是训练中学习到的参数矩阵。Q、K、V 同源，数值通常不同。</small></div>}
       </section>)}</div>
       <p className="example-takeaway"><b>主线：</b>{EXAMPLE_SECTIONS.map((item) => item.takeaway).join(' ')}</p>
+      <div className="example-prose example-closing">{EXAMPLE_CLOSING_PARAGRAPHS.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
     </article>
-    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p><button className="button primary" onClick={onExplore}>去自由探索<Icon name="arrow" size={16} /></button></div>
+    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p></div>
     <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
   </section>;
 }

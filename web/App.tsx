@@ -6,7 +6,6 @@ import { VectorEditor } from './components/VectorEditor.tsx';
 import { Calculation } from './components/Calculation.tsx';
 import { Results } from './components/Results.tsx';
 import { HelpPage } from './components/HelpPage.tsx';
-import type { HelpModule } from './components/HelpPage.tsx';
 import { ModuleInstructions } from './components/ModuleInstructions.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
@@ -27,6 +26,8 @@ import { useLearningProgress } from './learning/useLearningProgress.ts';
 
 type ReadingView = 'help' | 'introduction' | 'example' | 'summary' | 'multihead' | 'types';
 const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '小栗子🌰', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', free: '自由探索', guided: '引导实验', assessment: '理解自测' };
+type LearningView = keyof typeof VIEW_LABELS;
+const MODULE_ORDER = ['help', 'introduction', 'example', 'free', 'summary', 'guided', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
 export function App() {
   const [state, dispatch] = useReducer(labReducer, undefined, createLabState);
@@ -35,6 +36,7 @@ export function App() {
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
   const [readingView, setReadingView] = useState<ReadingView | null>('help');
   const activeView = readingView ?? mode;
+  const nextView = MODULE_ORDER[(MODULE_ORDER.indexOf(activeView) + 1) % MODULE_ORDER.length]!;
   const [session, setSession] = useState<LessonSession | null>(null);
   const freeSnapshot = useRef<LabState | null>(null);
   const editorRef = useRef<HTMLElement>(null);
@@ -59,10 +61,10 @@ export function App() {
   }, [mode, readingView, session?.phase, session?.lessonId]);
 
   useEffect(() => {
-    if (readingView === null) return;
+    if (activeView === 'guided') return;
     navigationRef.current?.scrollIntoView({ block: 'start' });
     navigationRef.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus({ preventScroll: true });
-  }, [readingView]);
+  }, [activeView]);
 
   useEffect(() => {
     if (!announcement) return;
@@ -98,7 +100,7 @@ export function App() {
     setMode('assessment');
   };
   const enterReading = (view: ReadingView) => setReadingView(view);
-  const openHelpModule = (view: HelpModule) => {
+  const enterModule = (view: LearningView) => {
     if (view === 'free') enterFree();
     else if (view === 'guided') enterGuided();
     else if (view === 'assessment') enterAssessment();
@@ -133,24 +135,16 @@ export function App() {
     </div></header>
     <main className="main-shell">
       <div ref={navigationRef} className="learning-navigation"><div className="learning-tabs" role="group" aria-label="学习模式">
-        <button aria-pressed={activeView === 'help'} className={activeView === 'help' ? 'active' : ''} onClick={() => enterReading('help')}>使用说明</button>
-        <button aria-pressed={activeView === 'introduction'} className={activeView === 'introduction' ? 'active' : ''} onClick={() => enterReading('introduction')}>Attention 引言</button>
-        <button aria-pressed={activeView === 'example'} className={activeView === 'example' ? 'active' : ''} onClick={() => enterReading('example')}>小栗子🌰</button>
-        <button aria-pressed={activeView === 'free'} className={activeView === 'free' ? 'active' : ''} onClick={enterFree}>自由探索</button>
-        <button aria-pressed={activeView === 'summary'} className={activeView === 'summary' ? 'active' : ''} onClick={() => enterReading('summary')}>实验总结</button>
-        <button aria-pressed={activeView === 'guided'} className={activeView === 'guided' ? 'active' : ''} onClick={enterGuided}>引导实验</button>
-        <button aria-pressed={activeView === 'assessment'} className={activeView === 'assessment' ? 'active' : ''} onClick={enterAssessment}>理解自测</button>
-        <button aria-pressed={activeView === 'multihead'} className={activeView === 'multihead' ? 'active' : ''} onClick={() => enterReading('multihead')}>多头注意力</button>
-        <button aria-pressed={activeView === 'types'} className={activeView === 'types' ? 'active' : ''} onClick={() => enterReading('types')}>三种 Attention</button>
+        {MODULE_ORDER.map((view) => <button key={view} aria-pressed={activeView === view} className={activeView === view ? 'active' : ''} onClick={() => enterModule(view)}>{VIEW_LABELS[view]}</button>)}
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       {readingView === null && mode !== 'assessment' && <div className={`page-intro ${mode === 'free' ? 'free-exploration-intro' : 'experiment-actions-only'}`}>
         {mode === 'free' && <div><div className="intro-label"><span className="eyebrow">LEARN BY EXPLORING</span><span className="label-line" /></div><h1>通过改变一个向量来看懂注意力</h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>}
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
       </div>}
-      <div hidden={readingView !== 'help'}><HelpPage onNavigate={openHelpModule} /></div>
+      <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction /></div>
-      <div hidden={readingView !== 'example'}><SentenceExample onExplore={enterFree} /></div>
+      <div hidden={readingView !== 'example'}><SentenceExample /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       <div hidden={readingView !== 'multihead'}><MultiHeadAttention /></div>
       <div hidden={readingView !== 'types'}><AttentionTypes /></div>
@@ -190,6 +184,7 @@ export function App() {
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
       <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
       </div>}
+      <nav className="module-next" aria-label="下一模块"><button className="button primary" onClick={() => enterModule(nextView)}>{nextView === 'help' ? '返回使用说明' : `进入${VIEW_LABELS[nextView]}模块`}<Icon name="arrow" size={17} /></button></nav>
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
   </>;
