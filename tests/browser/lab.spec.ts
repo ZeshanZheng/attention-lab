@@ -132,7 +132,7 @@ test('mobile help page opens from navigation and returns to the existing experim
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
   await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: '使用说明', exact: true }).click();
-  await expect(page.getByRole('region', { name: '欢迎来到注意力实验室', exact: true })).toBeVisible();
+  await expect(page.locator('section[aria-labelledby="help-title"]')).toBeVisible();
   await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await page.getByRole('button', { name: '打开自由探索', exact: true }).click();

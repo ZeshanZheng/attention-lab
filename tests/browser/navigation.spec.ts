@@ -37,6 +37,8 @@ test('reading pages have independent navigation and preserve free vectors, basel
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
   await expect(page.locator('#help-title')).toBeVisible();
+  await expect(page.getByRole('region', { name: '认识 Attention（注意力机制）', exact: true })).toBeVisible();
+  await expect(page.locator('.help-attention-overview')).toContainText('理解它有什么帮助？');
   await expect(page.getByRole('button', { name: '打开自由探索', exact: true })).toBeVisible();
   await expect(page.locator('.help-page .guide-list')).toHaveCount(0);
   await expect(page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true })).toHaveCount(0);
@@ -58,7 +60,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('3');
   await page.getByRole('button', { name: '3 Softmax', exact: true }).click();
   await modes.getByRole('button', { name: '使用说明', exact: true }).click();
-  await expect(page.getByRole('region', { name: '欢迎来到注意力实验室', exact: true })).toBeVisible();
+  await expect(page.locator('section[aria-labelledby="help-title"]')).toBeVisible();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
   await modes.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 引言');
