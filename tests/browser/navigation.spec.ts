@@ -18,6 +18,9 @@ test('module footers follow navigation order and preserve experiment and unfinis
     const next = order[(index + 1) % order.length]!;
     const label = index === order.length - 1 ? '返回使用说明' : `进入${next}模块`;
     const footer = page.getByRole('navigation', { name: '下一模块' });
+    await expect(footer).toHaveCount(1);
+    if (current === 'Attention 引言') await expect(page.locator('.learning-introduction').getByRole('navigation', { name: '下一模块' })).toBeVisible();
+    if (current === '小栗子🌰') await expect(page.locator('.sentence-example').getByRole('navigation', { name: '下一模块' })).toBeVisible();
     await footer.getByRole('button', { name: label, exact: true }).click();
     await expect(modes.getByRole('button', { pressed: true })).toHaveText(next);
     if (next !== '引导实验') await expect(modes.getByRole('button', { pressed: true })).toBeFocused();

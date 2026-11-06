@@ -1,6 +1,7 @@
+import type { ReactNode } from 'react';
 import { TransformerArchitecture } from './TransformerArchitecture.tsx';
 
-export function LearningIntroduction() {
+export function LearningIntroduction({ nextNavigation }: { nextNavigation: ReactNode }) {
   return <section className="learning-introduction" aria-labelledby="attention-introduction-title">
     <div className="introduction-heading"><h2 id="attention-introduction-title">先认识 Attention 中的 Q、K、V</h2></div>
     <dl className="introduction-qkv">
@@ -31,7 +32,7 @@ export function LearningIntroduction() {
         <p>图中的 N× 表示层会重复堆叠。Attention 之后还会经过残差连接、归一化和前馈网络等环节。当您完成基础学习后，可以在“多头注意力”和“三种 Attention”继续看这些扩展。</p>
       </div>
     </details></div></div></section>
-    <p className="introduction-sources">背景出处，可选阅读：<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noreferrer">早期机器翻译注意力研究（2014）</a><span> · </span><a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文（2017）</a>。</p>
-    <p className="introduction-next-example">这些向量怎样帮助词元利用上下文？接下来用“书”和“它”的例子，把这个过程串起来。</p>
+    <p className="introduction-sources">背景出处：<a href="https://arxiv.org/abs/1409.0473" target="_blank" rel="noreferrer">早期机器翻译注意力研究（2014）</a><span> · </span><a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文（2017）</a>。</p>
+    <div className="introduction-ending"><p className="introduction-next-example">这些向量怎样帮助词元利用上下文？接下来用“书”和“它”的例子，把这个过程串起来。</p>{nextNavigation}</div>
   </section>;
 }

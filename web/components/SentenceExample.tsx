@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 const EXAMPLE_SECTIONS = [
   {
     label: '认识 Q 和 K',
@@ -41,7 +43,7 @@ const EXAMPLE_CLOSING_PARAGRAPHS = [
   '在自注意力中，序列里的每个词元都会给可见位置分配不同的注意力权重，再按权重汇合信息。不同的关注方式会带来不同的聚合结果，帮助模型利用上下文处理语言。这就是这个例子想说明的 Attention：匹配相关位置，分配关注比例，再组合信息。但是输出仍然是向量，模型还要经过其他环节才能给出最终答案。',
 ] as const;
 
-export function SentenceExample() {
+export function SentenceExample({ nextNavigation }: { nextNavigation: ReactNode }) {
   return <section className="sentence-example" aria-label="小栗子🌰">
     <div className="example-heading"><p className="example-scope">这只是指代关系的教学示意，并未运行真实语言模型；真实模型使用的词元划分取决于分词器。</p></div>
     <div className="example-sentence" aria-label="例句">
@@ -57,7 +59,7 @@ export function SentenceExample() {
       </section>)}</div>
       <div className="example-prose example-closing">{EXAMPLE_CLOSING_PARAGRAPHS.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
     </article>
-    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p></div>
     <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
+    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p>{nextNavigation}</div>
   </section>;
 }

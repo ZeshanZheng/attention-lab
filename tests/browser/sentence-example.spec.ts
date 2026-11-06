@@ -48,8 +48,11 @@ test('sentence example presents one continuous explanation and preserves experim
   await expect(page.locator('.example-takeaway')).toHaveCount(0);
   await expect(page.locator('.example-scope')).toHaveText('这只是指代关系的教学示意，并未运行真实语言模型；真实模型使用的词元划分取决于分词器。');
   const articleBounds = await explanation.boundingBox();
+  const sourceBounds = await page.locator('.example-source').boundingBox();
   const entryBounds = await page.locator('.example-explore').boundingBox();
-  expect(articleBounds!.y + articleBounds!.height).toBeLessThan(entryBounds!.y);
+  expect(articleBounds!.y + articleBounds!.height).toBeLessThan(sourceBounds!.y);
+  expect(sourceBounds!.y + sourceBounds!.height).toBeLessThan(entryBounds!.y);
+  await expect(page.locator('.example-explore').getByRole('button', { name: '进入自由探索模块', exact: true })).toBeVisible();
   await page.screenshot({ path: '.tools/preview-sentence-example-desktop.png', fullPage: true });
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await exampleButton.click();

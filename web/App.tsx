@@ -134,6 +134,8 @@ function Laboratory() {
     else setAnnouncement(next.goalFeedback?.feedback ?? '继续修改，再检查结果');
   };
 
+  const nextModuleNavigation = <nav className="module-next" aria-label="下一模块"><button className="button primary" onClick={() => enterModule(nextView)}>{nextView === 'help' ? '返回使用说明' : `进入${VIEW_LABELS[nextView]}模块`}<Icon name="arrow" size={17} /></button></nav>;
+
   return <>
     <header className="site-header"><div className="header-inner">
       <a className="brand" href="./" aria-label="Attention Lab 首页"><svg className="brand-mark" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="#7560df" /><path d="m11 28 9-17 9 17M15 23h10" fill="none" stroke="white" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /><circle cx="29" cy="28" r="2.4" fill="#b6ebd6" /></svg><span>Attention<span className="brand-light"> Lab</span><small>注意力实验室</small></span></a>
@@ -145,21 +147,21 @@ function Laboratory() {
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       {readingView === null && mode !== 'assessment' && <div className={`page-intro ${mode === 'free' ? 'free-exploration-intro' : 'experiment-actions-only'}`}>
-        {mode === 'free' && <div><h1>通过改变一个向量来看懂注意力</h1><p>从匹配得分到信息聚合，用一场小实验拆解 Attention。</p></div>}
+        {mode === 'free' && <div><h1>通过改变一个向量来理解注意力</h1></div>}
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
       </div>}
       <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>
-      <div hidden={readingView !== 'introduction'}><LearningIntroduction /></div>
-      <div hidden={readingView !== 'example'}><SentenceExample /></div>
+      <div hidden={readingView !== 'introduction'}><LearningIntroduction nextNavigation={activeView === 'introduction' ? nextModuleNavigation : null} /></div>
+      <div hidden={readingView !== 'example'}><SentenceExample nextNavigation={activeView === 'example' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       <div hidden={readingView !== 'multihead'}><MultiHeadAttention /></div>
       <div hidden={readingView !== 'types'}><AttentionTypes /></div>
       {readingView === null && mode === 'free' && <>
         <section className="free-experiment-scope" aria-labelledby="free-experiment-scope-title">
           <h2 id="free-experiment-scope-title">关于这个小实验</h2>
-          <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息；先理解一个头，更容易理解这些扩展。</p>
-          <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，没有训练语言模型。输出是聚合向量，得到下一个词还需要其他模块；热力图显示分配比例，单看它不足以解释模型的全部行为。</p>
-          <p>点积是匹配得分，不是余弦相似度。本实验没有加入训练、位置编码和多头机制。</p>
+          <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息。</p>
+          <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，并没有训练语言模型。输出的是聚合向量，得到下一个词还需要其他模块。</p>
+          <p>本实验没有加入训练、位置编码和多头机制。</p>
         </section>
         <ModuleInstructions title="自由探索操作说明">
           <ol className="guide-list">
@@ -169,7 +171,7 @@ function Laboratory() {
             <li><b>比较修改前后</b><span>默认基线是初始实验。也可以保存当前参数作为新基线，或恢复基线继续实验。</span></li>
           </ol>
         </ModuleInstructions>
-        <div className="learning-entry"><span><b>从观察，到理解</b>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>
+        <div className="learning-entry"><span>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>
       </>}
       {mode === 'guided' && session && <div hidden={readingView !== null} ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
         onPredict={(choice) => setSession(choosePrediction(session, choice))}
@@ -190,7 +192,7 @@ function Laboratory() {
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
       <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
       </div>}
-      <nav className="module-next" aria-label="下一模块"><button className="button primary" onClick={() => enterModule(nextView)}>{nextView === 'help' ? '返回使用说明' : `进入${VIEW_LABELS[nextView]}模块`}<Icon name="arrow" size={17} /></button></nav>
+      {activeView !== 'introduction' && activeView !== 'example' && nextModuleNavigation}
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
   </>;

@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 test('single-head matrix precedes the existing summary and explains Query rows and Key columns', async ({ page }) => {
   await openLab(page);
   await page.getByRole('button', { name: '实验总结', exact: true }).click();
-  const matrix = page.getByRole('table', { name: '点积匹配得分矩阵 · 缩放与 Softmax 之前' });
+  const matrix = page.locator('.single-head-matrix').getByRole('table');
   await expect(matrix).toBeVisible();
   await expect(matrix.locator('tbody tr')).toHaveCount(8);
   await expect(matrix.locator('tbody td')).toHaveCount(64);
@@ -15,7 +15,7 @@ test('single-head matrix precedes the existing summary and explains Query rows a
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('这一行的权重组合各个 V');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('长度保持不变');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('夹角超过 90°');
-  const before = await page.getByRole('heading', { name: '单头注意力：这张矩阵怎样读？', exact: true }).boundingBox();
+  const before = await page.locator('#single-head-matrix-title').boundingBox();
   const after = await page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？', exact: true }).boundingBox();
   expect(before!.y).toBeLessThan(after!.y);
   await expect(page.locator('.concept-summary')).toContainText('输出 x ≈ 0.576×2');
