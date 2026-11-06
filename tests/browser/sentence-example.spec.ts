@@ -45,9 +45,8 @@ test('sentence example presents one continuous explanation and preserves experim
   await expect(page.locator('.example-source a')).toHaveText('Transformer 原论文 §3.2');
   await expect(page.locator('.example-transcript')).toHaveCount(0);
   await expect(page.locator('.example-prose .example-topic > p, .example-closing > p')).toHaveCount(13);
-  const takeawayBounds = await page.locator('.example-takeaway').boundingBox();
-  const closingBounds = await page.locator('.example-closing').boundingBox();
-  expect(takeawayBounds!.y + takeawayBounds!.height).toBeLessThan(closingBounds!.y);
+  await expect(page.locator('.example-takeaway')).toHaveCount(0);
+  await expect(page.locator('.example-scope')).toHaveText('这只是指代关系的教学示意，并未运行真实语言模型；真实模型使用的词元划分取决于分词器。');
   const articleBounds = await explanation.boundingBox();
   const entryBounds = await page.locator('.example-explore').boundingBox();
   expect(articleBounds!.y + articleBounds!.height).toBeLessThan(entryBounds!.y);

@@ -2,7 +2,6 @@ const EXAMPLE_SECTIONS = [
   {
     label: '认识 Q 和 K',
     title: '每个词，怎样描述自己和寻找信息？',
-    takeaway: 'K 提供用于匹配的特征，Q 用来寻找相关信息。',
     paragraphs: [
       '我们来看一个例子：“我今天买了一本书，上午去了图书馆，然后下午又去了咖啡厅，晚上才开始读它。”那么这个句子中的“我”的身份是什么呢？是一个人称代词、是句子的主体，所以我们可以用这个说法来帮助理解“我”的 K。而“我”这个词最关心什么呢？比如“我做了什么”“我去了哪里”，这些可以用来帮助理解“我”的 Q。',
       '句子里的每个词都要计算出自己的 Q 和 K，“书”和“它”也是一样。从直觉上说，“书”的 K 可以联想到“名词、能被买也能被读的物品”，“书”的 Q 可以联想到“与哪些人或动作有关”；“它”的 K 可以联想到“代词、指代某个对象”，它的 Q 可以联想到“我代表的是什么东西”。这些问答只是比喻，具体模型中的 Q 和 K 并不是写好的自然语言问题或词性标签。',
@@ -12,7 +11,6 @@ const EXAMPLE_SECTIONS = [
   {
     label: '寻找相关位置',
     title: '“它”拿着自己的 Q，去和各个 K 匹配',
-    takeaway: 'Q 与 K 决定匹配得分，再通过缩放和 Softmax 得到关注比例。',
     paragraphs: [
       '接下来，每个词元的 Q 都要与可见位置的 K 做点积运算。也就是说，每个词拿着自己的 Q，去和各个词的 K 碰一碰，看看哪些位置更能提供相关信息；在自注意力中，也可以包含自己的位置。',
       '比如，“它”的 Q 可以比喻成“我指代的是什么东西”。拿着“它”的Q去碰“我”的 K：“我”是人称代词，是做这些事情的主体。在这句话中，它不是“读它”最自然的指代对象，所以我们用“较不匹配、较少关注”来说明这个位置。这里不表示代词永远不能指人，也不表示模型会把这个位置的权重直接设成零。',
@@ -22,7 +20,6 @@ const EXAMPLE_SECTIONS = [
   {
     label: '读取 V 的内容',
     title: '找到了相关位置，它能提供什么信息？',
-    takeaway: 'V 携带可供取回的信息，权重决定取回多少。',
     paragraphs: [
       '当“它”对“书”分配了关注，就可以进一步取回“书”的 V。我们可以把 V 理解为这个位置能够提供的内容或信息。不过需要注意，这里的 V 并不是单词最初的向量，而是当前层的输入表示经过另一组学习到的参数矩阵，计算出来的新向量。',
       '比如，“书”在自然语言中可能有不同的含义：可以指成册的著作，也可以出现在书写、书法或“尚书”等表达里。而在这个句子里，“买了一本”和“读它”让“成册的著作”成为更自然的解释。模型通过训练学习词语和上下文之间的规律，并通过多层计算形成与上下文有关的表示。',
@@ -32,7 +29,6 @@ const EXAMPLE_SECTIONS = [
   {
     label: '融入上下文',
     title: '让“它”的表示带上来自上下文的信息',
-    takeaway: '按权重组合 V，得到聚合向量，为更新当前位置的表示提供信息。',
     paragraphs: [
       '我们把整个过程串起来：“它”通过自己的 Q 和各个位置的 K 做匹配，在这个例子中，我们希望“它”更多地关注“书”，再按关注比例取回各个位置的 V。加权汇合后的结果会参与更新“它”的表示，使这个位置融入与“书”有关的上下文信息。',
       '可以把这种更新形容为“向量朝着成册的著作这个含义产生了一定的偏移”：原来单看“它”不清楚指谁，现在它的表示有机会带上阅读对象的信息。（这只是帮助理解的比喻，不对应空间里一条固定的“书的词义方向”。模型需要结合多层计算，才有可能在任务中正确处理这种指代关系。）',
@@ -47,7 +43,7 @@ const EXAMPLE_CLOSING_PARAGRAPHS = [
 
 export function SentenceExample() {
   return <section className="sentence-example" aria-label="小栗子🌰">
-    <div className="example-heading"><p className="example-scope">这是指代关系的教学示意，未运行真实语言模型，也未计算这句话的实际权重。我们按词语讲解；真实模型使用的词元划分取决于分词器。</p></div>
+    <div className="example-heading"><p className="example-scope">这只是指代关系的教学示意，并未运行真实语言模型；真实模型使用的词元划分取决于分词器。</p></div>
     <div className="example-sentence" aria-label="例句">
       <p><span className="example-word example-subject">我</span>今天买了一本<span className="example-word example-book is-emphasized">书</span>，上午去了图书馆，然后下午又去了咖啡厅，晚上才开始读<span className="example-word example-pronoun is-emphasized">它</span>。</p>
       <div className="example-connection">Q/K 匹配 → 分配注意力权重 → 汇合 V → 融入上下文</div>
@@ -59,7 +55,6 @@ export function SentenceExample() {
         {item.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
         {index === 0 && <div className="example-projection"><p>同一个输入表示 X，经过不同的学习到的变换</p><div><span>Q = X W<sub>Q</sub></span><span>K = X W<sub>K</sub></span><span>V = X W<sub>V</sub></span></div><small>X 是当前层的输入表示；W 是训练中学习到的参数矩阵。Q、K、V 同源，数值通常不同。</small></div>}
       </section>)}</div>
-      <p className="example-takeaway"><b>主线：</b>{EXAMPLE_SECTIONS.map((item) => item.takeaway).join(' ')}</p>
       <div className="example-prose example-closing">{EXAMPLE_CLOSING_PARAGRAPHS.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
     </article>
     <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p></div>
