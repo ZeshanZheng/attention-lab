@@ -119,6 +119,7 @@
 .assessment-answer.correct b { color: #4e7064; }
 .assessment-answer p { font-size: 13px; line-height: 1.9; color: #6b6575; margin-top: 5px; }
 .assessment-answer.correct p { color: #5d6d66; }
+.assessment-answer .assessment-review { margin-top: 14px; max-width: 100%; height: auto; min-height: 39px; padding-block: 9px; white-space: normal; text-align: left; }
 .assessment-submit { display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 5px; }
 .assessment-submit > span { flex-basis: 100%; color: #62666f; font-size: 12px; }
 .learning-summary { position: sticky; top: 24px; }

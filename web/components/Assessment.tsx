@@ -5,6 +5,8 @@ import { completedLessons, createAssessmentRecord } from '../learning/progress.t
 import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
 import { MathText } from './MathText.tsx';
+import { reviewForQuestion } from '../learning/review.ts';
+import type { AssessmentReview } from '../learning/review.ts';
 
 function newQuiz(previousRounds: readonly (readonly string[])[]) {
   const questions = createAssessment(previousRounds);
@@ -12,8 +14,8 @@ function newQuiz(previousRounds: readonly (readonly string[])[]) {
     recentRounds: [...previousRounds.slice(-2), questions.map((question) => question.id)] };
 }
 
-export function Assessment({ progress, onSubmit, onGuided, onExport }: {
-  progress: LearningProgress; onSubmit: (record: AssessmentRecord) => void; onGuided: () => void; onExport: () => void;
+export function Assessment({ progress, onSubmit, onGuided, onReview, onExport }: {
+  progress: LearningProgress; onSubmit: (record: AssessmentRecord) => void; onGuided: () => void; onReview: (review: AssessmentReview) => void; onExport: () => void;
 }) {
   const [quiz, setQuiz] = useState(() => newQuiz(progress.assessments.map((record) => record.questions.map((question) => question.id))));
   const instructionsRef = useRef<HTMLDivElement>(null);
@@ -36,7 +38,9 @@ export function Assessment({ progress, onSubmit, onGuided, onExport }: {
       {questions.map((question, index) => <article className="card assessment-card" key={question.id} data-testid="assessment-question" data-question-id={question.id}>
         <div className="assessment-question-number">QUESTION {String(index + 1).padStart(2, '0')} · {TOPIC_LABELS[question.topic]}<span>{submitted ? answers[index] === question.correctIndex ? '回答正确' : '值得再练' : '单选题'}</span></div>
         <QuestionChoices question={question} value={answers[index]!} disabled={submitted} onChange={(choice) => setQuiz({ ...quiz, answers: answers.map((answer, itemIndex) => itemIndex === index ? choice : answer) })} />
-        {submitted && <div className={`assessment-answer ${answers[index] === question.correctIndex ? 'correct' : 'revised'}`}><b>正确答案：{question.options[question.correctIndex]}</b>{question.explanation.split('\n').map((paragraph, line) => <p key={line}><MathText>{paragraph}</MathText></p>)}</div>}
+        {submitted && <div className={`assessment-answer ${answers[index] === question.correctIndex ? 'correct' : 'revised'}`}><b>正确答案：{question.options[question.correctIndex]}</b>{question.explanation.split('\n').map((paragraph, line) => <p key={line}><MathText>{paragraph}</MathText></p>)}
+          {answers[index] !== question.correctIndex && <button className="button secondary assessment-review" data-testid={`assessment-review-${question.id}`} onClick={() => onReview(reviewForQuestion(question))}>{reviewForQuestion(question).label}<Icon name="arrow" size={16} /></button>}
+        </div>}
       </article>)}
       <div className="assessment-submit">{!submitted ? <>
         <button className="button primary" disabled={!ready} onClick={() => {

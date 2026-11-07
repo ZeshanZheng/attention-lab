@@ -23,6 +23,7 @@ import { answerComprehension, beginExperiment, checkExperiment, chooseComprehens
 import type { LessonSession } from './learning/session.ts';
 import type { LabState } from './state.ts';
 import { useLearningProgress } from './learning/useLearningProgress.ts';
+import type { AssessmentReview } from './learning/review.ts';
 
 type ReadingView = 'help' | 'introduction' | 'example' | 'calculation' | 'summary' | 'multihead' | 'types';
 const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '理解Q,K,V', calculation: 'Attention 计算', experiment: '动手实验', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
@@ -40,6 +41,7 @@ function Laboratory() {
   const [announcement, setAnnouncement] = useState('');
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
   const [readingView, setReadingView] = useState<ReadingView | null>('help');
+  const [assessmentVisited, setAssessmentVisited] = useState(false);
   const activeView = readingView ?? (mode === 'assessment' ? 'assessment' : 'experiment');
   const nextView = MODULE_ORDER[(MODULE_ORDER.indexOf(activeView) + 1) % MODULE_ORDER.length]!;
   const [session, setSession] = useState<LessonSession | null>(null);
@@ -116,6 +118,7 @@ function Laboratory() {
     setMode('free');
   };
   const enterAssessment = () => {
+    setAssessmentVisited(true);
     setReadingView(null);
     if (mode === 'free') freeSnapshot.current = state;
     else if (mode === 'guided') guidedSnapshot.current = state;
@@ -129,6 +132,11 @@ function Laboratory() {
     }
     else if (view === 'assessment') enterAssessment();
     else enterReading(view);
+  };
+  const reviewQuestion = (review: AssessmentReview) => {
+    if (review.kind === 'reading') enterReading(review.view);
+    else if (session?.lessonId === review.lessonId && guidedSnapshot.current) enterGuided();
+    else startLesson(review.lessonId);
   };
   const downloadProgress = () => {
     const blob = new Blob([exportProgress(progress, new Date().toISOString())], { type: 'application/json;charset=utf-8' });
@@ -182,7 +190,7 @@ function Laboratory() {
         onAnswerChoice={(choice) => setSession(chooseComprehension(session, choice))}
         onAnswer={() => { const outcome = answerComprehension(session, new Date().toISOString()); setSession(outcome.session); if (outcome.record) setProgress((previous) => addLessonRecord(previous, outcome.record!)); }}
         onAssessment={enterAssessment} onSummary={() => enterReading('summary')} /></div>}
-      {mode === 'assessment' && <div hidden={readingView !== null}><Assessment progress={progress} onGuided={enterGuided} onExport={downloadProgress}
+      {assessmentVisited && <div hidden={readingView !== null || mode !== 'assessment'}><Assessment progress={progress} onGuided={enterGuided} onReview={reviewQuestion} onExport={downloadProgress}
         onSubmit={(record) => setProgress((previous) => addAssessmentRecord(previous, record))} /></div>}
       {mode !== 'assessment' && <div hidden={readingView !== null}>
       {mode === 'guided' && session?.phase === 'experiment' && activeLesson && <div className="guided-taskbar" role="region" aria-label="当前实验目标"><div><b>现在修改：词元 {TOKEN_NAMES[activeLesson.token]} 的 {activeLesson.kind === 'keys' ? 'K' : 'V'}</b><p>{activeLesson.task}</p>{session.goalFeedback && <p role="status">{session.goalFeedback.feedback}</p>}</div><div className="taskbar-actions"><button className="button secondary" onClick={locateEditor}>定位输入框</button><button className="button primary" onClick={checkCurrentExperiment}>检查当前修改</button></div></div>}

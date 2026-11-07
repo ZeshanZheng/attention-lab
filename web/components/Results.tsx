@@ -47,12 +47,13 @@ export function Results({ current, baseline, query, hasChanges, focus, canSaveBa
   return <section className="card results-card" aria-labelledby="results-title">
     <div className="card-heading"><div><h2 id="results-title">观察结果变化</h2></div><span className="live-badge"><span className="live-dot" />实时</span></div>
     <div className={`weight-section ${focus === 'weights' ? 'result-focus' : ''}`} data-result-focus={focus === 'weights'}><div className="result-heading"><h3>注意力权重</h3><span>观察词元 {TOKEN_NAMES[query]} 的 Query</span></div>
+    <p className="weight-process-note">匹配得分经过缩放和 Softmax 后得到权重。</p>
     <div className="chart-legend"><span><i className="legend-current" />当前</span><span><i className="legend-baseline" />修改前（基线）</span></div>
     <div className="weight-chart" aria-label="当前注意力权重与基线对比">
       {TOKEN_NAMES.map((name, index) => {
         const difference = (weights[index]! - previousWeights[index]!) * 100;
         return <div className="weight-row" key={name}>
-          <div className="weight-label"><span><i className="token-dot" style={{ background: TOKEN_COLORS[index] }} />词元 {name}</span><b data-testid={`weight-${index}`}>{formatNumber(weights[index]! * 100, 1)}<small>%</small></b></div>
+          <div className="weight-label"><span><i className="token-dot" style={{ background: TOKEN_COLORS[index] }} />词元 {name}</span><div className="weight-metrics"><span className="matching-score">匹配得分 <code data-testid={`matching-score-${index}`}>{formatNumber(current.rawScores[query]![index]!)}</code></span><span className="score-arrow" aria-hidden="true">→</span><span className="weight-number">权重 <b data-testid={`weight-${index}`}>{formatNumber(weights[index]! * 100, 1)}<small>%</small></b></span></div></div>
           <div className="weight-track"><div className="weight-fill" style={{ width: `${weights[index]! * 100}%`, background: TOKEN_COLORS[index] }} /><i className="baseline-tick" style={{ left: `calc(${previousWeights[index]! * 100}% - 1px)` }} title={`基线：${formatNumber(previousWeights[index]! * 100, 1)}%`} /></div>
           <span className={`weight-delta ${Math.abs(difference) < 0.05 ? 'unchanged' : ''}`} data-testid={`weight-delta-${index}`}>{Math.abs(difference) < 0.05 ? '与基线相同' : `${formatDelta(difference, 1)} 个百分点`}</span>
         </div>;

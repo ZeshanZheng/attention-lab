@@ -11,6 +11,9 @@ test('default experiment renders correct results without browser errors', async 
   await expect(page.getByTestId('weight-0')).toHaveText('57.6%');
   await expect(page.getByTestId('weight-1')).toHaveText('28.4%');
   await expect(page.getByTestId('weight-2')).toHaveText('14.0%');
+  await expect(page.getByTestId('matching-score-0')).toHaveText('1.000');
+  await expect(page.getByTestId('matching-score-1')).toHaveText('0.000');
+  await expect(page.getByTestId('matching-score-2')).toHaveText('-1.000');
   await expect(page.getByRole('button', { name: '观察词元 A', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await page.screenshot({ path: '.tools/preview-desktop.png', fullPage: true });
   expect(errors).toEqual([]);
@@ -29,6 +32,9 @@ test('editing only B value doubles output y without changing attention weights',
   await expect(page.getByTestId('weight-delta-0')).toHaveText('与基线相同');
   await expect(page.getByTestId('output-delta-y')).toHaveText('+0.568');
   await expect(page.getByTestId('insight')).toContainText('权重没变，输出变了');
+  await expect(page.getByTestId('matching-score-0')).toHaveText('1.000');
+  await expect(page.getByTestId('matching-score-1')).toHaveText('0.000');
+  await expect(page.getByTestId('matching-score-2')).toHaveText('-1.000');
 
 });
 
@@ -68,6 +74,7 @@ test('dragging and keyboard adjustment update K while keeping the observed Query
   await expect((await vectorInput(page, 'B', 'K', 'x'))).toHaveValue('2');
   await expect(page.getByRole('button', { name: '观察词元 A', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('weight-1')).toHaveText('62.0%');
+  await expect(page.getByTestId('matching-score-1')).toHaveText('2.000');
   await page.getByRole('combobox', { name: '坐标调整步长' }).selectOption('0.1');
   await handle.press('ArrowRight');
   await expect((await vectorInput(page, 'B', 'K', 'x'))).toHaveValue('2.1');
@@ -103,8 +110,12 @@ test('changing the observed query updates current and baseline results consisten
   await expect(page.getByTestId('output-vector')).toContainText('(0.000, 1.007)');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.000, 1.007)');
   await expect(page.getByTestId('weight-1')).toHaveText('50.3%');
+  await expect(page.getByTestId('matching-score-0')).toHaveText('0.000');
+  await expect(page.getByTestId('matching-score-1')).toHaveText('1.000');
   await page.getByRole('button', { name: '观察词元 C', exact: true }).click();
   await expect(page.getByTestId('output-vector')).toContainText('(-0.872, 0.568)');
+  await expect(page.getByTestId('matching-score-0')).toHaveText('-1.000');
+  await expect(page.getByTestId('matching-score-2')).toHaveText('1.000');
 });
 
 test('invalid numeric input is explained and cannot change the calculation', async ({ page }) => {

@@ -4,9 +4,9 @@ const MODULE_OVERVIEW = [
   { id: 'introduction', title: 'Attention 引言', description: '结合 Transformer 架构图，认识 Attention 所在的位置与作用，了解自注意力与交叉注意力的区别。' },
   { id: 'example', title: '理解Q,K,V', description: '用“书”和“它”的具体例子，连贯解释 Q、K、V 如何配合，帮助直观理解Q、K、V。' },
   { id: 'calculation', title: 'Attention 计算', description: '按点积、缩放、Softmax 和加权求和四步理解完整公式，结合默认数值例子认识权重与输出。' },
-  { id: 'experiment', title: '动手实验', description: '切换自由探索与引导任务，修改 Q/K/V，先观察注意力权重和输出的变化，直接比较修改前后结果，需要时展开热力图。' },
+  { id: 'experiment', title: '动手实验', description: '切换自由探索与引导任务，修改 Q/K/V，观察匹配得分、注意力权重和输出的变化，直接比较修改前后结果，需要时展开热力图。' },
   { id: 'summary', title: '实验总结', description: '用单头注意力矩阵理解所有 Query 与 Key 的匹配，认识逐行分配权重和汇合信息的过程。' },
-  { id: 'assessment', title: '理解自测', description: '您可以通过答题和解析检查掌握情况，从而发现容易混淆的概念。' },
+  { id: 'assessment', title: '理解自测', description: '通过答题和解析检查掌握情况；答错后可直接进入对应任务或说明页，再回来核对理解。' },
   { id: 'multihead', title: '多头注意力', description: '介绍了多个注意力头如何并行计算、拼接并组合结果，进一步理解信息聚合。' },
   { id: 'types', title: '三种 Attention', description: '对比了编码器自注意力、解码器遮罩自注意力和交叉注意力的用途、信息来源与可见范围。' },
 ] as const;
