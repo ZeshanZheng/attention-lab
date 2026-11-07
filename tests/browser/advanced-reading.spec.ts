@@ -22,7 +22,7 @@ test('summary contains the single-head matrix while the separate calculation mod
   await expect(page.locator('.summary-explanation')).toContainText('网页里 Q、K 都是二维向量');
   await expect(page.locator('.summary-explanation')).toContainText('各项权重相加为 1');
   await expect(page.locator('.summary-explanation')).toContainText('逐坐标相加');
-  await expect(page.locator('.summary-formula .math-power sup')).toHaveText(['zj', 'zl']);
+  await expect(page.locator('.math-fraction .math-power sup')).toHaveText(['zj', 'zl']);
   await expect(page.locator('.summary-explanation')).toContainText('e 的 z 次方');
   await expect(page.locator('.formula-explanation')).not.toContainText('exp(');
   await expect(page.locator('.formula-explanation .beginner-example sub')).toHaveText(['A', 'A', 'B', 'C']);

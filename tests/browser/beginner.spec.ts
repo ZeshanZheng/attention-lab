@@ -8,7 +8,18 @@ test('the calculation module explains all four stages and labels the default wor
   await expect(page.getByTestId('weight-0')).toHaveText('76.8%');
   await openCalculation(page);
   await expect(page.locator('.summary-calculation-steps > li')).toHaveCount(4);
-  await expect(page.locator('.summary-formula .math-power sup')).toHaveText(['zj', 'zl']);
+  await expect(page.locator('.formula-explanation > h2, .summary-formula')).toHaveCount(0);
+  await expect(page.locator('.summary-explanation')).not.toContainText('箭头表示依次计算');
+  const fractions = page.locator('.math-fraction');
+  await expect(fractions).toHaveCount(2);
+  await expect(fractions.locator('.math-power sup')).toHaveText(['zj', 'zl']);
+  for (const fraction of await fractions.all()) {
+    const numerator = await fraction.locator('.fraction-numerator').boundingBox();
+    const denominator = await fraction.locator('.fraction-denominator').boundingBox();
+    expect(numerator!.y + numerator!.height).toBeLessThanOrEqual(denominator!.y + 1);
+    expect(Math.abs(numerator!.x + numerator!.width / 2 - denominator!.x - denominator!.width / 2)).toBeLessThan(1);
+    await expect(fraction.locator('.fraction-denominator')).toHaveCSS('border-top-style', 'solid');
+  }
   await expect(page.locator('.summary-explanation')).toContainText('e ≈ 2.718');
   await expect(page.locator('.formula-explanation .beginner-example')).toContainText('默认实验的完整例子');
   await expect(page.locator('.formula-explanation .beginner-example')).toContainText('0.568');

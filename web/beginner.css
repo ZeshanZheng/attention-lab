@@ -24,15 +24,18 @@
 .guided-taskbar p { font-size: 13px; margin-top: 5px; line-height: 1.7; }
 .taskbar-actions { display: flex; flex-shrink: 0; gap: 8px; }
 .formula-explanation { margin: 0 0 24px; }
-.formula-explanation h2 { font-size: 24px; margin-bottom: 22px; }
 #attention-calculation-title { scroll-margin-top: 24px; }
 .formula-explanation > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
-.formula-explanation .summary-formula { margin-top: 0; }
-.summary-formula-term { display: inline-block; max-width: 100%; vertical-align: middle; }
+.math-fraction { display: inline-grid; grid-template-rows: auto auto; vertical-align: middle; text-align: center; white-space: nowrap; line-height: 1.5; }
+.fraction-numerator { padding: .2em .35em .15em; }
+.fraction-denominator { border-top: 1px solid currentColor; padding: .15em .35em .2em; }
 .math-power { display: inline-block; white-space: nowrap; font-family: var(--mono); line-height: 1.8; }
 .math-power sup { font-size: .78em; line-height: 0; vertical-align: super; }
 .math-power sup sub { font-size: .85em; line-height: 0; }
 .summary-explanation { margin-top: 20px; color: #44506a; font-size: 17px; line-height: 2; }
+.formula-explanation > .summary-explanation { margin-top: 0; }
+.formula-explanation .summary-calculation-steps { margin-top: 0; }
+.formula-explanation .summary-calculation-steps > li:first-child { margin-top: 0; }
 .summary-calculation-steps { margin: 18px 0 0; padding-left: 28px; }
 .summary-calculation-steps > li { margin-top: 18px; padding-left: 4px; }
 .summary-calculation-steps b { color: #4d416b; }
@@ -46,7 +49,6 @@
 .assessment-answer p { font-size: 14px; margin-top: 10px; }
 @media (max-width: 700px) {
   .concept-definitions { grid-template-columns: 1fr; }
-  .formula-explanation h2 { font-size: 19px; }
   .summary-explanation { font-size: 16px; }
   .summary-calculation-steps { padding-left: 21px; }
   .summary-calculation-steps code { font-size: 14px; }
