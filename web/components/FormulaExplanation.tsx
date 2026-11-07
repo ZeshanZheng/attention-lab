@@ -1,4 +1,5 @@
 import { Exponential, Fraction } from './MathText.tsx';
+import { SingleHeadMatrix } from './SingleHeadMatrix.tsx';
 
 export function FormulaExplanation() {
   return <section className="card formula-explanation" id="attention-calculation-title" aria-label="Attention 计算公式与详细解释">
@@ -21,7 +22,9 @@ export function FormulaExplanation() {
       </ol>
     </div>
     <div className="beginner-example"><b>默认实验的完整例子，观察 Q<sub>A</sub> = (1, 0)</b><p>点积得分 (1, 0, −1) → 除以 √2，得 (0.707, 0, −0.707) → Softmax 权重约为 (0.576, 0.284, 0.140)，即 (57.6%, 28.4%, 14.0%) → 对 V<sub>A</sub> = (2, 0)、V<sub>B</sub> = (0, 2)、V<sub>C</sub> = (−2, 0) 加权。</p><p>输出 x ≈ 0.576×2 + 0.284×0 + 0.140×(−2) = 0.872；输出 y ≈ 0.576×0 + 0.284×2 + 0.140×0 = 0.568。</p></div>
-    <p>其中，<strong>Q/K 决定关注比例，V 提供被汇合的信息，o 是汇合后的向量。</strong></p>
-    <p>实验一说明 Q/K 改变匹配，实验二说明 V 改变内容，实验三说明各权重共同分配 100%。这个输出是聚合后的向量；预测下一个词还需要完整模型中的其他模块。</p>
+    <details className="calculation-matrix">
+      <summary>单头注意力矩阵与讲解</summary>
+      <SingleHeadMatrix />
+    </details>
   </section>;
 }

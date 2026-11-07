@@ -1,9 +1,16 @@
 import { openLab, openExperiment, vectorInput, openCalculation } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
-test('summary contains the single-head matrix while the separate calculation module explains the formula', async ({ page }) => {
+test('calculation ends with a collapsed, keyboard-accessible single-head matrix and explanation', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '实验总结', exact: true }).click();
+  await openCalculation(page);
+  const fold = page.locator('.calculation-matrix');
+  await expect(fold).not.toHaveAttribute('open');
+  await expect(page.locator('.beginner-example')).toBeVisible();
+  await expect(page.locator('.single-head-matrix')).toBeHidden();
+  expect(await fold.evaluate((node) => node === node.parentElement!.lastElementChild)).toBe(true);
+  await fold.locator('summary').focus();
+  await page.keyboard.press('Enter');
   const matrix = page.locator('.single-head-matrix').getByRole('table');
   await expect(matrix).toBeVisible();
   await expect(matrix.locator('tbody tr')).toHaveCount(8);
@@ -15,8 +22,10 @@ test('summary contains the single-head matrix while the separate calculation mod
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('这一行的权重组合各个 V');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('长度保持不变');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('夹角超过 90°');
-  await expect(page.locator('.formula-explanation')).toBeHidden();
+  await expect(page.locator('.formula-explanation > p')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await openCalculation(page);
+  await expect(fold).toHaveAttribute('open');
   await expect(page.locator('.formula-explanation')).toContainText('输出 x ≈ 0.576×2');
   await expect(page.locator('.summary-calculation-steps > li')).toHaveCount(4);
   await expect(page.locator('.summary-explanation')).toContainText('网页里 Q、K 都是二维向量');
@@ -40,7 +49,7 @@ test('architecture images load, all attention locations are labelled beside the 
   await openExperiment(page, 'free');
   await (await vectorInput(page, 'A', 'K', 'x')).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '理解自测', '多头注意力', '三种 Attention'];
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(nav.getByRole('button', { name, exact: true })).toHaveCount(1);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
@@ -135,8 +144,9 @@ for (const width of [320, 390]) {
     const questions = page.getByTestId('assessment-question');
     const ids = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
     await questions.first().getByRole('radio').first().check();
-    for (const name of ['使用说明', 'Attention 引言', '实验总结', '多头注意力', '三种 Attention']) {
+    for (const name of ['使用说明', 'Attention 引言', 'Attention 计算', '多头注意力', '三种 Attention']) {
       await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name, exact: true }).click();
+      if (name === 'Attention 计算') await page.locator('.calculation-matrix > summary').click();
       await expect(page.getByRole('radio')).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
       for (const table of await page.locator('.reading-table-scroll:visible').all()) {

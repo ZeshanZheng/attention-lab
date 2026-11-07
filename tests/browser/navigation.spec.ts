@@ -40,7 +40,7 @@ test('module footers follow navigation order and preserve experiment and unfinis
 test('reading pages have independent navigation and preserve free vectors and baseline across the calculation module', async ({ page }) => {
   await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '理解自测', '多头注意力', '三种 Attention'];
   await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
@@ -78,8 +78,9 @@ test('reading pages have independent navigation and preserve free vectors and ba
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '重置实验' })).toHaveCount(0);
   await expect(page.locator('.architecture-attention-note')).toBeVisible();
-  await modes.getByRole('button', { name: '实验总结', exact: true }).click();
-  await expect(modes.getByRole('button', { pressed: true })).toHaveText('实验总结');
+  await modes.getByRole('button', { name: 'Attention 计算', exact: true }).click();
+  await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 计算');
+  await page.locator('.calculation-matrix > summary').click();
   await expect(page.locator('#single-head-matrix-title')).toBeVisible();
   await expect(page.locator('#attention-introduction-title')).toBeHidden();
   await modes.getByRole('button', { name: '理解Q,K,V', exact: true }).click();
@@ -103,7 +104,7 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await (await vectorInput(page, 'B', 'K', 'x')).fill('2');
   await page.getByRole('button', { name: '给我一点提示' }).click();
   await expect(page.locator('.lesson-hint')).toBeVisible();
-  await page.getByRole('button', { name: '实验总结', exact: true }).click();
+  await page.getByRole('button', { name: 'Attention 计算', exact: true }).click();
   await expect(page.getByRole('region', { name: '当前实验目标' })).toHaveCount(0);
   await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: '使用说明', exact: true }).click();
   await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
@@ -138,7 +139,7 @@ test('mobile reading navigation preserves unfinished quiz questions and selected
   await cards.first().getByRole('radio').first().check();
   await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await expect(page.getByRole('radio')).toHaveCount(0);
-  await page.getByRole('button', { name: '实验总结', exact: true }).click();
+  await page.getByRole('button', { name: 'Attention 计算', exact: true }).click();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
   await page.screenshot({ path: '.tools/preview-navigation-summary-mobile.png', fullPage: true });
   await page.getByRole('button', { name: '理解自测', exact: true }).click();

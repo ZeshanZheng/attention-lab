@@ -16,7 +16,7 @@ test('one workbench preserves independent free and guided state across predictio
   const navigation = page.getByRole('group', { name: '学习模式' });
   await expect(navigation.getByRole('button', { name: '自由探索', exact: true })).toHaveCount(0);
   await expect(navigation.getByRole('button', { name: '引导实验', exact: true })).toHaveCount(0);
-  await expect(page.locator('.help-module-card')).toHaveCount(8);
+  await expect(page.locator('.help-module-card')).toHaveCount(7);
   await openExperiment(page);
   const workbench = page.locator('.lab-grid');
   const originalWorkbench = await workbench.elementHandle();

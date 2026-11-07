@@ -75,8 +75,9 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await expect(page.locator('.completion-explanation .math-power sup')).toHaveText('c');
   await expect(page.locator('.completion-explanation')).not.toContainText('exp(');
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
-  await page.getByRole('button', { name: '查看实验总结', exact: true }).click();
-  await expect(page.locator('#single-head-matrix-title')).toBeVisible();
+  await page.getByRole('button', { name: '查看计算说明', exact: true }).click();
+  await expect(page.locator('.formula-explanation')).toBeVisible();
+  await expect(page.locator('.calculation-matrix')).not.toHaveAttribute('open');
   await openExperiment(page, 'guided');
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.screenshot({ path: '.tools/preview-guided.png', fullPage: true });

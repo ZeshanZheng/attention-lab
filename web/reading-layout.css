@@ -18,6 +18,9 @@
 }
 
 .module-next { display: flex; justify-content: flex-end; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.calculation-matrix { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
+.calculation-matrix > summary { cursor: pointer; color: #614d99; font-size: 17px; font-weight: 650; line-height: 1.8; }
+.calculation-matrix > .single-head-matrix { margin: 0; padding: 18px 0 0; border: 0; border-radius: 0; box-shadow: none; }
 .module-next .button { max-width: 100%; height: auto; min-height: 39px; padding-block: 10px; white-space: normal; text-align: center; }
 .introduction-ending .module-next, .example-explore .module-next { flex-shrink: 0; margin: 0; padding: 0; border: 0; }
 

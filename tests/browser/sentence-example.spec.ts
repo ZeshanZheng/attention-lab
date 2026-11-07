@@ -54,7 +54,7 @@ test('sentence example presents one continuous explanation and preserves experim
   expect(sourceBounds!.y + sourceBounds!.height).toBeLessThan(entryBounds!.y);
   await expect(page.locator('.example-explore').getByRole('button', { name: '进入Attention 计算模块', exact: true })).toBeVisible();
   await page.screenshot({ path: '.tools/preview-sentence-example-desktop.png', fullPage: true });
-  await modes.getByRole('button', { name: '实验总结', exact: true }).click();
+  await modes.getByRole('button', { name: 'Attention 计算', exact: true }).click();
   await exampleButton.click();
   await expect(explanation).toContainText('V 本身是一组数字');
   await page.getByRole('button', { name: '进入Attention 计算模块', exact: true }).click();

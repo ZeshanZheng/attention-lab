@@ -6,10 +6,10 @@ import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
 import { MathText } from './MathText.tsx';
 
-export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onAnswerChoice, onAnswer, onAssessment, onSummary }: {
+export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onAnswerChoice, onAnswer, onAssessment, onCalculation }: {
   session: LessonSession; completed: readonly LessonId[];
   onStart: (id: LessonId) => void; onPredict: (choice: number) => void; onBegin: () => void;
-  onSummary: () => void;
+  onCalculation: () => void;
   onAnswerChoice: (choice: number) => void; onAnswer: () => void; onAssessment: () => void;
 }) {
   const [hintLevel, setHintLevel] = useState(0);
@@ -46,7 +46,7 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
             <div className="lesson-action-row comprehension-actions"><button className="button primary" disabled={session.comprehensionChoice === null} onClick={onAnswer}>提交理解题</button></div></>}
           {session.phase === 'complete' && <><div className="completion-explanation"><b>理解题已通过</b><p><MathText>{lesson.comprehension.explanation}</MathText></p><small>理解题作答 {session.comprehensionAnswers.length} 次 · 完成进度已更新</small></div>
             <details className="completed-record"><summary>查看本次实验记录</summary><p>{session.observation!.explanation}</p><p>首次预测：{lesson.prediction.options[session.prediction!]}</p></details>
-            <div className="lesson-action-row"><button className="text-button" onClick={() => { setHintLevel(0); onStart(lesson.id); }}>重新实验</button><button className="button primary" onClick={() => { setHintLevel(0); if (nextLesson) onStart(nextLesson.id); else onSummary(); }}>{nextLesson ? '下一个实验' : '查看实验总结'}<Icon name="arrow" size={16} /></button></div>
+            <div className="lesson-action-row"><button className="text-button" onClick={() => { setHintLevel(0); onStart(lesson.id); }}>重新实验</button><button className="button primary" onClick={() => { setHintLevel(0); if (nextLesson) onStart(nextLesson.id); else onCalculation(); }}>{nextLesson ? '下一个实验' : '查看计算说明'}<Icon name="arrow" size={16} /></button></div>
             {!nextLesson && <button className="text-button" onClick={onAssessment}>直接进入理解自测</button>}</>}
         </>}
       </div>

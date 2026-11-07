@@ -12,7 +12,6 @@ import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
 import { AttentionHeatmap } from './components/AttentionHeatmap.tsx';
-import { ConceptSummary } from './components/ConceptSummary.tsx';
 import { LearningIntroduction } from './components/LearningIntroduction.tsx';
 import { SentenceExample } from './components/SentenceExample.tsx';
 import { MultiHeadAttention } from './components/MultiHeadAttention.tsx';
@@ -26,10 +25,10 @@ import type { LabState } from './state.ts';
 import { useLearningProgress } from './learning/useLearningProgress.ts';
 import type { AssessmentReview } from './learning/review.ts';
 
-type ReadingView = 'help' | 'introduction' | 'example' | 'calculation' | 'summary' | 'multihead' | 'types';
-const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '理解Q,K,V', calculation: 'Attention 计算', experiment: '动手实验', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
+type ReadingView = 'help' | 'introduction' | 'example' | 'calculation' | 'multihead' | 'types';
+const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '理解Q,K,V', calculation: 'Attention 计算', experiment: '动手实验', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
 type LearningView = keyof typeof VIEW_LABELS;
-const MODULE_ORDER = ['help', 'introduction', 'example', 'calculation', 'experiment', 'summary', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
+const MODULE_ORDER = ['help', 'introduction', 'example', 'calculation', 'experiment', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
 export function App() {
   const [screen, setScreen] = useState<'welcome' | 'laboratory' | 'completion'>('welcome');
@@ -190,7 +189,6 @@ function Laboratory({ onComplete }: { onComplete: () => void }) {
       <div hidden={readingView !== 'introduction'}><LearningIntroduction nextNavigation={activeView === 'introduction' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'example'}><SentenceExample nextNavigation={activeView === 'example' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'calculation'}><FormulaExplanation /></div>
-      <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       <div hidden={readingView !== 'multihead'}><MultiHeadAttention /></div>
       <div hidden={readingView !== 'types'}><AttentionTypes /></div>
 
@@ -199,7 +197,7 @@ function Laboratory({ onComplete }: { onComplete: () => void }) {
         onBegin={() => { const next = beginExperiment(session); setSession(next); dispatch({ type: 'allow-lesson-editing', enabled: next.phase === 'experiment' }); }}
         onAnswerChoice={(choice) => setSession(chooseComprehension(session, choice))}
         onAnswer={() => { const outcome = answerComprehension(session, new Date().toISOString()); setSession(outcome.session); if (outcome.record) setProgress((previous) => addLessonRecord(previous, outcome.record!)); }}
-        onAssessment={enterAssessment} onSummary={() => enterReading('summary')} /></div>}
+        onAssessment={enterAssessment} onCalculation={() => enterReading('calculation')} /></div>}
       {assessmentVisited && <div hidden={readingView !== null || mode !== 'assessment'}><Assessment progress={progress} onGuided={enterGuided} onReview={reviewQuestion} onExport={downloadProgress}
         onSubmit={(record) => setProgress((previous) => addAssessmentRecord(previous, record))} /></div>}
       {mode !== 'assessment' && <div hidden={readingView !== null}>
