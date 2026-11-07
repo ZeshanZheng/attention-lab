@@ -47,13 +47,13 @@ test('architecture images load, all attention locations are labelled beside the 
   await expect(page.locator('.introduction-qkv')).toHaveCount(0);
   await expect(page.locator('.introduction-calculation')).toHaveCount(0);
   await expect(page.locator('.introduction-next-example')).toContainText('接下来用“书”和“它”的例子');
-  const context = page.locator('.architecture-context');
-  await expect(context).toHaveJSProperty('open', false);
-  await expect(context.locator('p').first()).toBeHidden();
-  await context.locator('summary').focus();
-  await page.keyboard.press('Enter');
-  await expect(context).toHaveJSProperty('open', true);
-  await expect(context.locator('p').first()).toBeVisible();
+  const overview = page.locator('.architecture-introduction-text').first();
+  await expect(overview.locator('p').nth(0)).toContainText('这张图展示的是原始 Transformer 架构');
+  await expect(overview.locator('p').nth(1)).toContainText('图中的 N× 表示层会重复堆叠');
+  await expect(overview.locator('p').nth(2)).toContainText('红圈标出左边编码器');
+  await expect(overview.locator('p').first()).toBeVisible();
+  await expect(page.locator('.architecture-context')).toHaveCount(0);
+  await expect(page.getByText('先看红圈中的注意力子层，本实验主要拆解其中一个注意力头的计算。', { exact: true })).toHaveCount(0);
   const introImage = page.locator('.introduction-architecture img');
   await expect(introImage).toBeVisible();
   expect(await introImage.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -123,7 +123,7 @@ test('architecture images load, all attention locations are labelled beside the 
   await expect(speech).toBeVisible();
   await expect(layout.locator('ellipse')).toHaveCount(3);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
-  await expect(context).toHaveJSProperty('open', true);
+  await expect(overview.locator('p').first()).toBeVisible();
   expect(errors).toEqual([]);
 });
 
