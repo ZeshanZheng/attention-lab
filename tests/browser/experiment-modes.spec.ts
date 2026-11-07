@@ -1,6 +1,15 @@
 import { expect, test } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import { openLab, openExperiment } from './open-lab.ts';
 import { getLesson } from '../../web/learning/lessons.ts';
+
+async function expectModuleBarVisible(page: Page) {
+  const bar = page.locator('.learning-navigation');
+  await expect(bar).toBeInViewport({ ratio: 1 });
+  const barBounds = await bar.boundingBox();
+  const headerBounds = await page.getByRole('banner').boundingBox();
+  expect(barBounds!.y).toBeGreaterThanOrEqual(headerBounds!.y + headerBounds!.height);
+}
 
 test('one workbench preserves independent free and guided state across prediction, editing and explanation', async ({ page }) => {
   await openLab(page);
@@ -21,12 +30,14 @@ test('one workbench preserves independent free and guided state across predictio
 
   const lesson = getLesson('focus');
   await openExperiment(page, 'guided');
+  await expectModuleBarVisible(page);
   await page.getByRole('radio', { name: lesson.prediction.options[0]!, exact: true }).check();
   await openExperiment(page, 'free');
   await expect(value).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
   await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
   await openExperiment(page, 'guided');
+  await expectModuleBarVisible(page);
   await expect(page.getByRole('radio', { name: lesson.prediction.options[0]!, exact: true })).toBeChecked();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
   const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
@@ -37,6 +48,7 @@ test('one workbench preserves independent free and guided state across predictio
   await expect(value).toBeEnabled();
   await value.fill('2.5');
   await openExperiment(page, 'guided');
+  await expectModuleBarVisible(page);
   await expect(key).toHaveValue('2');
   await expect(key).toBeEnabled();
   await expect(value).toHaveValue('2');
@@ -55,6 +67,7 @@ test('one workbench preserves independent free and guided state across predictio
   await openExperiment(page, 'free');
   await expect(value).toHaveValue('2.5');
   await openExperiment(page, 'guided');
+  await expectModuleBarVisible(page);
   await expect(key).toBeDisabled();
   await expect(answer).toBeChecked();
   await expect(page.getByTestId('output-vector')).toHaveText(frozenOutput!);
@@ -62,6 +75,7 @@ test('one workbench preserves independent free and guided state across predictio
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 1 / 3');
   await navigation.getByRole('button', { name: '理解自测', exact: true }).click();
   await navigation.getByRole('button', { name: '动手实验', exact: true }).click();
+  await expectModuleBarVisible(page);
   await expect(page.getByRole('group', { name: '实验方式' }).getByRole('button', { pressed: true })).toHaveText('引导任务');
   await expect(page.getByText('理解题已通过', { exact: true })).toBeVisible();
   await openExperiment(page, 'free');
@@ -78,6 +92,7 @@ test('mobile modes are keyboard operable, keep the target visible, and preserve 
   await page.keyboard.press('Tab');
   await expect(modes.getByRole('button', { name: '引导任务', exact: true })).toBeFocused();
   await page.keyboard.press('Enter');
+  await expectModuleBarVisible(page);
   await page.getByRole('radio', { name: getLesson('focus').prediction.options[0]!, exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
   const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
@@ -89,6 +104,7 @@ test('mobile modes are keyboard operable, keep the target visible, and preserve 
   await key.fill('1');
   await openExperiment(page, 'free');
   await openExperiment(page, 'guided');
+  await expectModuleBarVisible(page);
   await expect(key).toHaveValue('1');
   await expect(key).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);

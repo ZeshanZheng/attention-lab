@@ -108,7 +108,8 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await openExperiment(page, 'guided');
   const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
   await expect(key).toHaveValue('2');
-  await expect(key).toBeFocused();
+  await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: '动手实验', exact: true })).toBeFocused();
+  await expect(page.getByRole('group', { name: '学习模式' })).toBeInViewport({ ratio: 1 });
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toBeDisabled();
   await expect(page.locator('.lesson-hint')).toBeVisible();
   await expect(page.getByRole('button', { name: '记录预测，开始实验' })).toHaveCount(0);

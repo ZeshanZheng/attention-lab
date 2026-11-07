@@ -50,6 +50,7 @@ function Laboratory() {
   const editorRef = useRef<HTMLElement>(null);
   const guidedRef = useRef<HTMLDivElement>(null);
   const navigationRef = useRef<HTMLDivElement>(null);
+  const guidedWasVisible = useRef(false);
   const { progress, setProgress, storageAvailable } = useLearningProgress();
   const completed = completedLessons(progress);
   const result = useMemo(() => computeAttention(state.input), [state.input]);
@@ -62,14 +63,19 @@ function Laboratory() {
   };
 
   useEffect(() => {
+    const wasVisible = guidedWasVisible.current;
+    guidedWasVisible.current = readingView === null && mode === 'guided';
     if (readingView !== null || mode !== 'guided' || !session) return;
+    if (!wasVisible) {
+      navigationRef.current?.scrollIntoView({ block: 'start' });
+      return;
+    }
     if (session.phase === 'experiment') locateEditor();
     else if (session.phase === 'explain' || session.phase === 'complete') guidedRef.current?.querySelector<HTMLElement>('.lesson-interaction')?.scrollIntoView({ block: 'start' });
-    else guidedRef.current?.scrollIntoView({ block: 'start' });
+    else navigationRef.current?.scrollIntoView({ block: 'start' });
   }, [mode, readingView, session?.phase, session?.lessonId]);
 
   useEffect(() => {
-    if (activeView === 'experiment' && mode === 'guided') return;
     navigationRef.current?.scrollIntoView({ block: 'start' });
     navigationRef.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus({ preventScroll: true });
   }, [activeView]);
