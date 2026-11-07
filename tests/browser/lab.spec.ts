@@ -1,11 +1,11 @@
-import { openLab } from './open-lab.ts';
+import { openLab, openExperiment } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('default experiment renders correct results without browser errors', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page).toHaveTitle('Attention Lab · 注意力实验室');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 0.568)');
   await expect(page.getByTestId('weight-0')).toHaveText('57.6%');
@@ -18,7 +18,7 @@ test('default experiment renders correct results without browser errors', async 
 
 test('editing only B value doubles output y without changing attention weights', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
   await expect(page.getByRole('group', { name: 'V 二维向量编辑器', exact: true })).toBeVisible();
@@ -36,7 +36,7 @@ test('editing only B value doubles output y without changing attention weights',
 
 test('saving and restoring a baseline keeps the snapshot independent, reset returns defaults', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   const valueY = page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true });
   await valueY.fill('4');
@@ -55,7 +55,7 @@ test('saving and restoring a baseline keeps the snapshot independent, reset retu
 
 test('dragging and keyboard adjustment update K while keeping the observed Query fixed', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   const plane = page.getByRole('group', { name: 'K 二维向量编辑器', exact: true });
   const handle = page.getByTestId('vector-handle-1');
   await handle.scrollIntoViewIfNeeded();
@@ -78,7 +78,7 @@ test('dragging and keyboard adjustment update K while keeping the observed Query
 test('calculation steps change only through manual navigation', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-08T08:00:00Z') });
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.clock.pauseAt(new Date('2026-10-08T08:01:00Z'));
   await page.clock.fastForward(60_000);
   await expect(page.getByRole('button', { name: '1 点积', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -103,7 +103,7 @@ test('calculation steps change only through manual navigation', async ({ page })
 
 test('changing the observed query updates current and baseline results consistently', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.getByRole('button', { name: '观察词元 B', exact: true }).click();
   await expect(page.getByTestId('output-vector')).toContainText('(0.000, 1.007)');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.000, 1.007)');
@@ -114,7 +114,7 @@ test('changing the observed query updates current and baseline results consisten
 
 test('invalid numeric input is explained and cannot change the calculation', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   const input = page.getByRole('spinbutton', { name: '词元 A 的 Q x', exact: true });
   await input.fill('6');
   await expect(input).toHaveAttribute('aria-invalid', 'true');
@@ -127,7 +127,7 @@ test('invalid numeric input is explained and cannot change the calculation', asy
 test('mobile help page opens from navigation and returns to the existing experiment', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
   expect(overflow).toBe(false);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
@@ -136,7 +136,7 @@ test('mobile help page opens from navigation and returns to the existing experim
   await expect(page.locator('section[aria-labelledby="help-title"]')).toBeVisible();
   await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { pressed: true })).toHaveText('使用说明');
   expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
-  await page.getByRole('button', { name: '打开自由探索', exact: true }).click();
+  await page.getByRole('button', { name: '打开动手实验', exact: true }).click();
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('4');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
   await page.screenshot({ path: '.tools/preview-mobile.png', fullPage: true });

@@ -27,6 +27,7 @@ export type LabAction =
   | { type: 'load-lesson'; input: AttentionInput; kind: VectorKind; token: number; step: number }
   | { type: 'allow-lesson-editing'; enabled: boolean }
   | { type: 'resume-free'; state: LabState }
+  | { type: 'resume-guided'; state: LabState }
   | { type: 'reset' };
 
 export const VECTOR_LIMIT = 5;
@@ -90,6 +91,9 @@ export function labReducer(state: LabState, action: LabAction): LabState {
       return state.editPolicy ? { ...state, editPolicy: { ...state.editPolicy, enabled: action.enabled } } : state;
     case 'resume-free':
       return { ...action.state, input: copyInput(action.state.input), baseline: copyInput(action.state.baseline), editPolicy: null };
+    case 'resume-guided':
+      return { ...action.state, input: copyInput(action.state.input), baseline: copyInput(action.state.baseline),
+        editPolicy: action.state.editPolicy ? { ...action.state.editPolicy } : null };
     case 'reset':
       return createLabState();
   }

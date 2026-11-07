@@ -51,7 +51,7 @@ export function Assessment({ progress, onSubmit, onGuided, onExport }: {
       <div className="summary-metric"><span>首次自测</span><b data-testid="first-score">{first ? recordScore(first) : '尚未作答'}</b></div>
       <div className="summary-metric"><span>最近自测</span><b data-testid="latest-score">{latest ? recordScore(latest) : '尚未作答'}</b></div>
       {submitted && <div className="assessment-score" role="status"><span>本次答对</span><strong data-testid="assessment-score">{score} / {questions.length}</strong><p>{score === questions.length ? '本轮五类概念都答对了。可以换一组题，试试新的情境。' : '查看每题解释，再回到对应实验验证你的想法。'}</p></div>}
-      <div className="summary-actions"><button className="button secondary" onClick={onGuided}>回到引导实验</button><button className="text-button" onClick={onExport}>导出学习记录<Icon name="save" size={14} /></button></div>
+      <div className="summary-actions"><button className="button secondary" onClick={onGuided}>回到引导任务</button><button className="text-button" onClick={onExport}>导出学习记录<Icon name="save" size={14} /></button></div>
       <p className="summary-note">每次保存实际题目和答案；旧版四题成绩保留。不同题组难度可能不同，成绩不能直接作为学习提升的证明。</p>
     </aside></div>
   </section>;

@@ -31,9 +31,9 @@ export function AttentionHeatmap({ current, baseline, query, onSelectQuery }: {
     <div className="heatmap-intro"><h2 id="heatmap-title">注意力权重热力图</h2>
       <p>一张图，看见三个词元的关注关系。颜色越深，分配的权重越大。</p>
       <div className="heatmap-axis-guide"><span><b>行 · Query</b>谁在关注</span><span><b>列 · Key</b>关注谁</span></div>
-      <p className="heatmap-instruction">{onSelectQuery ? '悬停或聚焦查看数值；点击一格，同步观察这一行的 Query。' : '引导实验固定观察 A；点选其他单元格仍可查看数值。'}</p>
+      <p className="heatmap-instruction">{onSelectQuery ? '悬停或聚焦查看数值；点击一格，同步观察这一行的 Query。' : '引导任务固定观察 A；点选其他单元格仍可查看数值。'}</p>
       <ModuleInstructions title="怎样读热力图">
-        <p>行表示谁的 Query 在关注，列表示被关注的 Key；颜色越深，权重越大，每行的权重之和为 1。点选、悬停或用 Tab 聚焦一格，可以查看实际权重、点积和基线差值。自由探索中点击单元格会切换观察 Query；引导实验固定观察 A。只改 V 不会改变热力图。</p>
+        <p>行表示谁的 Query 在关注，列表示被关注的 Key；颜色越深，权重越大，每行的权重之和为 1。点选、悬停或用 Tab 聚焦一格，可以查看实际权重、点积和基线差值。自由探索中点击单元格会切换观察 Query；引导任务固定观察 A。只改 V 不会改变热力图。</p>
       </ModuleInstructions>
     </div>
     <div className="heatmap-matrix">

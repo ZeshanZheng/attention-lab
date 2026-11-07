@@ -1,4 +1,4 @@
-import { enterLab, openLab } from './open-lab.ts';
+import { enterLab, openLab, openExperiment } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('module footers follow navigation order and preserve experiment and unfinished quiz state', async ({ page }) => {
@@ -9,7 +9,7 @@ test('module footers follow navigation order and preserve experiment and unfinis
   for (let index = 0; index < order.length; index++) {
     const current = order[index]!;
     await expect(modes.getByRole('button', { pressed: true })).toHaveText(current);
-    if (current === '自由探索') await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
+    if (current === '动手实验') await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
     if (current === '理解自测') {
       const questions = page.getByTestId('assessment-question');
       quizIds = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
@@ -23,27 +23,27 @@ test('module footers follow navigation order and preserve experiment and unfinis
     if (current === '小栗子🌰') await expect(page.locator('.sentence-example').getByRole('navigation', { name: '下一模块' })).toBeVisible();
     await footer.getByRole('button', { name: label, exact: true }).click();
     await expect(modes.getByRole('button', { pressed: true })).toHaveText(next);
-    if (next !== '引导实验') await expect(modes.getByRole('button', { pressed: true })).toBeFocused();
+    await expect(modes.getByRole('button', { pressed: true })).toBeFocused();
   }
   await modes.getByRole('button', { name: '理解自测', exact: true }).click();
   const questions = page.getByTestId('assessment-question');
   expect(await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')))).toEqual(quizIds);
   await expect(questions.first().getByRole('radio').first()).toBeChecked();
-  await modes.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
 });
 
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
   await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '小栗子🌰', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
   await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
   await expect(page.locator('#help-title')).toBeVisible();
   await expect(page.getByRole('region', { name: '认识 Attention（注意力机制）', exact: true })).toBeVisible();
   await expect(page.locator('.help-attention-overview')).toContainText('理解它有什么帮助？');
-  await expect(page.getByRole('button', { name: '打开自由探索', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '打开动手实验', exact: true })).toBeVisible();
   await expect(page.locator('.help-page .guide-list')).toHaveCount(0);
   await expect(page.getByRole('banner').getByRole('button', { name: '使用说明', exact: true })).toHaveCount(0);
   await expect(page.locator('.free-experiment-scope')).toHaveCount(0);
@@ -54,7 +54,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
     await expect(page.locator('#help-title')).toBeHidden();
     await modes.getByRole('button', { name: '使用说明', exact: true }).click();
   }
-  await page.getByRole('button', { name: '打开自由探索', exact: true }).click();
+  await page.getByRole('button', { name: '打开动手实验', exact: true }).click();
   await expect(page.locator('#attention-introduction-title')).toBeHidden();
   await expect(page.locator('.free-experiment-scope')).toBeVisible();
   await expect(page.locator('#concept-summary-title')).toBeHidden();
@@ -81,7 +81,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await modes.getByRole('button', { name: '小栗子🌰', exact: true }).click();
   await expect(page.getByRole('region', { name: '小栗子🌰', exact: true })).toBeVisible();
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
-  await modes.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
   await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -92,7 +92,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
 
 test('reading pages preserve an in-progress guided lesson, hints and locked parameters', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await page.getByRole('radio', { name: 'B 的权重上升，A 和 C 的权重下降', exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true }).fill('2');
@@ -105,7 +105,7 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await page.getByRole('button', { name: '小栗子🌰', exact: true }).click();
   await page.getByRole('button', { name: '多头注意力', exact: true }).click();
   await page.getByRole('button', { name: '三种 Attention', exact: true }).click();
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
   await expect(key).toHaveValue('2');
   await expect(key).toBeFocused();

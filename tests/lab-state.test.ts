@@ -31,3 +31,28 @@ test('invalid coordinates and invalid selection indices cannot corrupt the exper
   assert.equal(labReducer(state, { type: 'select-token', index: 3 }), state);
   assert.equal(labReducer(state, { type: 'select-step', step: 4 }), state);
 });
+
+test('resuming guided work restores its own baseline and editing policy without sharing mutable references', () => {
+  const initial = createLabState();
+  let guided = labReducer(initial, { type: 'load-lesson', input: initial.input, kind: 'keys', token: 1, step: 2 });
+  guided = labReducer(guided, { type: 'allow-lesson-editing', enabled: true });
+  guided = labReducer(guided, { type: 'edit-vector', kind: 'keys', token: 1, vector: [2, 1] });
+  const free = labReducer(initial, { type: 'edit-vector', kind: 'values', token: 2, vector: [-4, 0] });
+  for (const enabled of [true, false]) {
+    const snapshot = labReducer(guided, { type: 'allow-lesson-editing', enabled });
+    const restored = labReducer(free, { type: 'resume-guided', state: snapshot });
+    assert.deepEqual(restored, snapshot);
+    assert.notEqual(restored.input.keys[1], snapshot.input.keys[1]);
+    assert.notEqual(restored.baseline.values[2], snapshot.baseline.values[2]);
+    assert.notEqual(restored.editPolicy, snapshot.editPolicy);
+    assert.deepEqual(restored.baseline.keys[1], [0, 1]);
+    const edit = { type: 'edit-vector', kind: 'keys', token: 1, vector: [3, 1] } as const;
+    assert.equal(labReducer(restored, edit) === restored, !enabled);
+    assert.equal(labReducer(restored, { ...edit, token: 0 }), restored);
+    assert.equal(labReducer(restored, { type: 'save-baseline' }), restored);
+    assert.equal(labReducer(restored, { type: 'select-query', index: 2 }), restored);
+    const returned = labReducer(restored, { type: 'resume-free', state: free });
+    assert.equal(returned.editPolicy, null);
+    assert.deepEqual(returned.input.values[2], [-4, 0]);
+  }
+});

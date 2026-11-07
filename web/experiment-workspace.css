@@ -1,0 +1,38 @@
+.experiment-mode-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; margin-bottom: 22px; }
+.experiment-modes { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid #e1dced; border-radius: 10px; background: #eeebf6; }
+.experiment-modes button { padding: 9px 20px; border-radius: 7px; background: transparent; color: #635b75; font-size: 16px; }
+.experiment-modes button[aria-pressed="true"] { background: #fff; color: #6a50c9; box-shadow: 0 2px 7px #33215212; font-weight: 650; }
+.experiment-mode-bar p { font-size: 15px; line-height: 1.8; color: #62697b; }
+.guided-compact { padding: 20px 22px; border: 1px solid #e1dbef; border-radius: 12px; background: #fff; margin-bottom: 18px; }
+.guided-controls { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 14px; }
+.guided-controls h2 { font-size: 18px; color: #4d416b; }
+.guided-compact .lesson-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.guided-compact .lesson-card { gap: 8px; padding: 7px 12px; border-radius: 8px; }
+.guided-compact .lesson-number { width: 24px; height: 24px; border-radius: 6px; font-size: 12px; }
+.guided-compact .lesson-card b { font-size: 14px; }
+.guided-compact .lesson-workspace { display: block; border: 0; border-radius: 0; overflow: visible; }
+.guided-compact .lesson-task { padding: 0; border: 0; background: transparent; }
+.guided-compact .lesson-task h3 { margin: 0; font-size: 18px; color: #3c4560; }
+.guided-compact .lesson-task > p { margin-top: 8px; font-size: 16px; }
+.guided-compact .lesson-path { margin: 12px 0; gap: 10px 16px; }
+.guided-compact .lesson-interaction { padding: 0; scroll-margin-top: 16px; }
+.guided-compact .question-choices legend { font-size: 16px; }
+.guided-compact .question-option { font-size: 15px; padding: 9px 12px; }
+.guided-compact .lesson-hint { margin-top: 10px; }
+.guided-compact .recorded-prediction { padding: 10px 14px; margin-top: 12px; }
+.guided-compact summary { cursor: pointer; font-size: 15px; line-height: 1.8; color: #65518d; }
+.guided-compact .prediction-feedback { margin: 12px 0; }
+.guided-compact .learning-feedback { margin: 12px 0; }
+.guided-compact .learning-feedback p, .guided-compact .prediction-feedback p, .completed-record p { font-size: 15px; line-height: 1.9; margin-top: 8px; }
+.completed-record { margin-top: 12px; }
+@media (max-width: 700px) {
+  .experiment-mode-bar { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .experiment-mode-bar p { font-size: 14px; }
+  .experiment-modes { width: 100%; }
+  .experiment-modes button { flex: 1; padding: 8px 12px; font-size: 15px; }
+  .guided-compact { padding: 16px; }
+  .guided-compact .lesson-picker { gap: 7px; }
+  .guided-compact .lesson-card { padding: 6px 9px; }
+  .guided-compact .lesson-card b { font-size: 13px; }
+  .guided-compact .lesson-task > p, .guided-compact .question-choices legend { font-size: 15px; }
+}

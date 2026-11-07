@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { enterLab } from './open-lab.ts';
+import { enterLab, openExperiment } from './open-lab.ts';
 
 test('welcome is a separate first screen, enters help by keyboard, and returns after reload', async ({ page }) => {
   await page.goto('/');
@@ -26,7 +26,7 @@ test('welcome is a separate first screen, enters help by keyboard, and returns a
   await expect(page.locator('#help-title')).toHaveText('认识 Attention（注意力机制）');
   await expect(page.locator('.help-page')).not.toContainText('欢迎您来到');
   await expect(page.getByRole('main')).toHaveCount(1);
-  await modes.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
   await page.reload();
   await expect(welcome).toBeVisible();

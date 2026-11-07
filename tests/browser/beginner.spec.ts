@@ -1,9 +1,9 @@
-import { openLab } from './open-lab.ts';
+import { openLab, openExperiment } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('each calculation step teaches its purpose and example follows edited input', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page.getByTestId('step-guide')).toContainText('不是百分比');
   await page.getByRole('spinbutton', { name: '词元 A 的 Q x', exact: true }).fill('2');
   await expect(page.getByTestId('beginner-example')).toContainText('2.0 × 1.0 + 0.0 × 0.0 = 2.000');
@@ -23,7 +23,7 @@ test('each calculation step teaches its purpose and example follows edited input
 test('mobile guided experiment locates unlocked input, keeps task visible and checks in place', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLab(page);
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await page.getByRole('radio', { name: 'B 的权重上升，A 和 C 的权重下降', exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
   const input = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
@@ -46,7 +46,7 @@ test('mobile guided experiment locates unlocked input, keeps task visible and ch
 
 test('integer and decimal adjustments preserve other coordinates and allow typed decimals', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   const step = page.getByRole('combobox', { name: '坐标调整步长' });
   const handle = page.getByTestId('vector-handle-0');
   await expect(step).toHaveValue('1');

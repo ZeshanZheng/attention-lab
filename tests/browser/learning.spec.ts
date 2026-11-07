@@ -1,4 +1,4 @@
-import { enterLab, openLab } from './open-lab.ts';
+import { enterLab, openLab, openExperiment } from './open-lab.ts';
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
@@ -36,7 +36,7 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await openLab(page);
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   const keyX = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
   await expect(keyX).toBeDisabled();
   await expect(page.getByRole('button', { name: '记录预测，开始实验', exact: true })).toBeDisabled();
@@ -45,10 +45,10 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: '观察词元 B', exact: true })).toBeDisabled();
   await expect(page.getByRole('button', { name: '保存基线', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
-  await expect(page.getByTestId('lesson-interaction').getByText(/B 当前的权重是.*还需要超过 60/)).toBeVisible();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
+  await expect(page.getByRole('region', { name: '当前实验目标' }).getByText(/B 当前的权重是.*还需要超过 60/)).toBeVisible();
   await keyX.fill('2');
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await expect(keyX).toBeDisabled();
   await expect(page.getByText('用观察修正了首次预测', { exact: true })).toBeVisible();
   await answerUnderstanding(page, 'focus', 0);
@@ -62,19 +62,19 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
   await expect(page.getByTestId('weight-0')).toHaveText('57.6%');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await answerUnderstanding(page, 'content', 0);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 2 / 3');
 
   await page.getByRole('button', { name: '下一个实验', exact: true }).click();
   await predict(page, 'competition', 2);
   await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await answerUnderstanding(page, 'competition', 1);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.getByRole('button', { name: '查看实验总结', exact: true }).click();
   await expect(page.locator('#concept-summary-title')).toBeVisible();
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.screenshot({ path: '.tools/preview-guided.png', fullPage: true });
 
@@ -92,28 +92,28 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await page.reload();
   await enterLab(page);
   await expect(page.getByTestId('saved-progress')).toHaveText('实验进度 3 / 3');
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   expect(errors).toEqual([]);
 });
 
 test('mode switching preserves free exploration, and guided reset keeps completed learning records', async ({ page }) => {
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.getByRole('button', { name: '编辑词元 C', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 C 的 V x', exact: true }).fill('-3');
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await predict(page, 'focus', 0);
   await page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true }).fill('2');
   await page.getByRole('button', { name: '理解自测', exact: true }).click();
-  await page.getByRole('button', { name: '回到引导实验', exact: true }).click();
+  await page.getByRole('button', { name: '回到引导任务', exact: true }).click();
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true })).toHaveValue('2');
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await answerUnderstanding(page, 'focus', 1);
   await page.getByRole('button', { name: '重置实验', exact: true }).click();
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 1 / 3');
   await expect(page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page.getByRole('spinbutton', { name: '词元 C 的 V x', exact: true })).toHaveValue('-3');
   await expect(page.getByRole('spinbutton', { name: '词元 C 的 V x', exact: true })).toBeEnabled();
   await expect(page.getByTestId('saved-progress')).toHaveText('实验进度 1 / 3');
@@ -201,7 +201,7 @@ test('malformed saved progress recovers without a page error', async ({ page }) 
   await page.addInitScript((key) => localStorage.setItem(key, '{not-json'), STORAGE_KEY);
   await openLab(page);
   await expect(page.getByTestId('saved-progress')).toHaveText('实验进度 0 / 3');
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 0.568)');
   expect(errors).toEqual([]);
 });
@@ -212,10 +212,10 @@ test('when local storage is unavailable, learning remains usable and export is o
   });
   await openLab(page);
   await expect(page.getByText('浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await predict(page, 'focus', 0);
   await page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true }).fill('2');
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await answerUnderstanding(page, 'focus', 1);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 1 / 3');
   const downloadPromise = page.waitForEvent('download');
@@ -226,11 +226,11 @@ test('when local storage is unavailable, learning remains usable and export is o
 test('mobile guided learning and quiz have no horizontal overflow and can complete an experiment', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openLab(page);
-  await page.getByRole('button', { name: '引导实验', exact: true }).click();
+  await openExperiment(page, 'guided');
   await page.getByRole('button', { name: '实验 2：改变传递内容', exact: true }).click();
   await predict(page, 'content', 1);
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
-  await page.getByRole('button', { name: '检查实验结果', exact: true }).click();
+  await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await answerUnderstanding(page, 'content', 0);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 1 / 3');
   expect(await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)).toBe(false);

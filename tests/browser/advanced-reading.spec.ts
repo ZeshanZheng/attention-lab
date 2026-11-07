@@ -1,4 +1,4 @@
-import { openLab } from './open-lab.ts';
+import { openLab, openExperiment } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('single-head matrix precedes the existing summary and explains Query rows and Key columns', async ({ page }) => {
@@ -25,10 +25,10 @@ test('architecture images load and advanced reading preserves free parameters an
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await openLab(page);
-  await page.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '自由探索', '小栗子🌰', '实验总结', '引导实验', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '小栗子🌰', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(nav.getByRole('button', { name, exact: true })).toHaveCount(1);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
@@ -73,7 +73,7 @@ test('architecture images load and advanced reading preserves free parameters an
   await page.keyboard.press('Enter');
   await expect(detail).toContainText('Q 来自解码器，K 和 V 来自编码器');
   await expect(image).toHaveAttribute('alt', /红圈标出编码器—解码器跨注意力/);
-  await nav.getByRole('button', { name: '自由探索', exact: true }).click();
+  await openExperiment(page, 'free');
   await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();
   await expect(picker.getByRole('button', { pressed: true })).toHaveText('3编码器—解码器跨注意力');

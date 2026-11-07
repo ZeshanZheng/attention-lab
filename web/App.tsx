@@ -26,9 +26,9 @@ import type { LabState } from './state.ts';
 import { useLearningProgress } from './learning/useLearningProgress.ts';
 
 type ReadingView = 'help' | 'introduction' | 'example' | 'summary' | 'multihead' | 'types';
-const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '小栗子🌰', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', free: '自由探索', guided: '引导实验', assessment: '理解自测' };
+const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '小栗子🌰', experiment: '动手实验', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
 type LearningView = keyof typeof VIEW_LABELS;
-const MODULE_ORDER = ['help', 'introduction', 'example', 'free', 'summary', 'guided', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
+const MODULE_ORDER = ['help', 'introduction', 'example', 'experiment', 'summary', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
 export function App() {
   const [entered, setEntered] = useState(false);
@@ -41,10 +41,12 @@ function Laboratory() {
   const [announcement, setAnnouncement] = useState('');
   const [mode, setMode] = useState<'free' | 'guided' | 'assessment'>('free');
   const [readingView, setReadingView] = useState<ReadingView | null>('help');
-  const activeView = readingView ?? mode;
+  const activeView = readingView ?? (mode === 'assessment' ? 'assessment' : 'experiment');
   const nextView = MODULE_ORDER[(MODULE_ORDER.indexOf(activeView) + 1) % MODULE_ORDER.length]!;
   const [session, setSession] = useState<LessonSession | null>(null);
   const freeSnapshot = useRef<LabState | null>(null);
+  const guidedSnapshot = useRef<LabState | null>(null);
+  const lastExperimentMode = useRef<'free' | 'guided'>('free');
   const editorRef = useRef<HTMLElement>(null);
   const guidedRef = useRef<HTMLDivElement>(null);
   const navigationRef = useRef<HTMLDivElement>(null);
@@ -67,7 +69,7 @@ function Laboratory() {
   }, [mode, readingView, session?.phase, session?.lessonId]);
 
   useEffect(() => {
-    if (activeView === 'guided') return;
+    if (activeView === 'experiment' && mode === 'guided') return;
     navigationRef.current?.scrollIntoView({ block: 'start' });
     navigationRef.current?.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')?.focus({ preventScroll: true });
   }, [activeView]);
@@ -85,30 +87,42 @@ function Laboratory() {
     const lesson = getLesson(id);
     dispatch({ type: 'load-lesson', input: createLessonInput(), kind: lesson.kind, token: lesson.token, step: lesson.step });
     setSession(createSession(id, new Date().toISOString()));
+    guidedSnapshot.current = null;
+    lastExperimentMode.current = 'guided';
     setMode('guided');
   };
   const enterGuided = () => {
     setReadingView(null);
+    lastExperimentMode.current = 'guided';
     if (mode === 'guided' && session) return;
-    if (mode === 'assessment' && session && state.editPolicy) { setMode('guided'); return; }
+    if (mode === 'free') freeSnapshot.current = state;
+    if (session && guidedSnapshot.current) {
+      dispatch({ type: 'resume-guided', state: guidedSnapshot.current });
+      setMode('guided');
+      return;
+    }
     startLesson(LESSONS.find((lesson) => !completed.includes(lesson.id))?.id ?? 'focus');
   };
   const enterFree = () => {
     setReadingView(null);
+    lastExperimentMode.current = 'free';
     if (mode === 'free') return;
+    if (mode === 'guided') guidedSnapshot.current = state;
     dispatch({ type: 'resume-free', state: freeSnapshot.current ?? createLabState() });
-    setSession(null);
     setMode('free');
   };
   const enterAssessment = () => {
     setReadingView(null);
     if (mode === 'free') freeSnapshot.current = state;
+    else if (mode === 'guided') guidedSnapshot.current = state;
     setMode('assessment');
   };
   const enterReading = (view: ReadingView) => setReadingView(view);
   const enterModule = (view: LearningView) => {
-    if (view === 'free') enterFree();
-    else if (view === 'guided') enterGuided();
+    if (view === 'experiment') {
+      if (lastExperimentMode.current === 'guided') enterGuided();
+      else enterFree();
+    }
     else if (view === 'assessment') enterAssessment();
     else enterReading(view);
   };
@@ -146,16 +160,35 @@ function Laboratory() {
         {MODULE_ORDER.map((view) => <button key={view} aria-pressed={activeView === view} className={activeView === view ? 'active' : ''} onClick={() => enterModule(view)}>{VIEW_LABELS[view]}</button>)}
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
-      {readingView === null && mode !== 'assessment' && <div className={`page-intro ${mode === 'free' ? 'free-exploration-intro' : 'experiment-actions-only'}`}>
-        {mode === 'free' && <div><h1>通过改变一个向量来理解注意力</h1></div>}
+      {readingView === null && mode !== 'assessment' && <><div className="page-intro free-exploration-intro">
+        <div><h1>通过改变一个向量来理解注意力</h1></div>
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
-      </div>}
+      </div><div className="experiment-mode-bar"><div className="experiment-modes" role="group" aria-label="实验方式"><button aria-pressed={mode === 'free'} onClick={enterFree}>自由探索</button><button aria-pressed={mode === 'guided'} onClick={enterGuided}>引导任务</button></div><p>{mode === 'free' ? '自由调整向量，观察匹配、权重和输出的变化。' : '选择一个任务，先预测，再修改和验证。'}</p></div></>}
       <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction nextNavigation={activeView === 'introduction' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'example'}><SentenceExample nextNavigation={activeView === 'example' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       <div hidden={readingView !== 'multihead'}><MultiHeadAttention /></div>
       <div hidden={readingView !== 'types'}><AttentionTypes /></div>
+
+      {session && <div hidden={readingView !== null || mode !== 'guided'} ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
+        onPredict={(choice) => setSession(choosePrediction(session, choice))}
+        onBegin={() => { const next = beginExperiment(session); setSession(next); dispatch({ type: 'allow-lesson-editing', enabled: next.phase === 'experiment' }); }}
+        onAnswerChoice={(choice) => setSession(chooseComprehension(session, choice))}
+        onAnswer={() => { const outcome = answerComprehension(session, new Date().toISOString()); setSession(outcome.session); if (outcome.record) setProgress((previous) => addLessonRecord(previous, outcome.record!)); }}
+        onAssessment={enterAssessment} onSummary={() => enterReading('summary')} /></div>}
+      {mode === 'assessment' && <div hidden={readingView !== null}><Assessment progress={progress} onGuided={enterGuided} onExport={downloadProgress}
+        onSubmit={(record) => setProgress((previous) => addAssessmentRecord(previous, record))} /></div>}
+      {mode !== 'assessment' && <div hidden={readingView !== null}>
+      {mode === 'guided' && session?.phase === 'experiment' && activeLesson && <div className="guided-taskbar" role="region" aria-label="当前实验目标"><div><b>现在修改：词元 {TOKEN_NAMES[activeLesson.token]} 的 {activeLesson.kind === 'keys' ? 'K' : 'V'}</b><p>{activeLesson.task}</p>{session.goalFeedback && <p role="status">{session.goalFeedback.feedback}</p>}</div><div className="taskbar-actions"><button className="button secondary" onClick={locateEditor}>定位输入框</button><button className="button primary" onClick={checkCurrentExperiment}>检查当前修改</button></div></div>}
+      <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
+        {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} disabled={mode === 'guided'} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
+      </div></div>{mode === 'free' && <div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div>}</div>
+      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} onStep={selectStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
+      <AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
+        onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
+      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
+      </div>}
       {readingView === null && mode === 'free' && <>
         <section className="free-experiment-scope" aria-labelledby="free-experiment-scope-title">
           <h2 id="free-experiment-scope-title">关于这个小实验</h2>
@@ -172,27 +205,7 @@ function Laboratory() {
             <li><b>比较修改前后</b><span>默认基线是初始实验。也可以保存当前参数作为新基线，或恢复基线继续实验。</span></li>
           </ol>
         </ModuleInstructions>
-        <div className="learning-entry"><span>三个引导实验，先预测，再用实际计算验证。</span><button className="text-button" onClick={enterGuided}>开始引导实验<Icon name="arrow" size={15} /></button></div>
       </>}
-      {mode === 'guided' && session && <div hidden={readingView !== null} ref={guidedRef} className="guided-anchor"><GuidedLessons key={`${session.lessonId}-${session.startedAt}`} session={session} completed={completed} onStart={startLesson}
-        onPredict={(choice) => setSession(choosePrediction(session, choice))}
-        onBegin={() => { const next = beginExperiment(session); setSession(next); dispatch({ type: 'allow-lesson-editing', enabled: next.phase === 'experiment' }); }}
-        onCheck={checkCurrentExperiment} onLocate={locateEditor}
-        onAnswerChoice={(choice) => setSession(chooseComprehension(session, choice))}
-        onAnswer={() => { const outcome = answerComprehension(session, new Date().toISOString()); setSession(outcome.session); if (outcome.record) setProgress((previous) => addLessonRecord(previous, outcome.record!)); }}
-        onAssessment={enterAssessment} onSummary={() => enterReading('summary')} /></div>}
-      {mode === 'assessment' && <div hidden={readingView !== null}><Assessment progress={progress} onGuided={enterGuided} onExport={downloadProgress}
-        onSubmit={(record) => setProgress((previous) => addAssessmentRecord(previous, record))} /></div>}
-      {mode !== 'assessment' && <div hidden={readingView !== null}>
-      {mode === 'guided' && session?.phase === 'experiment' && activeLesson && <div className="guided-taskbar" role="region" aria-label="当前实验目标"><div><b>现在修改：词元 {TOKEN_NAMES[activeLesson.token]} 的 {activeLesson.kind === 'keys' ? 'K' : 'V'}</b><p>{activeLesson.task}</p>{session.goalFeedback && <p role="status">{session.goalFeedback.feedback}</p>}</div><div className="taskbar-actions"><button className="button secondary" onClick={locateEditor}>定位输入框</button><button className="button primary" onClick={checkCurrentExperiment}>检查当前修改</button></div></div>}
-      <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
-        {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} disabled={mode === 'guided'} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
-      </div></div>{mode === 'free' && <div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div>}</div>
-      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} onStep={selectStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
-      <AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
-        onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
-      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
-      </div>}
       {activeView !== 'introduction' && activeView !== 'example' && nextModuleNavigation}
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
