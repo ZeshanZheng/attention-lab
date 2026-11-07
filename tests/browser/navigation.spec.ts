@@ -15,10 +15,14 @@ test('module footers follow navigation order and preserve experiment and unfinis
       quizIds = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
       await questions.first().getByRole('radio').first().check();
     }
-    const next = order[(index + 1) % order.length]!;
-    const label = index === order.length - 1 ? '返回使用说明' : `进入${next}模块`;
     const footer = page.getByRole('navigation', { name: '下一模块' });
     await expect(footer).toHaveCount(1);
+    if (index === order.length - 1) {
+      await expect(footer.getByRole('button', { name: '进入结束页', exact: true })).toBeVisible();
+      break;
+    }
+    const next = order[index + 1]!;
+    const label = `进入${next}模块`;
     if (current === 'Attention 引言') await expect(page.locator('.learning-introduction').getByRole('navigation', { name: '下一模块' })).toBeVisible();
     if (current === '理解Q,K,V') await expect(page.locator('.sentence-example').getByRole('navigation', { name: '下一模块' })).toBeVisible();
     await footer.getByRole('button', { name: label, exact: true }).click();

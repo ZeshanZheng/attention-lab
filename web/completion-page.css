@@ -1,0 +1,28 @@
+.completion-content { position: relative; z-index: 1; }
+.completion-content h1:focus { outline: none; }
+.completion-return { background: #246de3; box-shadow: 0 8px 24px #246de329; }
+.completion-return:hover { background: #195dcb; box-shadow: 0 10px 28px #246de338; }
+.completion-return:active { background: #164fb0; }
+.completion-fireworks { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.firework { position: absolute; width: 1px; height: 1px; color: var(--burst-color); }
+.firework-rocket { position: absolute; left: -1px; top: -24px; width: 2px; height: 26px; border-radius: 50%; background: linear-gradient(transparent, var(--burst-color)); opacity: 0; animation: firework-launch .65s ease-out var(--burst-delay) both; }
+.firework-spark { position: absolute; left: -1.5px; top: -7px; width: 3px; height: 14px; border-radius: 3px; background: currentColor; box-shadow: 0 0 6px currentColor; opacity: 0; animation: firework-bloom 1.8s cubic-bezier(.15, .6, .4, 1) calc(var(--burst-delay) + .6s) both; }
+@keyframes firework-launch {
+  0% { opacity: 0; transform: translateY(170px) scaleY(.3); }
+  25% { opacity: .7; }
+  80% { opacity: .9; }
+  100% { opacity: 0; transform: translateY(0) scaleY(.6); }
+}
+@keyframes firework-bloom {
+  0% { opacity: 0; transform: translate(0, 0) rotate(var(--spark-angle)) scale(.4); }
+  8% { opacity: .95; }
+  60% { opacity: .85; transform: translate(calc(var(--spark-x) * .8), calc(var(--spark-y) * .8 + 15px)) rotate(var(--spark-angle)) scale(1); }
+  100% { opacity: 0; transform: translate(var(--spark-x), calc(var(--spark-y) + 45px)) rotate(var(--spark-angle)) scale(.6); }
+}
+@media (max-width: 700px) {
+  .firework { transform: scale(.6); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .completion-fireworks { display: none; }
+  .completion-fireworks * { animation: none; }
+}

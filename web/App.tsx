@@ -7,6 +7,7 @@ import { FormulaExplanation } from './components/FormulaExplanation.tsx';
 import { Results } from './components/Results.tsx';
 import { HelpPage } from './components/HelpPage.tsx';
 import { WelcomePage } from './components/WelcomePage.tsx';
+import { CompletionPage } from './components/CompletionPage.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
@@ -31,11 +32,13 @@ type LearningView = keyof typeof VIEW_LABELS;
 const MODULE_ORDER = ['help', 'introduction', 'example', 'calculation', 'experiment', 'summary', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
 export function App() {
-  const [entered, setEntered] = useState(false);
-  return entered ? <Laboratory /> : <WelcomePage onEnter={() => setEntered(true)} />;
+  const [screen, setScreen] = useState<'welcome' | 'laboratory' | 'completion'>('welcome');
+  useEffect(() => { window.scrollTo(0, 0); }, [screen]);
+  if (screen === 'completion') return <CompletionPage onReturn={() => setScreen('welcome')} />;
+  return screen === 'laboratory' ? <Laboratory onComplete={() => setScreen('completion')} /> : <WelcomePage onEnter={() => setScreen('laboratory')} />;
 }
 
-function Laboratory() {
+function Laboratory({ onComplete }: { onComplete: () => void }) {
   const [state, dispatch] = useReducer(labReducer, undefined, createLabState);
   const [coordinateStep, setCoordinateStep] = useState(1);
   const [announcement, setAnnouncement] = useState('');
@@ -160,7 +163,7 @@ function Laboratory() {
     else setAnnouncement(next.goalFeedback?.feedback ?? '继续修改，再检查结果');
   };
 
-  const nextModuleNavigation = <nav className="module-next" aria-label="下一模块"><button className="button primary" onClick={() => enterModule(nextView)}>{nextView === 'help' ? '返回使用说明' : `进入${VIEW_LABELS[nextView]}模块`}<Icon name="arrow" size={17} /></button></nav>;
+  const nextModuleNavigation = <nav className="module-next" aria-label="下一模块"><button className="button primary" onClick={activeView === 'types' ? onComplete : () => enterModule(nextView)}>{activeView === 'types' ? '进入结束页' : `进入${VIEW_LABELS[nextView]}模块`}<Icon name="arrow" size={17} /></button></nav>;
 
   return <>
     <header className="site-header"><div className="header-inner">

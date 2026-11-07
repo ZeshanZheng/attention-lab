@@ -13,6 +13,7 @@ import './reading-layout.css';
 import './experiment-workspace.css';
 import './header.css';
 import './welcome-page.css';
+import './completion-page.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Application root element is missing.');
