@@ -179,6 +179,13 @@ function Laboratory({ onComplete }: { onComplete: () => void }) {
         <div><h1>通过改变一个向量来理解注意力</h1></div>
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button></div>
       </div><div className="experiment-mode-bar"><div className="experiment-modes" role="group" aria-label="实验方式"><button aria-pressed={mode === 'free'} onClick={enterFree}>自由探索</button><button aria-pressed={mode === 'guided'} onClick={enterGuided}>引导任务</button></div><p>{mode === 'free' ? '自由调整向量，观察匹配、权重和输出的变化。' : '选择一个任务，先预测，再修改和验证。'}</p></div></>}
+      {readingView === null && mode === 'free' && <details className="free-experiment-scope experiment-disclosure" aria-labelledby="free-experiment-scope-title">
+        <summary id="free-experiment-scope-title">关于这个小实验</summary>
+        <p>词元是参与计算的一个文本单位；这里用 A、B、C 代替真实文字。向量是一组数字，二维向量有 x、y 两个坐标。我们直接编辑人为设定的向量，观察计算关系。</p>
+        <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息。</p>
+        <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，并没有训练语言模型。输出的是聚合向量，得到下一个词还需要其他模块。</p>
+        <p>本实验没有加入训练、位置编码和多头机制。</p>
+      </details>}
       <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction nextNavigation={activeView === 'introduction' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'example'}><SentenceExample nextNavigation={activeView === 'example' ? nextModuleNavigation : null} /></div>
@@ -206,16 +213,6 @@ function Laboratory({ onComplete }: { onComplete: () => void }) {
       <details className="experiment-disclosure heatmap-disclosure"><summary>查看所有词元的注意力</summary><AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} /></details>
       </div>}
-      {readingView === null && mode === 'free' && <>
-        <details className="free-experiment-scope experiment-disclosure" aria-labelledby="free-experiment-scope-title">
-          <summary id="free-experiment-scope-title">关于这个小实验</summary>
-          <p>词元是参与计算的一个文本单位；这里用 A、B、C 代替真实文字。向量是一组数字，二维向量有 x、y 两个坐标。我们直接编辑人为设定的向量，观察计算关系。</p>
-          <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息。</p>
-          <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，并没有训练语言模型。输出的是聚合向量，得到下一个词还需要其他模块。</p>
-          <p>本实验没有加入训练、位置编码和多头机制。</p>
-        </details>
-
-      </>}
       {activeView !== 'introduction' && activeView !== 'example' && nextModuleNavigation}
     </main>
     <div className={`toast ${announcement ? 'visible' : ''}`} role="status" aria-live="polite">{announcement}</div>
