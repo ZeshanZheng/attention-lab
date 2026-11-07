@@ -27,6 +27,7 @@
 .architecture-highlight { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .architecture-highlight ellipse { fill: none; stroke: #d8383a; stroke-width: 3; }
 .architecture-highlight text { fill: #12376a; font-family: inherit; font-size: 30px; font-weight: 750; letter-spacing: 4px; }
+.architecture-highlight .architecture-location-label { fill: #a12b32; font-size: 20px; font-weight: 650; letter-spacing: 0; paint-order: stroke; stroke: #fff; stroke-width: 5px; stroke-linejoin: round; }
 .transformer-architecture figcaption { font-size: 14px; line-height: 1.85; color: #60697a; margin-top: 12px; }
 .transformer-architecture figcaption > span { display: block; margin-top: 5px; }
 .introduction-architecture { margin-top: 28px; padding-top: 24px; border-top: 1px solid #e5dff1; }
@@ -48,20 +49,10 @@
 .head-flow-branches > div { background: #f1f8f6; color: #34766c; }
 .multi-head-flow > div + div:before { content: '→'; position: absolute; left: -24px; width: 24px; top: calc(50% - 14px); text-align: center; color: #7b68a3; }
 .head-flow-branches { position: relative; }
-.attention-type-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 24px; }
-.attention-type-picker button { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 15px; border: 1px solid #e2dcec; border-radius: 10px; background: #f9f7fc; color: #615378; font-size: 16px; line-height: 1.8; }
-.attention-type-picker button > span { font-family: var(--mono); color: #78639f; }
-.attention-type-picker button[aria-pressed="true"] { background: #ece7fa; border-color: #aa94e1; color: #6549b1; font-weight: 600; }
-.attention-type-picker button:focus-visible { outline: 3px solid #aa9ae8; outline-offset: 3px; }
 .attention-type-layout { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 24px; }
-.attention-type-detail { padding: 24px; border: 1px solid #e2dcec; border-radius: 12px; background: #faf8ff; }
-.attention-type-detail h3 { font-size: 22px; line-height: 1.6; color: #4d416b; }
-.attention-type-detail p { margin-top: 16px; font-size: 17px; line-height: 2; }
-.attention-type-detail .type-english { font-size: 15px; margin-top: 8px; color: #746482; overflow-wrap: anywhere; }
-.attention-type-detail dl { margin: 22px 0; }
-.attention-type-detail dl > div { border-top: 1px solid #e8e2f0; padding: 14px 0; font-size: 16px; line-height: 1.9; }
-.attention-type-detail dt { color: #66518e; font-weight: 600; }
-.attention-type-detail dd { margin: 5px 0 0; }
+.attention-type-speech { padding: 20px 24px; border: 1px solid #e2dcec; border-radius: 12px; background: #faf8ff; min-width: 0; }
+.attention-type-speech > p:first-child { margin-top: 0; }
+.attention-type-speech .reading-source { font-size: 14px; line-height: 1.9; }
 @media (max-width: 900px) {
   .architecture-introduction-grid, .attention-type-layout { grid-template-columns: 1fr; gap: 22px; }
   .transformer-architecture { margin-inline: auto; }
@@ -70,11 +61,9 @@
 }
 @media (max-width: 700px) {
   .advanced-reading h2, .single-head-matrix h2 { font-size: 22px; }
-  .reading-lead, .reading-speech p, .architecture-introduction-text p, .attention-type-detail p { font-size: 16px; }
+  .reading-lead, .reading-speech p, .architecture-introduction-text p { font-size: 16px; }
   .reading-speech h3, .introduction-architecture > h3 { font-size: 20px; }
   .reading-table-scroll th, .reading-table-scroll td { font-size: 15px; padding: 10px; }
-  .architecture-introduction-text, .attention-type-detail { padding: 18px; }
+  .architecture-introduction-text, .attention-type-speech { padding: 18px; }
   .multi-head-figure { padding: 10px; }
-  .attention-type-picker { grid-template-columns: 1fr; gap: 10px; }
-  .attention-type-picker button { justify-content: flex-start; font-size: 16px; padding: 12px 16px; }
 }

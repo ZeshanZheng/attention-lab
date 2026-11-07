@@ -21,7 +21,7 @@ test('single-head matrix precedes the existing summary and explains Query rows a
   await expect(page.locator('.concept-summary')).toContainText('输出 x ≈ 0.576×2');
 });
 
-test('architecture images load and advanced reading preserves free parameters and selected attention type', async ({ page }) => {
+test('architecture images load, all attention locations are labelled beside the full explanation, and reading preserves free parameters', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await openLab(page);
@@ -62,21 +62,35 @@ test('architecture images load and advanced reading preserves free parameters an
   await expect(page.locator('.advanced-reading:visible')).toContainText('输出投影 Wₒ');
   await expect(page.locator('.advanced-reading:visible')).toContainText('模型并不会提前规定');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();
-  const picker = page.getByRole('group', { name: '选择架构中的注意力位置' });
-  const detail = page.getByRole('article', { name: '当前注意力类型' });
+  const layout = page.locator('.attention-type-layout');
+  const speech = layout.locator('.reading-speech');
   const image = page.locator('.attention-type-layout img');
-  await picker.getByRole('button', { name: '2 解码器遮罩自注意力', exact: true }).click();
-  await expect(detail).toContainText('当前及更早的输入位置');
-  await expect(detail).toContainText('右移一位');
-  await expect(image).toHaveAttribute('alt', /红圈标出解码器遮罩自注意力/);
-  await picker.getByRole('button', { name: '3 编码器—解码器跨注意力', exact: true }).focus();
-  await page.keyboard.press('Enter');
-  await expect(detail).toContainText('Q 来自解码器，K 和 V 来自编码器');
-  await expect(image).toHaveAttribute('alt', /红圈标出编码器—解码器跨注意力/);
+  await expect(page.getByRole('group', { name: '选择架构中的注意力位置' })).toHaveCount(0);
+  await expect(page.getByRole('article', { name: '当前注意力类型' })).toHaveCount(0);
+  await expect(speech.locator('p')).toHaveCount(5);
+  await expect(speech).toContainText('并不表示 Q = K = V');
+  await expect(speech).toContainText('不能偷看未来的词');
+  await expect(speech).toContainText('在 Softmax 之前把未来位置的得分设为负无穷');
+  await expect(speech).toContainText('并不要求每个模型都包含三种模块');
+  await expect(speech.getByRole('link', { name: 'Transformer 原论文 §3.1、§3.2.3' })).toBeVisible();
+  await expect(layout.locator('ellipse')).toHaveCount(3);
+  await expect(layout.locator('.architecture-location-label')).toHaveText(['编码器自注意力', '解码器遮罩自注意力', '编码器—解码器跨注意力']);
+  const ringWidths = await layout.locator('ellipse').evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).strokeWidth));
+  expect(new Set(ringWidths).size).toBe(1);
+  await expect(image).toHaveAttribute('alt', /红圈标出编码器自注意力、解码器遮罩自注意力、编码器—解码器跨注意力/);
+  await expect(image).toBeVisible();
+  expect(await image.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  const [figureBounds, speechBounds, comparisonBounds] = await Promise.all([
+    layout.locator('figure').boundingBox(), speech.boundingBox(), page.locator('.attention-types-table').boundingBox(),
+  ]);
+  expect(speechBounds!.x).toBeGreaterThan(figureBounds!.x + figureBounds!.width);
+  expect(speechBounds!.y).toBe(figureBounds!.y);
+  expect(comparisonBounds!.y).toBeGreaterThan(speechBounds!.y + speechBounds!.height);
   await openExperiment(page, 'free');
   await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();
-  await expect(picker.getByRole('button', { pressed: true })).toHaveText('3编码器—解码器跨注意力');
+  await expect(speech).toBeVisible();
+  await expect(layout.locator('ellipse')).toHaveCount(3);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await expect(context).toHaveJSProperty('open', true);
   expect(errors).toEqual([]);
