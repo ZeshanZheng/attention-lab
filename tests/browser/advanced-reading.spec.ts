@@ -19,6 +19,16 @@ test('single-head matrix precedes the existing summary and explains Query rows a
   const after = await page.locator('#concept-summary-title').boundingBox();
   expect(before!.y).toBeLessThan(after!.y);
   await expect(page.locator('.concept-summary')).toContainText('输出 x ≈ 0.576×2');
+  await expect(page.locator('.summary-calculation-steps > li')).toHaveCount(4);
+  await expect(page.locator('.summary-explanation')).toContainText('网页里 Q、K 都是二维向量');
+  await expect(page.locator('.summary-explanation')).toContainText('各项权重相加为 1');
+  await expect(page.locator('.summary-explanation')).toContainText('逐坐标相加');
+  await expect(page.locator('.concept-summary .beginner-example sub')).toHaveText(['A', 'A', 'B', 'C']);
+  await expect(page.locator('.concept-summary .concept-definitions')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Attention 在算什么？', exact: true })).toHaveCount(0);
+  await expect(page.getByText('跟着表格读一遍', { exact: true })).toHaveCount(0);
+  await expect(page.locator('.single-head-matrix .reading-lead')).toHaveCount(0);
+  await expect(page.locator('.concept-summary')).not.toContainText('展示值已四舍五入');
 });
 
 test('architecture images load, all attention locations are labelled beside the full explanation, and reading preserves free parameters', async ({ page }) => {

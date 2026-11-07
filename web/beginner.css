@@ -27,6 +27,16 @@
 .concept-summary h2 { font-size: 22px; margin-top: 8px; }
 #concept-summary-title { scroll-margin-top: 24px; }
 .concept-summary > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
+.concept-summary .summary-formula { margin-top: 0; }
+.summary-formula-term { display: inline-block; max-width: 100%; vertical-align: middle; }
+.summary-explanation { margin-top: 20px; color: #44506a; font-size: 17px; line-height: 2; }
+.summary-calculation-steps { margin: 18px 0 0; padding-left: 28px; }
+.summary-calculation-steps > li { margin-top: 18px; padding-left: 4px; }
+.summary-calculation-steps b { color: #4d416b; }
+.summary-calculation-steps p { margin-top: 8px; }
+.summary-calculation-steps code { display: inline-block; max-width: 100%; padding: 2px 9px; border-radius: 6px; background: #f4f0fc; color: #66518c; font-size: 16px; line-height: 1.9; overflow-wrap: anywhere; }
+.summary-calculation-steps ul { margin: 6px 0 0; padding-left: 24px; }
+.summary-calculation-steps ul li { margin-top: 4px; }
 .concept-definitions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
 .concept-definitions > div { background: #f8f7fc; padding: 16px; border-radius: 8px; font-size: 14px; line-height: 1.9; }
 .concept-definitions dt { font-weight: 650; color: #614d99; margin-bottom: 5px; }
@@ -34,6 +44,9 @@
 @media (max-width: 700px) {
   .concept-definitions { grid-template-columns: 1fr; }
   .concept-summary h2 { font-size: 19px; }
+  .summary-explanation { font-size: 16px; }
+  .summary-calculation-steps { padding-left: 21px; }
+  .summary-calculation-steps code { font-size: 14px; }
   .guided-taskbar { flex-direction: column; align-items: stretch; padding: 10px 12px; gap: 8px; }
   .taskbar-actions { justify-content: flex-end; }
   .guided-taskbar p { font-size: 12px; }
