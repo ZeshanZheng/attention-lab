@@ -36,7 +36,6 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
     <div className="lesson-workspace">
       <div className="lesson-task"><h3>{lesson.title}</h3><p>{lesson.task}</p>
         <ol className="lesson-path">{['先预测', '动手修改', '解释结果', '完成实验'].map((label, index) => <li key={label} className={index === phaseIndex ? 'active' : index < phaseIndex ? 'done' : ''}><span>{index < phaseIndex ? '✓' : index + 1}</span>{label}</li>)}</ol>
-        <div className="learning-constraint"><Icon name="info" size={15} /><span>固定观察 A · 仅开放词元 {lesson.token === 0 ? 'A' : 'B'} 的 {lesson.kind === 'keys' ? 'K' : 'V'}</span></div>
         {session.phase === 'experiment' && <><button className="text-button hint-button" onClick={() => setHintLevel(Math.min(hintLevel + 1, 2))}>{hintLevel === 0 ? '给我一点提示' : hintLevel === 1 ? '再给一点提示' : '提示已展开'}</button>
           {hintLevel > 0 && <p className="lesson-hint">{hintLevel === 1 ? lesson.hint : lesson.deeperHint}</p>}</>}
       </div>
@@ -53,7 +52,7 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
           <div className={`prediction-feedback ${predictionCorrect ? 'correct' : 'revised'}`}><b>{predictionCorrect ? '你的首次预测正确' : '用观察修正了首次预测'}</b><p>{lesson.prediction.explanation}</p></div>
           {session.phase === 'explain' && <><QuestionChoices question={lesson.comprehension} value={session.comprehensionChoice} onChange={onAnswerChoice} />
             {session.comprehensionCorrect === false && <div className="learning-feedback pending" role="status"><b>再想一想</b><p>{lesson.comprehension.retryHint}首次回答会保留在学习记录中。</p></div>}
-            <div className="lesson-action-row"><span>解释清楚，才算完成这次实验。</span><button className="button primary" disabled={session.comprehensionChoice === null} onClick={onAnswer}>提交理解题</button></div></>}
+            <div className="lesson-action-row comprehension-actions"><button className="button primary" disabled={session.comprehensionChoice === null} onClick={onAnswer}>提交理解题</button></div></>}
           {session.phase === 'complete' && <><div className="completion-explanation"><b>理解题已通过</b><p>{lesson.comprehension.explanation}</p><small>理解题作答 {session.comprehensionAnswers.length} 次 · 完成进度已更新</small></div>
             {!nextLesson && <button className="text-button" onClick={onSummary}>查看实验总结</button>}
             <div className="lesson-action-row"><button className="text-button" onClick={() => { setHintLevel(0); onStart(lesson.id); }}>重新实验</button><button className="button primary" onClick={() => { setHintLevel(0); if (nextLesson) onStart(nextLesson.id); else onAssessment(); }}>{nextLesson ? '下一个实验' : '进入理解自测'}<Icon name="arrow" size={16} /></button></div></>}

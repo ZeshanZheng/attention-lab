@@ -81,6 +81,7 @@
 .question-option input { margin: 4px 0 0; accent-color: #8a70c6; width: 13px; height: 13px; flex-shrink: 0; }
 .question-choices:disabled .question-option { cursor: default; }
 .lesson-action-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; }
+.comprehension-actions { justify-content: flex-end; }
 .lesson-action-row > span { color: #62666f; font-size: 12px; }
 .lesson-action-row .button { font-size: 13px; }
 .recorded-prediction { padding: 13px 16px; background: #f5f2fc; border-radius: 9px; border: 1px solid #ebe5f7; }
