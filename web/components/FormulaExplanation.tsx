@@ -9,6 +9,7 @@ export function FormulaExplanation() {
         </li>
         <li><b>缩放得分：</b><code>z<sub>j</sub> = <Fraction numerator={<>s<sub>j</sub></>} denominator={<>√d<sub>k</sub></>} label="s 下标 j 除以 d 下标 k 的平方根" /></code>
           <p>把得分除以向量维度的平方根，调整数值尺度。网页里 Q、K 都是二维向量，所以 d<sub>k</sub> = 2，除以 √2。</p>
+          <p>当向量维度较大时，点积可能变大，让 Softmax 的分配过于集中、梯度变小；缩放有助于控制得分的尺度。</p>
         </li>
         <li><b>转换成权重：</b><code>α<sub>j</sub> = <Fraction numerator={<Exponential label="z 下标 j">z<sub>j</sub></Exponential>} denominator={<>Σ <Exponential label="z 下标 l">z<sub>l</sub></Exponential></>} label="e 的 z 下标 j 次方，除以所有 e 的 z 下标 l 次方之和" /></code>
           <p>这一步叫 <strong>Softmax</strong>：</p>

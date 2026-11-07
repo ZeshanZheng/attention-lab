@@ -39,6 +39,7 @@
 .architecture-introduction-text p:last-child { margin-bottom: 0; }
 .architecture-introduction-text strong, .architecture-introduction-text b { color: #65518f; }
 .multi-head-figure { margin: 22px 0 0; padding: 18px; border: 1px solid #e5e1ee; border-radius: 10px; background: #fff; }
+.advanced-reading > .multi-head-figure:first-child { margin-top: 0; }
 .multi-head-figure img { display: block; width: 90%; height: auto; margin-inline: auto; }
 .multi-head-figure figcaption { font-size: 15px; line-height: 1.9; margin-top: 12px; color: #60697a; }
 .multi-head-figure figcaption a { margin-left: 10px; }
@@ -47,6 +48,7 @@
 .multi-head-flow small { display: block; font-size: 14px; margin-top: 5px; color: #636b7d; }
 .head-flow-branches { display: flex; flex-direction: column; gap: 10px; }
 .head-flow-branches > div { background: #f1f8f6; color: #34766c; }
+.head-flow-ellipsis { text-align: center; font-size: 24px; line-height: 1; color: #34766c; }
 .multi-head-flow > div + div:before { content: '→'; position: absolute; left: -24px; width: 24px; top: calc(50% - 14px); text-align: center; color: #7b68a3; }
 .head-flow-branches { position: relative; }
 .attention-type-layout { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 32px; align-items: start; margin-top: 24px; }

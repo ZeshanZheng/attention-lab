@@ -68,6 +68,8 @@ test('architecture images load, all attention locations are labelled beside the 
   expect(await matrixImage.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   await expect(page.locator('.advanced-reading:visible')).toContainText('输出投影 Wₒ');
   await expect(page.locator('.advanced-reading:visible')).toContainText('模型并不会提前规定');
+  await expect(page.locator('.head-flow-branches > div')).toHaveText(['头 1（64 维）', '头 2（64 维）', '头 8（64 维）']);
+  await expect(page.locator('.head-flow-ellipsis')).toHaveText('…');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();
   const layout = page.locator('.attention-type-layout');
   const speech = layout.locator('.reading-speech');
@@ -81,10 +83,10 @@ test('architecture images load, all attention locations are labelled beside the 
   await expect(speech).toContainText('并不要求每个模型都包含三种模块');
   await expect(speech.getByRole('link', { name: 'Transformer 原论文 §3.1、§3.2.3' })).toBeVisible();
   await expect(layout.locator('ellipse')).toHaveCount(3);
-  await expect(layout.locator('.architecture-location-label')).toHaveText(['编码器自注意力', '解码器遮罩自注意力', '编码器—解码器跨注意力']);
+  await expect(layout.locator('.architecture-location-label')).toHaveText(['编码器自注意力', '解码器遮罩自注意力', '编码器—解码器交叉注意力']);
   const ringWidths = await layout.locator('ellipse').evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).strokeWidth));
   expect(new Set(ringWidths).size).toBe(1);
-  await expect(image).toHaveAttribute('alt', /红圈标出编码器自注意力、解码器遮罩自注意力、编码器—解码器跨注意力/);
+  await expect(image).toHaveAttribute('alt', /红圈标出编码器自注意力、解码器遮罩自注意力、编码器—解码器交叉注意力/);
   await expect(image).toBeVisible();
   expect(await image.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const [figureBounds, speechBounds, comparisonBounds] = await Promise.all([
