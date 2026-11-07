@@ -302,3 +302,5 @@ Attention 背景导读、Transformer 中的位置及学习路线见[第九次迭
 计算模块顶部精简与上下分数排版见[第四十九次迭代记录](docs/development/49-calculation-fractions.md)。
 
 多头流程示意简化、缩放说明迁移与交叉注意力用语统一见[第五十次迭代记录](docs/development/50-multi-head-branches-and-cross-attention.md)。
+
+用户指定的多头矩阵图片替换见[第五十一次迭代记录](docs/development/51-replace-multi-head-image.md)。
