@@ -1,6 +1,7 @@
 import type { AttentionResult, AttentionInput } from '../../src/index.ts';
 import { TOKEN_NAMES, TOKEN_COLORS, formatNumber, formatVector } from '../format.ts';
 import { Icon } from './Icon.tsx';
+import { Exponential, MathText } from './MathText.tsx';
 
 export const STEPS = [
   { name: '点积', title: '向量之间，有多匹配？', description: '用当前 Q 与每一个 K 做点积。方向和大小共同影响匹配得分；它不是归一化的余弦相似度。', formula: 'sⱼ = qₓ · kⱼₓ + qᵧ · kⱼᵧ', tag: 'DOT PRODUCT' },
@@ -40,8 +41,8 @@ export function Calculation({ input, result, query, step, onStep }: Props) {
       {STEPS.map((item, index) => <button key={item.name} className={`${step === index ? 'active' : ''} ${index < step ? 'completed' : ''}`} aria-label={`${index + 1} ${item.name}`} aria-pressed={step === index} onClick={() => onStep(index)}><span>{index < step ? '✓' : index + 1}</span>{item.name}</button>)}
     </div>
     <div className="step-intro"><h3>{current.title}</h3><p>{STEP_SUMMARIES[step]}</p></div>
-    <div className="formula-box"><span className="formula-label">计算公式</span><div className="math-formula">{current.formula}</div></div>
-    <details className="calculation-explanation"><summary>详细解释</summary><p className="calculation-description">{current.description}</p><div className="step-guide" data-testid="step-guide"><dl><div><dt>用什么算</dt><dd>{guide.input}</dd></div><div><dt>得到什么</dt><dd>{guide.output}</dd></div><div><dt>有什么用</dt><dd>{guide.purpose}</dd></div></dl><p><b>符号怎么读：</b>{guide.symbols}</p></div>
+    <div className="formula-box"><span className="formula-label">计算公式</span><div className="math-formula"><MathText>{current.formula}</MathText></div></div>
+    <details className="calculation-explanation"><summary>详细解释</summary><p className="calculation-description">{current.description}</p><div className="step-guide" data-testid="step-guide"><dl><div><dt>用什么算</dt><dd>{guide.input}</dd></div><div><dt>得到什么</dt><dd>{guide.output}</dd></div><div><dt>有什么用</dt><dd>{guide.purpose}</dd></div></dl><p><b>符号怎么读：</b><MathText>{guide.symbols}</MathText></p></div>
     <div className="active-query"><span className="token-square" style={{ background: TOKEN_COLORS[query] }}>Q{TOKEN_NAMES[query]}</span><span>当前查询向量</span><code>{formatVector(input.queries[query]!, 1)}</code></div>
     <div className="calculation-rows">
       {TOKEN_NAMES.map((name, index) => <div className="calculation-row" key={name}>
@@ -49,7 +50,7 @@ export function Calculation({ input, result, query, step, onStep }: Props) {
         <div className="row-equation">
           {step === 0 && <><span className="equation-detail">{formatNumber(input.queries[query]![0]!, 1)} × {formatNumber(input.keys[index]![0]!, 1)} + {formatNumber(input.queries[query]![1]!, 1)} × {formatNumber(input.keys[index]![1]!, 1)}</span><small>逐坐标乘积 {formatVector(result.dotProducts[query]![index]!)}</small></>}
           {step === 1 && <><span className="equation-detail">{formatNumber(result.rawScores[query]![index]!)} ÷ √2</span><small>维度 dₖ = 2</small></>}
-          {step === 2 && <><span className="equation-detail">exp({formatNumber(scores[index]! - maximum)}) ÷ {formatNumber(denominator)}</span><small>稳定指数值 {formatNumber(exponentials[index]!)}</small></>}
+          {step === 2 && <><span className="equation-detail"><Exponential label={formatNumber(scores[index]! - maximum)}>{formatNumber(scores[index]! - maximum)}</Exponential> ÷ {formatNumber(denominator)}</span><small>稳定指数值 {formatNumber(exponentials[index]!)}</small></>}
           {step === 3 && <><span className="equation-detail">{formatNumber(result.weights[query]![index]!)} × {formatVector(input.values[index]!, 1)}</span><small>该词元对输出的贡献</small></>}
         </div>
         <strong className="equation-result">{step === 3 ? formatVector(result.contributions[query]![index]!) : formatNumber(rowValues[index]!)}</strong>

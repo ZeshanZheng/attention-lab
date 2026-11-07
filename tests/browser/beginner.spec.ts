@@ -13,6 +13,9 @@ test('each calculation step teaches its purpose and example follows edited input
   await expect(page.getByTestId('step-guide')).toContainText('与词元数量无关');
   await expect(page.getByTestId('beginner-example')).toContainText('2.000 ÷ 1.414… ≈ 1.414');
   await (await calculationStep(page, '3 Softmax')).click();
+  await expect(page.locator('.calculation-card .math-formula .math-power sup')).toHaveText(['zⱼ − max z', 'zₗ − max z']);
+  await expect(page.locator('.calculation-row .math-power sup')).toHaveText(['0.000', '-1.414', '-2.828']);
+  await expect(page.locator('.calculation-card')).not.toContainText('exp(');
   await expect(page.getByTestId('step-guide')).toContainText('e ≈ 2.718');
   await expect(page.getByTestId('beginner-example')).toContainText('76.8%');
   await (await calculationStep(page, '4 加权求和')).click();

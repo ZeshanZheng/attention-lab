@@ -4,6 +4,7 @@ import type { LessonId } from '../learning/lessons.ts';
 import type { LessonSession } from '../learning/session.ts';
 import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
+import { MathText } from './MathText.tsx';
 
 export function GuidedLessons({ session, completed, onStart, onPredict, onBegin, onAnswerChoice, onAnswer, onAssessment, onSummary }: {
   session: LessonSession; completed: readonly LessonId[];
@@ -39,11 +40,11 @@ export function GuidedLessons({ session, completed, onStart, onPredict, onBegin,
         {session.phase === 'experiment' && <details className="recorded-prediction"><summary>查看已记录的预测</summary><p>{lesson.prediction.options[session.prediction!]}</p></details>}
         {(session.phase === 'explain' || session.phase === 'complete') && <>
           {session.phase === 'explain' && <><div className="learning-feedback success"><b>{session.goalFeedback!.feedback}</b><p>{session.observation!.explanation}</p></div>
-          <details className={`prediction-feedback ${predictionCorrect ? 'correct' : 'revised'}`}><summary>{predictionCorrect ? '你的首次预测正确' : '用观察修正了首次预测'}</summary><p>{lesson.prediction.explanation}</p></details></>}
+          <details className={`prediction-feedback ${predictionCorrect ? 'correct' : 'revised'}`}><summary>{predictionCorrect ? '你的首次预测正确' : '用观察修正了首次预测'}</summary><p><MathText>{lesson.prediction.explanation}</MathText></p></details></>}
           {session.phase === 'explain' && <><QuestionChoices question={lesson.comprehension} value={session.comprehensionChoice} onChange={onAnswerChoice} />
-            {session.comprehensionCorrect === false && <div className="learning-feedback pending" role="status"><b>再想一想</b><p>{lesson.comprehension.retryHint}首次回答会保留在学习记录中。</p></div>}
+            {session.comprehensionCorrect === false && <div className="learning-feedback pending" role="status"><b>再想一想</b><p><MathText>{lesson.comprehension.retryHint}</MathText>首次回答会保留在学习记录中。</p></div>}
             <div className="lesson-action-row comprehension-actions"><button className="button primary" disabled={session.comprehensionChoice === null} onClick={onAnswer}>提交理解题</button></div></>}
-          {session.phase === 'complete' && <><div className="completion-explanation"><b>理解题已通过</b><p>{lesson.comprehension.explanation}</p><small>理解题作答 {session.comprehensionAnswers.length} 次 · 完成进度已更新</small></div>
+          {session.phase === 'complete' && <><div className="completion-explanation"><b>理解题已通过</b><p><MathText>{lesson.comprehension.explanation}</MathText></p><small>理解题作答 {session.comprehensionAnswers.length} 次 · 完成进度已更新</small></div>
             <details className="completed-record"><summary>查看本次实验记录</summary><p>{session.observation!.explanation}</p><p>首次预测：{lesson.prediction.options[session.prediction!]}</p></details>
             <div className="lesson-action-row"><button className="text-button" onClick={() => { setHintLevel(0); onStart(lesson.id); }}>重新实验</button><button className="button primary" onClick={() => { setHintLevel(0); if (nextLesson) onStart(nextLesson.id); else onSummary(); }}>{nextLesson ? '下一个实验' : '查看实验总结'}<Icon name="arrow" size={16} /></button></div>
             {!nextLesson && <button className="text-button" onClick={onAssessment}>直接进入理解自测</button>}</>}

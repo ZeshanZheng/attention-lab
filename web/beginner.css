@@ -29,6 +29,9 @@
 .concept-summary > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
 .concept-summary .summary-formula { margin-top: 0; }
 .summary-formula-term { display: inline-block; max-width: 100%; vertical-align: middle; }
+.math-power { display: inline-block; white-space: nowrap; font-family: var(--mono); line-height: 1.8; }
+.math-power sup { font-size: .78em; line-height: 0; vertical-align: super; }
+.math-power sup sub { font-size: .85em; line-height: 0; }
 .summary-explanation { margin-top: 20px; color: #44506a; font-size: 17px; line-height: 2; }
 .summary-calculation-steps { margin: 18px 0 0; padding-left: 28px; }
 .summary-calculation-steps > li { margin-top: 18px; padding-left: 4px; }

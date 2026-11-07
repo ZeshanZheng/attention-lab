@@ -23,6 +23,9 @@ test('single-head matrix precedes the existing summary and explains Query rows a
   await expect(page.locator('.summary-explanation')).toContainText('网页里 Q、K 都是二维向量');
   await expect(page.locator('.summary-explanation')).toContainText('各项权重相加为 1');
   await expect(page.locator('.summary-explanation')).toContainText('逐坐标相加');
+  await expect(page.locator('.summary-formula .math-power sup')).toHaveText(['zj', 'zl']);
+  await expect(page.locator('.summary-explanation')).toContainText('e 的 z 次方');
+  await expect(page.locator('.concept-summary')).not.toContainText('exp(');
   await expect(page.locator('.concept-summary .beginner-example sub')).toHaveText(['A', 'A', 'B', 'C']);
   await expect(page.locator('.concept-summary .concept-definitions')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Attention 在算什么？', exact: true })).toHaveCount(0);

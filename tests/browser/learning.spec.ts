@@ -72,6 +72,8 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await (await vectorInput(page, 'A', 'K', 'x')).fill('2');
   await page.getByRole('button', { name: '检查当前修改', exact: true }).click();
   await answerUnderstanding(page, 'competition', 1);
+  await expect(page.locator('.completion-explanation .math-power sup')).toHaveText('c');
+  await expect(page.locator('.completion-explanation')).not.toContainText('exp(');
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.getByRole('button', { name: '查看实验总结', exact: true }).click();
   await expect(page.locator('#concept-summary-title')).toBeVisible();
