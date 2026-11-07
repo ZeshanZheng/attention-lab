@@ -57,7 +57,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await page.getByRole('button', { name: '打开自由探索', exact: true }).click();
   await expect(page.locator('#attention-introduction-title')).toBeHidden();
   await expect(page.locator('.free-experiment-scope')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toHaveCount(0);
+  await expect(page.locator('#concept-summary-title')).toBeHidden();
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
   await page.getByRole('button', { name: '保存基线', exact: true }).click();
@@ -76,7 +76,7 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.locator('.architecture-attention-note')).toBeVisible();
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('实验总结');
-  await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toBeVisible();
+  await expect(page.locator('#concept-summary-title')).toBeVisible();
   await expect(page.locator('#attention-introduction-title')).toBeHidden();
   await modes.getByRole('button', { name: '小栗子🌰', exact: true }).click();
   await expect(page.getByRole('region', { name: '小栗子🌰', exact: true })).toBeVisible();

@@ -73,7 +73,7 @@ test('all three guided lessons enforce the learning flow, retain first mistakes,
   await answerUnderstanding(page, 'competition', 1);
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.getByRole('button', { name: '查看实验总结', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？' })).toBeVisible();
+  await expect(page.locator('#concept-summary-title')).toBeVisible();
   await page.getByRole('button', { name: '引导实验', exact: true }).click();
   await expect(page.getByTestId('lesson-progress')).toHaveText('已完成 3 / 3');
   await page.screenshot({ path: '.tools/preview-guided.png', fullPage: true });
@@ -130,7 +130,7 @@ test('assessment gives per-question feedback and preserves first score independe
   await expect(page.locator('.assessment-answer').filter({ hasText: '先明确概念：' })).toHaveCount(5);
   await expect(page.locator('.assessment-answer').filter({ hasText: '为什么其他选项不对：' })).toHaveCount(5);
   await page.getByRole('button', { name: '换一组题，再测一次', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '换一组题，看看是否真正理解', exact: true })).toBeFocused();
+  await expect(page.getByRole('note', { name: '自测说明', exact: true })).toBeFocused();
   await expect(page.getByRole('radio', { checked: true })).toHaveCount(0);
   const secondIds = await answerQuiz(page, true);
   expect(secondIds.every((id) => !firstIds.includes(id))).toBe(true);

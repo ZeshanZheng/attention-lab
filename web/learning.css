@@ -104,6 +104,9 @@
 .coordinate-field input:disabled { color: #666a74; background: #f5f6fa; opacity: .8; }
 .vector-plane circle[data-editable=false] { cursor: default; opacity: .5; }
 .assessment-section { margin-bottom: 28px; }
+.assessment-instructions { margin: 8px 0 18px; padding: 20px 22px; border: 1px solid #e5dff3; border-radius: 12px; background: #fff; color: #44506a; }
+.assessment-instructions p { font-size: 17px; line-height: 1.95; }
+.assessment-instructions:focus-visible { outline: 3px solid #aa9ae8; outline-offset: 3px; }
 .assessment-grid { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 22px; align-items: start; }
 .assessment-questions { display: flex; flex-direction: column; gap: 15px; }
 .assessment-card { padding: 23px 26px; }
@@ -139,6 +142,8 @@
   .lesson-action-row > span { align-self: flex-start; }
 }
 @media (max-width: 700px) {
+  .assessment-instructions { padding: 18px; }
+  .assessment-instructions p { font-size: 16px; }
   .learning-navigation { align-items: flex-start; flex-direction: column; gap: 12px; }
   .learning-tabs { width: 100%; }
   .learning-tabs button { flex: 0 0 auto; padding: 8px 10px; font-size: 13px; }

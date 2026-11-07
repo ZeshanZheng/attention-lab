@@ -16,7 +16,7 @@ test('single-head matrix precedes the existing summary and explains Query rows a
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('长度保持不变');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('夹角超过 90°');
   const before = await page.locator('#single-head-matrix-title').boundingBox();
-  const after = await page.getByRole('heading', { name: '把三个实验串起来：Attention 到底在算什么？', exact: true }).boundingBox();
+  const after = await page.locator('#concept-summary-title').boundingBox();
   expect(before!.y).toBeLessThan(after!.y);
   await expect(page.locator('.concept-summary')).toContainText('输出 x ≈ 0.576×2');
 });

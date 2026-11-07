@@ -4,7 +4,6 @@ import type { AssessmentRecord, LearningProgress } from '../learning/progress.ts
 import { completedLessons, createAssessmentRecord } from '../learning/progress.ts';
 import { QuestionChoices } from './QuestionChoices.tsx';
 import { Icon } from './Icon.tsx';
-import { ModuleInstructions } from './ModuleInstructions.tsx';
 
 function newQuiz(previousRounds: readonly (readonly string[])[]) {
   const questions = createAssessment(previousRounds);
@@ -16,7 +15,7 @@ export function Assessment({ progress, onSubmit, onGuided, onExport }: {
   progress: LearningProgress; onSubmit: (record: AssessmentRecord) => void; onGuided: () => void; onExport: () => void;
 }) {
   const [quiz, setQuiz] = useState(() => newQuiz(progress.assessments.map((record) => record.questions.map((question) => question.id))));
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const instructionsRef = useRef<HTMLDivElement>(null);
   const { questions, answers, submitted } = quiz;
   const ready = answers.every((answer) => answer !== null);
   const score = submitted ? scoreAnswers(questions, answers as number[]) : null;
@@ -24,15 +23,14 @@ export function Assessment({ progress, onSubmit, onGuided, onExport }: {
   const latest = progress.assessments.at(-1);
   const nextQuiz = () => {
     setQuiz((previous) => newQuiz(previous.recentRounds));
-    headingRef.current?.focus({ preventScroll: true });
-    headingRef.current?.scrollIntoView({ block: 'start' });
+    instructionsRef.current?.focus({ preventScroll: true });
+    instructionsRef.current?.scrollIntoView({ block: 'start' });
   };
   const recordScore = (record: AssessmentRecord) => `${scoreAnswers(record.questions, record.answers)} / ${record.questions.length}`;
-  return <section className="assessment-section" aria-labelledby="assessment-title">
-    <div className="learning-heading"><div><h2 id="assessment-title" ref={headingRef} tabIndex={-1}>换一组题，看看是否真正理解</h2><p>题库 {QUESTION_BANK.length} 道，每轮 {ROUND_SIZE} 道，覆盖五类概念。最近三轮不重复，提交后查看答案与解释。</p></div></div>
-    <ModuleInstructions title="自测与记录说明">
-      <p>自测题库有 {QUESTION_BANK.length} 道，每轮抽取 {ROUND_SIZE} 道；点击“换一组题”会清空未提交答案，最近三轮的题目不重复。已完成进度与自测题目、成绩保存在当前浏览器，可导出匿名记录；旧版四题成绩仍保留。</p>
-    </ModuleInstructions>
+  return <section className="assessment-section" aria-label="理解自测">
+    <div className="assessment-instructions" role="note" aria-label="自测说明" ref={instructionsRef} tabIndex={-1}>
+      <p>自测题库有 {QUESTION_BANK.length} 道，每轮抽取 {ROUND_SIZE} 道，覆盖五类概念；点击“换一组题”会清空未提交答案，最近三轮的题目不重复。已完成进度与自测题目、成绩保存在当前浏览器，可导出匿名记录；旧版四题成绩仍保留。</p>
+    </div>
     <div className="assessment-grid"><div className="assessment-questions">
       {questions.map((question, index) => <article className="card assessment-card" key={question.id} data-testid="assessment-question" data-question-id={question.id}>
         <div className="assessment-question-number">QUESTION {String(index + 1).padStart(2, '0')} · {TOPIC_LABELS[question.topic]}<span>{submitted ? answers[index] === question.correctIndex ? '回答正确' : '值得再练' : '单选题'}</span></div>

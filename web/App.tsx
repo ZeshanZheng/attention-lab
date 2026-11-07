@@ -159,6 +159,7 @@ function Laboratory() {
       {readingView === null && mode === 'free' && <>
         <section className="free-experiment-scope" aria-labelledby="free-experiment-scope-title">
           <h2 id="free-experiment-scope-title">关于这个小实验</h2>
+          <p>词元是参与计算的一个文本单位；这里用 A、B、C 代替真实文字。向量是一组数字，二维向量有 x、y 两个坐标。我们直接编辑人为设定的向量，观察计算关系。</p>
           <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息。</p>
           <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，并没有训练语言模型。输出的是聚合向量，得到下一个词还需要其他模块。</p>
           <p>本实验没有加入训练、位置编码和多头机制。</p>
