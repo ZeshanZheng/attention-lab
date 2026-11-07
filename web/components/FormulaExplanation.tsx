@@ -23,7 +23,7 @@ export function FormulaExplanation() {
     </div>
     <div className="beginner-example"><b>默认实验的完整例子，观察 Q<sub>A</sub> = (1, 0)</b><p>点积得分 (1, 0, −1) → 除以 √2，得 (0.707, 0, −0.707) → Softmax 权重约为 (0.576, 0.284, 0.140)，即 (57.6%, 28.4%, 14.0%) → 对 V<sub>A</sub> = (2, 0)、V<sub>B</sub> = (0, 2)、V<sub>C</sub> = (−2, 0) 加权。</p><p>输出 x ≈ 0.576×2 + 0.284×0 + 0.140×(−2) = 0.872；输出 y ≈ 0.576×0 + 0.284×2 + 0.140×0 = 0.568。</p></div>
     <details className="calculation-matrix">
-      <summary>单头注意力矩阵与讲解</summary>
+      <summary>单头 Attention 矩阵与讲解</summary>
       <SingleHeadMatrix />
     </details>
   </section>;

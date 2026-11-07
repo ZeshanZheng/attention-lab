@@ -40,7 +40,7 @@ test('module footers follow navigation order and preserve experiment and unfinis
 test('reading pages have independent navigation and preserve free vectors and baseline across the calculation module', async ({ page }) => {
   await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '理解自测', 'Multi-Head Attention', '三种 Attention'];
   await expect(modes.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(modes.getByRole('button', { name, exact: true })).toHaveCount(1);
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
@@ -109,7 +109,7 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: '使用说明', exact: true }).click();
   await page.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await page.getByRole('button', { name: '理解Q,K,V', exact: true }).click();
-  await page.getByRole('button', { name: '多头注意力', exact: true }).click();
+  await page.getByRole('button', { name: 'Multi-Head Attention', exact: true }).click();
   await page.getByRole('button', { name: '三种 Attention', exact: true }).click();
   await openExperiment(page, 'guided');
   const key = (await vectorInput(page, 'B', 'K', 'x'));

@@ -26,7 +26,7 @@ import { useLearningProgress } from './learning/useLearningProgress.ts';
 import type { AssessmentReview } from './learning/review.ts';
 
 type ReadingView = 'help' | 'introduction' | 'example' | 'calculation' | 'multihead' | 'types';
-const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '理解Q,K,V', calculation: 'Attention 计算', experiment: '动手实验', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
+const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '理解Q,K,V', calculation: 'Attention 计算', experiment: '动手实验', multihead: 'Multi-Head Attention', types: '三种 Attention', assessment: '理解自测' };
 type LearningView = keyof typeof VIEW_LABELS;
 const MODULE_ORDER = ['help', 'introduction', 'example', 'calculation', 'experiment', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
@@ -175,7 +175,7 @@ function Laboratory({ onComplete }: { onComplete: () => void }) {
       </div><div className="progress-actions"><span data-testid="saved-progress">实验进度 {completed.length} / 3</span><button className="text-button" onClick={downloadProgress}><Icon name="save" size={14} />导出记录</button></div></div>
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       {readingView === null && mode !== 'assessment' && <><div className="page-intro free-exploration-intro">
-        <div><h1>通过改变一个向量来理解注意力</h1></div>
+        <div><h1>通过改变一个向量来理解 Attention</h1></div>
         <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button></div>
       </div><div className="experiment-mode-bar"><div className="experiment-modes" role="group" aria-label="实验方式"><button aria-pressed={mode === 'free'} onClick={enterFree}>自由探索</button><button aria-pressed={mode === 'guided'} onClick={enterGuided}>引导任务</button></div><p>{mode === 'free' ? '自由调整向量，观察匹配、权重和输出的变化。' : '选择一个任务，先预测，再修改和验证。'}</p></div></>}
       {readingView === null && mode === 'free' && <details className="free-experiment-scope experiment-disclosure" aria-labelledby="free-experiment-scope-title">
@@ -208,7 +208,7 @@ function Laboratory({ onComplete }: { onComplete: () => void }) {
       <div className="lab-grid experiment-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} canSaveBaseline={mode === 'free'} canRestoreBaseline={hasChanges && (mode === 'free' || session?.phase === 'experiment')}
         onSaveBaseline={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}
         onRestoreBaseline={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }} focus={mode === 'guided' ? activeLesson?.kind === 'values' ? 'output' : 'weights' : undefined} /></div>
-      <details className="experiment-disclosure heatmap-disclosure"><summary>查看所有词元的注意力</summary><AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
+      <details className="experiment-disclosure heatmap-disclosure"><summary>查看所有词元的注意力权重</summary><AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} /></details>
       </div>}
       {activeView !== 'introduction' && activeView !== 'example' && nextModuleNavigation}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1630" height="965" viewBox="0 0 1630 965" role="img" aria-labelledby="title description">
-  <title id="title">多头注意力机制</title>
+  <title id="title">Multi-Head Attention</title>
   <desc id="description">八张矩阵叠放。最前面的表格按我、今、天、买、了、一、本、书示意八个词元；列是 Query，行是 Key，每格为对应的 K 与 Q 的点积。得分经过缩放和逐 Query 的 Softmax 才成为注意力权重。</desc>
   <rect width="1630" height="965" fill="white" />
   <!-- Background sheets: outer borders only; white fills hide occluded edges. -->
@@ -36,7 +36,7 @@
     <line x1="108.7" y1="643.4" x2="1129" y2="725.6" />
   </g>
   <g id="editable-labels" fill="#111" font-family="Arial, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">
-    <text id="diagram-heading" x="905" y="53" font-size="64" font-weight="700">多头注意力机制</text>
+    <text id="diagram-heading" x="905" y="53" font-size="64" font-weight="700">Multi-Head Attention</text>
     <text x="322.42" y="195.81" font-size="35" data-token="1">我</text>
     <text x="321.66" y="250.43" font-size="30" data-query-label="1">Q<tspan baseline-shift="sub" font-size="70%">1</tspan></text>
     <text x="151.58" y="312.76" font-size="31">我</text>

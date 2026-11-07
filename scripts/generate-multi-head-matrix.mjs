@@ -18,7 +18,7 @@ const outline = (offset) => corners.map(([x, y]) => `${x + offset * 44},${y + of
 const parts = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<svg xmlns="http://www.w3.org/2000/svg" width="1630" height="965" viewBox="0 0 1630 965" role="img" aria-labelledby="title description">',
-  '  <title id="title">多头注意力机制</title>',
+  '  <title id="title">Multi-Head Attention</title>',
   '  <desc id="description">八张矩阵叠放。最前面的表格按我、今、天、买、了、一、本、书示意八个词元；列是 Query，行是 Key，每格为对应的 K 与 Q 的点积。得分经过缩放和逐 Query 的 Softmax 才成为注意力权重。</desc>',
   '  <rect width="1630" height="965" fill="white" />',
   '  <!-- Background sheets: outer borders only; white fills hide occluded edges. -->',
@@ -31,7 +31,7 @@ parts.push('  </g>', '  <!-- Front sheet and complete grid; the first two column
 for (const boundary of columns.slice(1, -1)) parts.push(line(point(boundary, 0), point(boundary, 1)));
 for (let row = 1; row < 10; row++) parts.push(line(point(0, row / 10), point(1, row / 10)));
 parts.push('  </g>', '  <g id="editable-labels" fill="#111" font-family="Arial, Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-weight="400" text-anchor="middle" dominant-baseline="middle">',
-  '    <text id="diagram-heading" x="905" y="53" font-size="64" font-weight="700">多头注意力机制</text>');
+  '    <text id="diagram-heading" x="905" y="53" font-size="64" font-weight="700">Multi-Head Attention</text>');
 for (let index = 0; index < 8; index++) {
   const center = (columns[index + 2] + columns[index + 3]) / 2;
   parts.push(label(center, .05, words[index], 35, ` data-token="${index + 1}"`));

@@ -1,15 +1,15 @@
 export type AttentionLocation = 'encoder' | 'decoder' | 'cross';
 
 const HIGHLIGHTS = {
-  encoder: { x: 205, y: 496, rx: 85, ry: 43, label: '编码器自注意力' },
-  decoder: { x: 385, y: 487, rx: 85, ry: 46, label: '解码器遮罩自注意力' },
-  cross: { x: 385, y: 355, rx: 85, ry: 43, label: '编码器—解码器交叉注意力' },
+  encoder: { x: 205, y: 496, rx: 85, ry: 43, label: '编码器 Self-Attention' },
+  decoder: { x: 385, y: 487, rx: 85, ry: 46, label: '解码器 Masked Self-Attention' },
+  cross: { x: 385, y: 355, rx: 85, ry: 43, label: '编码器—解码器 Cross-Attention' },
 } as const;
 
 const LOCATION_LABELS = {
-  encoder: { x: 8, y: 482, lines: ['编码器', '自注意力'] },
-  decoder: { x: 477, y: 460, lines: ['解码器', '遮罩', '自注意力'] },
-  cross: { x: 477, y: 328, lines: ['编码器—', '解码器', '交叉', '注意力'] },
+  encoder: { x: 8, y: 471, lines: ['编码器', 'Self-', 'Attention'] },
+  decoder: { x: 477, y: 449, lines: ['解码器', 'Masked', 'Self-', 'Attention'] },
+  cross: { x: 477, y: 300, lines: ['编码器—', '解码器', 'Cross-', 'Attention'] },
 } as const;
 
 export function TransformerArchitecture({ location = 'encoder', showQkv = false, showHighlightCaption = true, showAllLocations = false }: { location?: AttentionLocation; showQkv?: boolean; showHighlightCaption?: boolean; showAllLocations?: boolean }) {

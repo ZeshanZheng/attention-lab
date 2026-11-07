@@ -55,7 +55,7 @@ const BASE_QUESTIONS: readonly AssessmentQuestion[] = [
     explanation: '先用 Q 与各 K 的点积计算得分，再经 Softmax 得到权重，最后按权重聚合 V。', retryHint: '沿着点积、Softmax、加权求和回想计算顺序。' },
   { id: 'interpretation-output', topic: 'interpretation', prompt: '本实验计算出的二维 Attention 输出代表什么？',
     options: ['模型预测出的下一个词', '各 V 按权重聚合后的向量', '三个词元的原始匹配得分'], correctIndex: 1,
-    explanation: '本实验只实现注意力聚合，二维输出是加权 V 的结果。得到下一个词还需要模型中的其他模块。', retryHint: '区分 Attention 输出与完整语言模型输出。' },
+    explanation: '本实验只实现Attention 聚合，二维输出是加权 V 的结果。得到下一个词还需要模型中的其他模块。', retryHint: '区分 Attention 输出与完整语言模型输出。' },
   { id: 'interpretation-dot', topic: 'interpretation', prompt: 'Q = (1, 0)，K_A = (2, 0)，K_B = (1, 0)。关于本实验的点积得分，哪项正确？',
     options: ['方向相同，点积必定相等', '点积只能在 −1 到 1 之间', 'A 的点积是 2，B 是 1；点积不是余弦相似度'], correctIndex: 2,
     explanation: '点积同时受方向和长度影响。这里两个 K 方向相同，但长度不同，因此点积不同；不应把它当作归一化的余弦相似度。', retryHint: '直接把坐标相乘相加，不除以向量长度。' },

@@ -49,7 +49,7 @@ test('architecture images load, all attention locations are labelled beside the 
   await openExperiment(page, 'free');
   await (await vectorInput(page, 'A', 'K', 'x')).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '理解自测', 'Multi-Head Attention', '三种 Attention'];
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(nav.getByRole('button', { name, exact: true })).toHaveCount(1);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
@@ -69,8 +69,8 @@ test('architecture images load, all attention locations are labelled beside the 
   const introCaption = page.locator('.introduction-architecture');
   await expect(introCaption).toContainText('Q、K、V 来自同一序列');
   await expect(introCaption.locator('svg text')).toHaveText('Q K V');
-  await nav.getByRole('button', { name: '多头注意力', exact: true }).click();
-  await expect(page.locator('.mode-pill')).toHaveText('多头注意力');
+  await nav.getByRole('button', { name: 'Multi-Head Attention', exact: true }).click();
+  await expect(page.locator('.mode-pill')).toHaveText('Multi-Head Attention');
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   const matrixImage = page.locator('.multi-head-figure img');
   await expect(matrixImage).toBeVisible();
@@ -114,10 +114,10 @@ test('architecture images load, all attention locations are labelled beside the 
   await expect(speech).toContainText('并不要求每个模型都包含三种模块');
   await expect(speech.getByRole('link', { name: 'Transformer 原论文 §3.1、§3.2.3' })).toBeVisible();
   await expect(layout.locator('ellipse')).toHaveCount(3);
-  await expect(layout.locator('.architecture-location-label')).toHaveText(['编码器自注意力', '解码器遮罩自注意力', '编码器—解码器交叉注意力']);
+  await expect(layout.locator('.architecture-location-label')).toHaveText(['编码器Self-Attention', '解码器MaskedSelf-Attention', '编码器—解码器Cross-Attention']);
   const ringWidths = await layout.locator('ellipse').evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).strokeWidth));
   expect(new Set(ringWidths).size).toBe(1);
-  await expect(image).toHaveAttribute('alt', /红圈标出编码器自注意力、解码器遮罩自注意力、编码器—解码器交叉注意力/);
+  await expect(image).toHaveAttribute('alt', /红圈标出编码器 Self-Attention、解码器 Masked Self-Attention、编码器—解码器 Cross-Attention/);
   await expect(image).toBeVisible();
   expect(await image.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
   const [figureBounds, speechBounds, comparisonBounds] = await Promise.all([
@@ -144,7 +144,7 @@ for (const width of [320, 390]) {
     const questions = page.getByTestId('assessment-question');
     const ids = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
     await questions.first().getByRole('radio').first().check();
-    for (const name of ['使用说明', 'Attention 引言', 'Attention 计算', '多头注意力', '三种 Attention']) {
+    for (const name of ['使用说明', 'Attention 引言', 'Attention 计算', 'Multi-Head Attention', '三种 Attention']) {
       await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name, exact: true }).click();
       if (name === 'Attention 计算') await page.locator('.calculation-matrix > summary').click();
       await expect(page.getByRole('radio')).toHaveCount(0);
