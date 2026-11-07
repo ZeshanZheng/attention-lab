@@ -1,4 +1,4 @@
-import { openLab, openExperiment } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('single-head matrix precedes the existing summary and explains Query rows and Key columns', async ({ page }) => {
@@ -26,7 +26,7 @@ test('architecture images load, all attention locations are labelled beside the 
   page.on('pageerror', (error) => errors.push(error.message));
   await openLab(page);
   await openExperiment(page, 'free');
-  await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
+  await (await vectorInput(page, 'A', 'K', 'x')).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
   const expectedModes = ['使用说明', 'Attention 引言', '小栗子🌰', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
@@ -87,7 +87,7 @@ test('architecture images load, all attention locations are labelled beside the 
   expect(speechBounds!.y).toBe(figureBounds!.y);
   expect(comparisonBounds!.y).toBeGreaterThan(speechBounds!.y + speechBounds!.height);
   await openExperiment(page, 'free');
-  await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
+  await expect((await vectorInput(page, 'A', 'K', 'x'))).toHaveValue('2');
   await nav.getByRole('button', { name: '三种 Attention', exact: true }).click();
   await expect(speech).toBeVisible();
   await expect(layout.locator('ellipse')).toHaveCount(3);

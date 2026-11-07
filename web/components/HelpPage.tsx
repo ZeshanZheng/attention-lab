@@ -3,7 +3,7 @@ import { Icon } from './Icon.tsx';
 const MODULE_OVERVIEW = [
   { id: 'introduction', title: 'Attention 引言', description: '结合 Transformer 架构图，认识 Attention 所在的位置，了解 Q、K、V 的含义，以及自注意力与交叉注意力的区别。' },
   { id: 'example', title: '小栗子🌰', description: '用“书”和“它”的具体例子，连贯解释 Q、K、V 如何配合，帮助直观理解Q、K、V。' },
-  { id: 'experiment', title: '动手实验', description: '在同一操作界面切换自由探索和引导任务。自由修改 Q/K/V，或跟着三个任务先预测、再修改、再验证，观察匹配得分、注意力权重和输出向量。' },
+  { id: 'experiment', title: '动手实验', description: '切换自由探索与引导任务，修改 Q/K/V，先观察注意力权重和输出的变化，再按需展开计算过程、热力图和修改前后的对比。' },
   { id: 'summary', title: '实验总结', description: '整理单头注意力矩阵、核心公式与计算例子，把操作现象和数学原理联系起来。' },
   { id: 'assessment', title: '理解自测', description: '您可以通过答题和解析检查掌握情况，从而发现容易混淆的概念。' },
   { id: 'multihead', title: '多头注意力', description: '介绍了多个注意力头如何并行计算、拼接并组合结果，进一步理解信息聚合。' },

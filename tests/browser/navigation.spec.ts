@@ -1,4 +1,4 @@
-import { enterLab, openLab, openExperiment } from './open-lab.ts';
+import { enterLab, openLab, openExperiment, vectorInput, calculationStep, comparisonButton } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('module footers follow navigation order and preserve experiment and unfinished quiz state', async ({ page }) => {
@@ -9,7 +9,7 @@ test('module footers follow navigation order and preserve experiment and unfinis
   for (let index = 0; index < order.length; index++) {
     const current = order[index]!;
     await expect(modes.getByRole('button', { pressed: true })).toHaveText(current);
-    if (current === '动手实验') await page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true }).fill('2');
+    if (current === '动手实验') await (await vectorInput(page, 'A', 'K', 'x')).fill('2');
     if (current === '理解自测') {
       const questions = page.getByTestId('assessment-question');
       quizIds = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
@@ -30,7 +30,7 @@ test('module footers follow navigation order and preserve experiment and unfinis
   expect(await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')))).toEqual(quizIds);
   await expect(questions.first().getByRole('radio').first()).toBeChecked();
   await openExperiment(page, 'free');
-  await expect(page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true })).toHaveValue('2');
+  await expect((await vectorInput(page, 'A', 'K', 'x'))).toHaveValue('2');
 });
 
 test('reading pages have independent navigation and preserve free vectors, baseline and step', async ({ page }) => {
@@ -59,10 +59,10 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.locator('.free-experiment-scope')).toBeVisible();
   await expect(page.locator('#concept-summary-title')).toBeHidden();
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
-  await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
-  await page.getByRole('button', { name: '保存基线', exact: true }).click();
-  await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('3');
-  await page.getByRole('button', { name: '3 Softmax', exact: true }).click();
+  await (await vectorInput(page, 'B', 'V', 'y')).fill('4');
+  await (await comparisonButton(page, '保存基线')).click();
+  await (await vectorInput(page, 'B', 'V', 'y')).fill('3');
+  await (await calculationStep(page, '3 Softmax')).click();
   await modes.getByRole('button', { name: '使用说明', exact: true }).click();
   await expect(page.locator('section[aria-labelledby="help-title"]')).toBeVisible();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('使用说明');
@@ -82,9 +82,9 @@ test('reading pages have independent navigation and preserve free vectors, basel
   await expect(page.getByRole('region', { name: '小栗子🌰', exact: true })).toBeVisible();
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await openExperiment(page, 'free');
-  await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');
+  await expect((await vectorInput(page, 'B', 'V', 'y'))).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
-  await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect((await calculationStep(page, '3 Softmax'))).toHaveAttribute('aria-pressed', 'true');
   await modes.getByRole('button', { name: 'Attention 引言', exact: true }).click();
   await expect(page.locator('.architecture-attention-note')).toBeVisible();
   await page.screenshot({ path: '.tools/preview-navigation-introduction.png', fullPage: true });
@@ -95,7 +95,7 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await openExperiment(page, 'guided');
   await page.getByRole('radio', { name: 'B 的权重上升，A 和 C 的权重下降', exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
-  await page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true }).fill('2');
+  await (await vectorInput(page, 'B', 'K', 'x')).fill('2');
   await page.getByRole('button', { name: '给我一点提示' }).click();
   await expect(page.locator('.lesson-hint')).toBeVisible();
   await page.getByRole('button', { name: '实验总结', exact: true }).click();
@@ -106,11 +106,11 @@ test('reading pages preserve an in-progress guided lesson, hints and locked para
   await page.getByRole('button', { name: '多头注意力', exact: true }).click();
   await page.getByRole('button', { name: '三种 Attention', exact: true }).click();
   await openExperiment(page, 'guided');
-  const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
+  const key = (await vectorInput(page, 'B', 'K', 'x'));
   await expect(key).toHaveValue('2');
   await expect(page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: '动手实验', exact: true })).toBeFocused();
   await expect(page.getByRole('group', { name: '学习模式' })).toBeInViewport({ ratio: 1 });
-  await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toBeDisabled();
+  await expect((await vectorInput(page, 'B', 'V', 'y'))).toBeDisabled();
   await expect(page.locator('.lesson-hint')).toBeVisible();
   await expect(page.getByRole('button', { name: '记录预测，开始实验' })).toHaveCount(0);
   await page.getByRole('button', { name: '检查当前修改' }).click();

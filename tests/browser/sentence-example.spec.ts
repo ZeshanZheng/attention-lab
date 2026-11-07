@@ -1,4 +1,4 @@
-import { openLab, openExperiment } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, calculationStep, comparisonButton } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('sentence example presents one continuous explanation and preserves experiment state', async ({ page }) => {
@@ -7,10 +7,10 @@ test('sentence example presents one continuous explanation and preserves experim
   await expect(page.getByRole('region', { name: '小栗子🌰', exact: true })).toHaveCount(0);
   await openExperiment(page, 'free');
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
-  await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('4');
-  await page.getByRole('button', { name: '保存基线', exact: true }).click();
-  await page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true }).fill('3');
-  await page.getByRole('button', { name: '3 Softmax', exact: true }).click();
+  await (await vectorInput(page, 'B', 'V', 'y')).fill('4');
+  await (await comparisonButton(page, '保存基线')).click();
+  await (await vectorInput(page, 'B', 'V', 'y')).fill('3');
+  await (await calculationStep(page, '3 Softmax')).click();
   const exampleButton = modes.getByRole('button', { name: '小栗子🌰', exact: true });
   await exampleButton.click();
   await expect(exampleButton).toBeFocused();
@@ -59,9 +59,9 @@ test('sentence example presents one continuous explanation and preserves experim
   await expect(explanation).toContainText('V 本身是一组数字');
   await page.getByRole('button', { name: '进入动手实验模块', exact: true }).click();
   await expect(modes.getByRole('button', { pressed: true })).toHaveText('动手实验');
-  await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toHaveValue('3');
+  await expect((await vectorInput(page, 'B', 'V', 'y'))).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
-  await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect((await calculationStep(page, '3 Softmax'))).toHaveAttribute('aria-pressed', 'true');
 });
 
 for (const width of [320, 390]) {

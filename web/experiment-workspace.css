@@ -25,7 +25,63 @@
 .guided-compact .learning-feedback { margin: 12px 0; }
 .guided-compact .learning-feedback p, .guided-compact .prediction-feedback p, .completed-record p { font-size: 15px; line-height: 1.9; margin-top: 8px; }
 .completed-record { margin-top: 12px; }
+.lab-grid.experiment-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.experiment-grid .editor-card { display: block; }
+.experiment-grid .card-heading { margin-bottom: 14px; }
+.experiment-grid .results-card { display: block; grid-column: auto; }
+.experiment-grid .vector-type-picker { display: flex; margin-top: 10px; }
+.vector-type-picker button { flex: 1; }
+.experiment-grid .coordinate-row { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); min-height: 56px; padding: 6px 10px; }
+.experiment-grid .coordinate-head { grid-template-columns: 80px minmax(0, 1fr) minmax(0, 1fr); }
+.experiment-grid .coordinate-field input { height: 44px; font-size: 17px; }
+.experiment-grid .coordinate-step-control { margin-top: 10px; }
+.experiment-grid .vector-plane { display: block; max-width: 250px; margin-inline: auto; }
+.experiment-grid .vector-plane-wrap { margin-top: 10px; }
+.plane-edit-hint { font-size: 13px; font-weight: 400; color: #677085; }
+.vector-purpose { margin-top: 8px; color: #5e6278; font-size: 15px; line-height: 1.9; }
+.vector-visualization { margin-top: 14px; }
+.vector-visualization > summary { cursor: pointer; font-size: 15px; color: #5d4b8e; line-height: 1.9; }
+.vector-visualization > summary:focus-visible { outline: 3px solid #aa9ae8; outline-offset: 3px; border-radius: 6px; }
+.target-vector-label { color: #625084; font-size: 17px; font-weight: 650; }
+.other-vectors { margin-top: 12px; }
+.other-vectors > summary, .output-visualization > summary, .calculation-explanation > summary { cursor: pointer; width: fit-content; color: #6a50a2; font-size: 15px; line-height: 1.9; }
+.experiment-grid .other-vectors .coordinate-field input { font-size: 15px; height: 38px; }
+.experiment-grid .other-vectors .coordinate-row { min-height: 50px; }
+.experiment-grid .weight-row + .weight-row { margin-top: 14px; }
+.experiment-grid .weight-delta.unchanged { display: none; }
+.experiment-grid .weight-section { padding: 10px; border: 1px solid transparent; border-radius: 10px; }
+.experiment-grid .output-section { padding: 14px 10px 10px; margin-top: 8px; border: 1px solid transparent; border-top-color: #e7eaf3; border-radius: 10px; }
+.experiment-grid .result-focus { background: #faf8ff; border-color: #d9ccf4; }
+.experiment-grid .output-vector { padding: 16px; }
+.output-visualization { margin-top: 14px; }
+.experiment-grid .output-plane { max-width: 360px; display: block; margin-inline: auto; height: auto; }
+.experiment-grid .insight-box { margin-top: 14px; }
+.experiment-grid .insight-box p { font-size: 15px; }
+.experiment-disclosure { margin-top: 16px; border: 1px solid #e3deef; border-radius: 12px; background: #fff; }
+.experiment-disclosure > summary { cursor: pointer; padding: 17px 22px; color: #5e4b8e; font-size: 17px; font-weight: 600; line-height: 1.8; }
+.experiment-disclosure > summary:focus-visible, .other-vectors > summary:focus-visible, .output-visualization > summary:focus-visible, .calculation-explanation > summary:focus-visible { outline: 3px solid #aa9ae8; outline-offset: 3px; border-radius: 6px; }
+.experiment-disclosure > .card { border: 0; box-shadow: none; margin: 0; }
+.calculation-disclosure .calculation-card { padding-top: 8px; }
+.calculation-disclosure .step-intro { margin-top: 20px; }
+.calculation-disclosure .step-intro p { min-height: 0; }
+.calculation-disclosure .beginner-example { margin-top: 16px; }
+.calculation-explanation { margin-top: 20px; }
+.calculation-description { margin-top: 12px; font-size: 15px; line-height: 1.95; color: #586278; }
+.comparison-settings-body { padding: 0 22px 20px; }
+.comparison-settings-body > p { color: #60677a; font-size: 15px; line-height: 1.9; }
+.comparison-settings-body .baseline-footer { justify-content: space-between; flex-wrap: wrap; margin-top: 14px; }
+.comparison-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.free-experiment-scope.experiment-disclosure { padding: 0; margin-bottom: 16px; }
+.free-experiment-scope.experiment-disclosure > p { padding-inline: 22px; }
+.free-experiment-scope.experiment-disclosure > p:last-child { padding-bottom: 20px; }
 @media (max-width: 700px) {
+  .lab-grid.experiment-grid { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .experiment-grid .coordinate-row, .experiment-grid .coordinate-head { grid-template-columns: 54px minmax(0, 1fr) minmax(0, 1fr); }
+  .experiment-grid .vector-kind-label span { display: none; }
+  .experiment-grid .weight-section, .experiment-grid .output-section { padding: 12px; }
+  .experiment-grid .output-section { margin-top: 8px !important; padding-top: 16px !important; }
+  .experiment-disclosure > summary { padding: 15px 18px; font-size: 16px; }
+  .comparison-settings-body { padding-inline: 18px; }
   .experiment-mode-bar { align-items: flex-start; flex-direction: column; gap: 10px; }
   .experiment-mode-bar p { font-size: 14px; }
   .experiment-modes { width: 100%; }

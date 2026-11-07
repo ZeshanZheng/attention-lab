@@ -26,23 +26,27 @@ function OutputPlane({ current, baseline }: { current: readonly number[]; baseli
   </svg>;
 }
 
-export function Results({ current, baseline, query, hasChanges }: { current: AttentionResult; baseline: AttentionResult; query: number; hasChanges: boolean }) {
+export function Results({ current, baseline, query, hasChanges, focus }: { current: AttentionResult; baseline: AttentionResult; query: number; hasChanges: boolean; focus?: 'weights' | 'output' | undefined }) {
   const weights = current.weights[query]!;
   const previousWeights = baseline.weights[query]!;
   const output = current.outputs[query]!;
   const previousOutput = baseline.outputs[query]!;
   const weightsChanged = weights.some((value, index) => Math.abs(value - previousWeights[index]!) > 1e-10);
   const outputChanged = output.some((value, index) => Math.abs(value - previousOutput[index]!) > 1e-10);
-  const insight = !hasChanges ? '试试只修改 B 的 V：权重会变化吗？输出又会怎样变化？'
+  const outputChanges = ['x', 'y'].flatMap((coordinate, index) => Math.abs(output[index]! - previousOutput[index]!) > 1e-10 ? [`${coordinate} 分量${output[index]! > previousOutput[index]! ? '变大了' : '变小了'}`] : []).join('，');
+  const initialInsight = focus === 'weights' ? '修改目标 K，观察三个词元的关注比例如何变化。' : focus === 'output' ? '修改目标 V，比较注意力权重和输出向量。' : '试试只修改 B 的 V：权重会变化吗？输出又会怎样变化？';
+  const insight = !hasChanges ? initialInsight
+    : focus === 'output' && !weightsChanged && outputChanged ? `注意力权重没有变化，输出的 ${outputChanges}。`
     : !weightsChanged && outputChanged ? '权重没变，输出变了。相同的关注比例，也能传递不同的内容。'
     : weightsChanged && !outputChanged ? '关注比例变了，输出保持不变。不同的权重组合，也可能得到相同的输出。'
     : weightsChanged ? '关注比例发生了变化。一个得分的变化，会通过 Softmax 影响整组权重。'
+    : focus ? '参数已调整，但当前 Query 的权重和输出保持不变。请对照任务，继续调整目标向量。'
     : '参数已调整，但当前 Query 的权重和输出保持不变。试着观察另一个词元。';
 
   return <section className="card results-card" aria-labelledby="results-title">
     <div className="card-heading"><div><h2 id="results-title">观察结果变化</h2></div><span className="live-badge"><span className="live-dot" />实时</span></div>
-    <div className="result-heading"><h3>注意力权重</h3><span>Q{TOKEN_NAMES[query]} → 所有 K</span></div>
-    <div className="chart-legend"><span><i className="legend-current" />当前</span><span><i className="legend-baseline" />基线</span></div>
+    <div className={`weight-section ${focus === 'weights' ? 'result-focus' : ''}`} data-result-focus={focus === 'weights'}><div className="result-heading"><h3>注意力权重</h3><span>观察词元 {TOKEN_NAMES[query]} 的 Query</span></div>
+    <div className="chart-legend"><span><i className="legend-current" />当前</span><span><i className="legend-baseline" />修改前（基线）</span></div>
     <div className="weight-chart" aria-label="当前注意力权重与基线对比">
       {TOKEN_NAMES.map((name, index) => {
         const difference = (weights[index]! - previousWeights[index]!) * 100;
@@ -53,12 +57,12 @@ export function Results({ current, baseline, query, hasChanges }: { current: Att
         </div>;
       })}
     </div>
-    <div className="weight-total"><span>权重之和</span><code>{formatNumber(weights.reduce((sum, value) => sum + value, 0))}</code></div>
-    <div className="output-section"><div className="result-heading"><h3>输出向量</h3><span>V 的加权组合</span></div>
+    <div className="weight-total"><span>权重之和</span><code>{formatNumber(weights.reduce((sum, value) => sum + value, 0))}</code></div></div>
+    <div className={`output-section ${focus === 'output' ? 'result-focus' : ''}`} data-result-focus={focus === 'output'}><div className="result-heading"><h3>输出向量</h3><span>V 的加权组合</span></div>
       <div className="output-vector" data-testid="output-vector"><span>o =</span><strong>{formatVector(output)}</strong></div>
-      <div className="output-plot"><OutputPlane current={output} baseline={previousOutput} /></div>
-      <div className="output-comparison"><span>基线</span><code data-testid="baseline-output">{formatVector(previousOutput)}</code></div>
+      <div className="output-comparison"><span>修改前（基线）</span><code data-testid="baseline-output">{formatVector(previousOutput)}</code></div>
       <div className="coordinate-deltas">{['x', 'y'].map((coordinate, index) => <div key={coordinate}><span>Δ{coordinate}</span><b data-testid={`output-delta-${coordinate}`}>{formatDelta(output[index]! - previousOutput[index]!)}</b></div>)}</div>
+      <details className="output-visualization"><summary>查看输出坐标图</summary><div className="output-plot"><OutputPlane current={output} baseline={previousOutput} /></div></details>
     </div>
     <div className="insight-box"><span className="insight-symbol">✦</span><p data-testid="insight">{insight}</p></div>
   </section>;

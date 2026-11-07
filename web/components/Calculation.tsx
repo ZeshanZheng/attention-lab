@@ -24,6 +24,8 @@ const STEP_GUIDES = [
   { input: '每个词元的权重 α，以及它携带的 V（值）向量。', output: '一个新的向量 o，表示取回的信息。', purpose: '让关注较多的词元贡献较多内容，再合并成输出；只改 V 会影响这一步，不会改变前面的权重。', symbols: 'α 是上一阶段的比例，v 是该词元的 V。先用比例乘 V 的每个坐标，再分别把所有 x 和所有 y 相加；不是直接把 V 全部相加。' },
 ] as const;
 
+const STEP_SUMMARIES = ['用当前 Q 与各个 K 做点积，得到匹配得分。', '将匹配得分除以 √2，调整到合适的尺度。', '把缩放后的得分转换为总和为 1 的注意力权重。', '按注意力权重组合各个 V，得到输出向量。'];
+
 export function Calculation({ input, result, query, step, onStep }: Props) {
   const current = STEPS[step]!;
   const scores = result.scaledScores[query]!;
@@ -37,9 +39,9 @@ export function Calculation({ input, result, query, step, onStep }: Props) {
     <div className="step-tabs" aria-label="计算步骤">
       {STEPS.map((item, index) => <button key={item.name} className={`${step === index ? 'active' : ''} ${index < step ? 'completed' : ''}`} aria-label={`${index + 1} ${item.name}`} aria-pressed={step === index} onClick={() => onStep(index)}><span>{index < step ? '✓' : index + 1}</span>{item.name}</button>)}
     </div>
-    <div className="step-intro"><h3>{current.title}</h3><p>{current.description}</p></div>
+    <div className="step-intro"><h3>{current.title}</h3><p>{STEP_SUMMARIES[step]}</p></div>
     <div className="formula-box"><span className="formula-label">计算公式</span><div className="math-formula">{current.formula}</div></div>
-    <div className="step-guide" data-testid="step-guide"><dl><div><dt>用什么算</dt><dd>{guide.input}</dd></div><div><dt>得到什么</dt><dd>{guide.output}</dd></div><div><dt>有什么用</dt><dd>{guide.purpose}</dd></div></dl><p><b>符号怎么读：</b>{guide.symbols}</p></div>
+    <details className="calculation-explanation"><summary>详细解释</summary><p className="calculation-description">{current.description}</p><div className="step-guide" data-testid="step-guide"><dl><div><dt>用什么算</dt><dd>{guide.input}</dd></div><div><dt>得到什么</dt><dd>{guide.output}</dd></div><div><dt>有什么用</dt><dd>{guide.purpose}</dd></div></dl><p><b>符号怎么读：</b>{guide.symbols}</p></div>
     <div className="active-query"><span className="token-square" style={{ background: TOKEN_COLORS[query] }}>Q{TOKEN_NAMES[query]}</span><span>当前查询向量</span><code>{formatVector(input.queries[query]!, 1)}</code></div>
     <div className="calculation-rows">
       {TOKEN_NAMES.map((name, index) => <div className="calculation-row" key={name}>
@@ -52,7 +54,7 @@ export function Calculation({ input, result, query, step, onStep }: Props) {
         </div>
         <strong className="equation-result">{step === 3 ? formatVector(result.contributions[query]![index]!) : formatNumber(rowValues[index]!)}</strong>
       </div>)}
-    </div>
+    </div></details>
     <div className="step-summary">
       {step === 0 && <><span>匹配得分</span><code>{formatVector(result.rawScores[query]!)}</code></>}
       {step === 1 && <><span>缩放后得分</span><code>{formatVector(scores)}</code></>}

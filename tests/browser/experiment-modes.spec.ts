@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { openLab, openExperiment } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, calculationStep, comparisonButton } from './open-lab.ts';
 import { getLesson } from '../../web/learning/lessons.ts';
 
 async function expectModuleBarVisible(page: Page) {
@@ -22,11 +22,11 @@ test('one workbench preserves independent free and guided state across predictio
   const originalWorkbench = await workbench.elementHandle();
   await expect(workbench).toHaveCount(1);
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
-  const value = page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true });
+  const value = (await vectorInput(page, 'B', 'V', 'y'));
   await value.fill('4');
-  await page.getByRole('button', { name: '保存基线', exact: true }).click();
+  await (await comparisonButton(page, '保存基线')).click();
   await value.fill('3');
-  await page.getByRole('button', { name: '3 Softmax', exact: true }).click();
+  await (await calculationStep(page, '3 Softmax')).click();
 
   const lesson = getLesson('focus');
   await openExperiment(page, 'guided');
@@ -35,12 +35,12 @@ test('one workbench preserves independent free and guided state across predictio
   await openExperiment(page, 'free');
   await expect(value).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
-  await expect(page.getByRole('button', { name: '3 Softmax', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect((await calculationStep(page, '3 Softmax'))).toHaveAttribute('aria-pressed', 'true');
   await openExperiment(page, 'guided');
   await expectModuleBarVisible(page);
   await expect(page.getByRole('radio', { name: lesson.prediction.options[0]!, exact: true })).toBeChecked();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
-  const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
+  const key = (await vectorInput(page, 'B', 'K', 'x'));
   await key.fill('2');
   await page.getByRole('button', { name: '给我一点提示', exact: true }).click();
   await openExperiment(page, 'free');
@@ -95,7 +95,7 @@ test('mobile modes are keyboard operable, keep the target visible, and preserve 
   await expectModuleBarVisible(page);
   await page.getByRole('radio', { name: getLesson('focus').prediction.options[0]!, exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
-  const key = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
+  const key = (await vectorInput(page, 'B', 'K', 'x'));
   await expect(key).toBeFocused();
   const goal = page.getByRole('region', { name: '当前实验目标' });
   const inputBounds = await key.boundingBox();

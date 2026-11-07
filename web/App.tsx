@@ -168,7 +168,7 @@ function Laboratory() {
       {!storageAvailable && <p className="storage-notice" role="status">浏览器暂不能保存学习进度；本页仍可学习，离开前可导出记录。</p>}
       {readingView === null && mode !== 'assessment' && <><div className="page-intro free-exploration-intro">
         <div><h1>通过改变一个向量来理解注意力</h1></div>
-        <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button><button className="button primary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button></div>
+        <div className="intro-actions"><button className="button secondary" onClick={resetExperiment}><Icon name="reset" />重置实验</button></div>
       </div><div className="experiment-mode-bar"><div className="experiment-modes" role="group" aria-label="实验方式"><button aria-pressed={mode === 'free'} onClick={enterFree}>自由探索</button><button aria-pressed={mode === 'guided'} onClick={enterGuided}>引导任务</button></div><p>{mode === 'free' ? '自由调整向量，观察匹配、权重和输出的变化。' : '选择一个任务，先预测，再修改和验证。'}</p></div></>}
       <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction nextNavigation={activeView === 'introduction' ? nextModuleNavigation : null} /></div>
@@ -187,28 +187,31 @@ function Laboratory() {
         onSubmit={(record) => setProgress((previous) => addAssessmentRecord(previous, record))} /></div>}
       {mode !== 'assessment' && <div hidden={readingView !== null}>
       {mode === 'guided' && session?.phase === 'experiment' && activeLesson && <div className="guided-taskbar" role="region" aria-label="当前实验目标"><div><b>现在修改：词元 {TOKEN_NAMES[activeLesson.token]} 的 {activeLesson.kind === 'keys' ? 'K' : 'V'}</b><p>{activeLesson.task}</p>{session.goalFeedback && <p role="status">{session.goalFeedback.feedback}</p>}</div><div className="taskbar-actions"><button className="button secondary" onClick={locateEditor}>定位输入框</button><button className="button primary" onClick={checkCurrentExperiment}>检查当前修改</button></div></div>}
-      <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
-        {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} disabled={mode === 'guided'} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
-      </div></div>{mode === 'free' && <div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div>}</div>
-      <div className="lab-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} onStep={selectStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} /></div>
-      <AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
-        onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} />
-      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><button className="text-button" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div>
+      {mode === 'free' && <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
+        {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
+      </div></div><div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div></div>}
+      <div className="lab-grid experiment-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} focus={mode === 'guided' ? activeLesson?.kind === 'values' ? 'output' : 'weights' : undefined} /></div>
+      <details className="experiment-disclosure calculation-disclosure"><summary>查看计算过程</summary><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} onStep={selectStep} /></details>
+      <details className="experiment-disclosure heatmap-disclosure"><summary>查看所有词元的注意力</summary><AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
+        onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} /></details>
+      <details className="experiment-disclosure comparison-settings"><summary>对比设置</summary><div className="comparison-settings-body"><p>基线是用来比较的修改前参数，默认是初始实验。自由探索中可以把当前参数保存为新基线；引导任务始终使用任务的初始参数。</p>
+      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><div className="comparison-actions"><button className="button secondary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button><button className="button secondary" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div></div>
+      </div></details>
       </div>}
       {readingView === null && mode === 'free' && <>
-        <section className="free-experiment-scope" aria-labelledby="free-experiment-scope-title">
-          <h2 id="free-experiment-scope-title">关于这个小实验</h2>
+        <details className="free-experiment-scope experiment-disclosure" aria-labelledby="free-experiment-scope-title">
+          <summary id="free-experiment-scope-title">关于这个小实验</summary>
           <p>词元是参与计算的一个文本单位；这里用 A、B、C 代替真实文字。向量是一组数字，二维向量有 x、y 两个坐标。我们直接编辑人为设定的向量，观察计算关系。</p>
           <p>本实验用三个词元、二维向量和单个注意力头，把一次“匹配 → 分配比例 → 聚合内容”展开。真实 Transformer 会学习 Q/K/V 的投影，并用多个注意力头从不同角度聚合信息。</p>
           <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，并没有训练语言模型。输出的是聚合向量，得到下一个词还需要其他模块。</p>
           <p>本实验没有加入训练、位置编码和多头机制。</p>
-        </section>
+        </details>
         <ModuleInstructions title="自由探索操作说明">
           <ol className="guide-list">
             <li><b>选择观察对象</b><span>页面上方选择 A、B 或 C，观察它的 Query 如何关注其他词元。</span></li>
-            <li><b>改变一个向量</b><span>选中编辑词元，输入数字，或拖动 Q/K/V 的圆点。默认拖动和方向键按整数调整，可切换为 0.1 步长；直接输入可用小数。向量各坐标范围为 −5 到 5。</span></li>
-            <li><b>沿着四步计算走一遍</b><span>每一步说明输入、结果、用途和符号含义，并用当前数值举例。点击步骤标签，或使用“上一步”“下一步”，按自己的节奏阅读。</span></li>
-            <li><b>比较修改前后</b><span>默认基线是初始实验。也可以保存当前参数作为新基线，或恢复基线继续实验。</span></li>
+            <li><b>改变一个向量</b><span>选中编辑词元和 Q、K 或 V，修改 x、y 数字，或拖动向量圆点。默认拖动和方向键按整数调整，可切换为 0.1 步长；直接输入可用小数。向量各坐标范围为 −5 到 5。</span></li>
+            <li><b>查看计算过程</b><span>展开操作区下方的“查看计算过程”，用步骤标签或“上一步”“下一步”阅读公式和当前数值例子；“详细解释”补充输入、用途、符号和逐项计算。</span></li>
+            <li><b>比较修改前后</b><span>默认基线是初始实验。在“对比设置”中保存新基线或恢复基线；需要时还可展开输出坐标图和所有词元的注意力热力图。</span></li>
           </ol>
         </ModuleInstructions>
       </>}

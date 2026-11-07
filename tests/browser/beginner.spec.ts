@@ -1,19 +1,21 @@
-import { openLab, openExperiment } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, calculationStep, expandPanel } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('each calculation step teaches its purpose and example follows edited input', async ({ page }) => {
   await openLab(page);
   await openExperiment(page, 'free');
+  await expandPanel(page, '.calculation-disclosure');
+  await expandPanel(page, '.calculation-explanation');
   await expect(page.getByTestId('step-guide')).toContainText('不是百分比');
-  await page.getByRole('spinbutton', { name: '词元 A 的 Q x', exact: true }).fill('2');
+  await (await vectorInput(page, 'A', 'Q', 'x')).fill('2');
   await expect(page.getByTestId('beginner-example')).toContainText('2.0 × 1.0 + 0.0 × 0.0 = 2.000');
-  await page.getByRole('button', { name: '2 缩放', exact: true }).click();
+  await (await calculationStep(page, '2 缩放')).click();
   await expect(page.getByTestId('step-guide')).toContainText('与词元数量无关');
   await expect(page.getByTestId('beginner-example')).toContainText('2.000 ÷ 1.414… ≈ 1.414');
-  await page.getByRole('button', { name: '3 Softmax', exact: true }).click();
+  await (await calculationStep(page, '3 Softmax')).click();
   await expect(page.getByTestId('step-guide')).toContainText('e ≈ 2.718');
   await expect(page.getByTestId('beginner-example')).toContainText('76.8%');
-  await page.getByRole('button', { name: '4 加权求和', exact: true }).click();
+  await (await calculationStep(page, '4 加权求和')).click();
   await expect(page.getByTestId('step-guide')).toContainText('不会改变前面的权重');
   await expect(page.getByTestId('beginner-example')).toContainText('输出 x：');
   await page.getByRole('button', { name: '实验总结', exact: true }).click();
@@ -26,9 +28,9 @@ test('mobile guided experiment locates unlocked input, keeps task visible and ch
   await openExperiment(page, 'guided');
   await page.getByRole('radio', { name: 'B 的权重上升，A 和 C 的权重下降', exact: true }).check();
   await page.getByRole('button', { name: '记录预测，开始实验', exact: true }).click();
-  const input = page.getByRole('spinbutton', { name: '词元 B 的 K x', exact: true });
+  const input = (await vectorInput(page, 'B', 'K', 'x'));
   await expect(input).toBeFocused();
-  await expect(page.getByRole('spinbutton', { name: '词元 B 的 V y', exact: true })).toBeDisabled();
+  await expect((await vectorInput(page, 'B', 'V', 'y'))).toBeDisabled();
   const goal = page.getByRole('region', { name: '当前实验目标' });
   await expect(goal).toBeInViewport();
   await expect(goal).toContainText('权重超过 60%');
@@ -51,8 +53,8 @@ test('integer and decimal adjustments preserve other coordinates and allow typed
   const handle = page.getByTestId('vector-handle-0');
   await expect(step).toHaveValue('1');
   await handle.press('ArrowRight');
-  const x = page.getByRole('spinbutton', { name: '词元 A 的 K x', exact: true });
-  const y = page.getByRole('spinbutton', { name: '词元 A 的 K y', exact: true });
+  const x = (await vectorInput(page, 'A', 'K', 'x'));
+  const y = (await vectorInput(page, 'A', 'K', 'y'));
   await expect(x).toHaveValue('2');
   await y.fill('0.3');
   await handle.press('ArrowRight');
