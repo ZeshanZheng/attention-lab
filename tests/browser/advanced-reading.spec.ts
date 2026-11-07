@@ -1,7 +1,7 @@
-import { openLab, openExperiment, vectorInput } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, openCalculation } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
-test('single-head matrix precedes the existing summary and explains Query rows and Key columns', async ({ page }) => {
+test('summary contains the single-head matrix while the separate calculation module explains the formula', async ({ page }) => {
   await openLab(page);
   await page.getByRole('button', { name: '实验总结', exact: true }).click();
   const matrix = page.locator('.single-head-matrix').getByRole('table');
@@ -15,23 +15,22 @@ test('single-head matrix precedes the existing summary and explains Query rows a
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('这一行的权重组合各个 V');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('长度保持不变');
   await expect(page.locator('.single-head-matrix .reading-speech')).toContainText('夹角超过 90°');
-  const before = await page.locator('#single-head-matrix-title').boundingBox();
-  const after = await page.locator('#concept-summary-title').boundingBox();
-  expect(before!.y).toBeLessThan(after!.y);
-  await expect(page.locator('.concept-summary')).toContainText('输出 x ≈ 0.576×2');
+  await expect(page.locator('.formula-explanation')).toBeHidden();
+  await openCalculation(page);
+  await expect(page.locator('.formula-explanation')).toContainText('输出 x ≈ 0.576×2');
   await expect(page.locator('.summary-calculation-steps > li')).toHaveCount(4);
   await expect(page.locator('.summary-explanation')).toContainText('网页里 Q、K 都是二维向量');
   await expect(page.locator('.summary-explanation')).toContainText('各项权重相加为 1');
   await expect(page.locator('.summary-explanation')).toContainText('逐坐标相加');
   await expect(page.locator('.summary-formula .math-power sup')).toHaveText(['zj', 'zl']);
   await expect(page.locator('.summary-explanation')).toContainText('e 的 z 次方');
-  await expect(page.locator('.concept-summary')).not.toContainText('exp(');
-  await expect(page.locator('.concept-summary .beginner-example sub')).toHaveText(['A', 'A', 'B', 'C']);
-  await expect(page.locator('.concept-summary .concept-definitions')).toHaveCount(0);
+  await expect(page.locator('.formula-explanation')).not.toContainText('exp(');
+  await expect(page.locator('.formula-explanation .beginner-example sub')).toHaveText(['A', 'A', 'B', 'C']);
+  await expect(page.locator('.formula-explanation .concept-definitions')).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Attention 在算什么？', exact: true })).toHaveCount(0);
   await expect(page.getByText('跟着表格读一遍', { exact: true })).toHaveCount(0);
   await expect(page.locator('.single-head-matrix .reading-lead')).toHaveCount(0);
-  await expect(page.locator('.concept-summary')).not.toContainText('展示值已四舍五入');
+  await expect(page.locator('.formula-explanation')).not.toContainText('展示值已四舍五入');
 });
 
 test('architecture images load, all attention locations are labelled beside the full explanation, and reading preserves free parameters', async ({ page }) => {
@@ -41,17 +40,12 @@ test('architecture images load, all attention locations are labelled beside the 
   await openExperiment(page, 'free');
   await (await vectorInput(page, 'A', 'K', 'x')).fill('2');
   const nav = page.getByRole('group', { name: '学习模式' });
-  const expectedModes = ['使用说明', 'Attention 引言', '小栗子🌰', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
+  const expectedModes = ['使用说明', 'Attention 引言', '理解Q,K,V', 'Attention 计算', '动手实验', '实验总结', '理解自测', '多头注意力', '三种 Attention'];
   await expect(nav.getByRole('button')).toHaveCount(expectedModes.length);
   for (const name of expectedModes) await expect(nav.getByRole('button', { name, exact: true })).toHaveCount(1);
   await nav.getByRole('button', { name: 'Attention 引言', exact: true }).click();
-  const qkv = page.locator('.introduction-qkv');
-  const calculation = page.getByRole('region', { name: '一次 Attention，按这四步计算', exact: true });
-  const architecture = page.locator('.introduction-architecture');
-  const orderedSections = await Promise.all([qkv.boundingBox(), calculation.boundingBox(), architecture.boundingBox()]);
-  expect(orderedSections[0]!.y + orderedSections[0]!.height).toBeLessThan(orderedSections[1]!.y);
-  expect(orderedSections[1]!.y + orderedSections[1]!.height).toBeLessThan(orderedSections[2]!.y);
-  await expect(qkv.locator('dt')).toHaveText(['Q · Query · 查询', 'K · Key · 键', 'V · Value · 值']);
+  await expect(page.locator('.introduction-qkv')).toHaveCount(0);
+  await expect(page.locator('.introduction-calculation')).toHaveCount(0);
   await expect(page.locator('.introduction-next-example')).toContainText('接下来用“书”和“它”的例子');
   const context = page.locator('.architecture-context');
   await expect(context).toHaveJSProperty('open', false);

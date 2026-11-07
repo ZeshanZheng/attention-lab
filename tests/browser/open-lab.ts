@@ -33,12 +33,10 @@ export async function vectorInput(page: Page, token: string, kind: string, coord
   return input;
 }
 
-export async function calculationStep(page: Page, label: string) {
-  await expandPanel(page, '.calculation-disclosure');
-  return page.getByRole('button', { name: label, exact: true });
+export async function openCalculation(page: Page) {
+  await page.getByRole('group', { name: '学习模式' }).getByRole('button', { name: 'Attention 计算', exact: true }).click();
 }
 
 export async function comparisonButton(page: Page, label: string) {
-  await expandPanel(page, '.comparison-settings');
-  return page.getByRole('button', { name: label, exact: true });
+  return page.locator('.results-card').getByRole('button', { name: label, exact: true });
 }

@@ -1,28 +1,21 @@
-import { openLab, openExperiment, vectorInput, calculationStep, expandPanel } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, openCalculation, expandPanel } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
-test('each calculation step teaches its purpose and example follows edited input', async ({ page }) => {
+test('the calculation module explains all four stages and labels the default worked example', async ({ page }) => {
   await openLab(page);
-  await openExperiment(page, 'free');
-  await expandPanel(page, '.calculation-disclosure');
-  await expandPanel(page, '.calculation-explanation');
-  await expect(page.getByTestId('step-guide')).toContainText('不是百分比');
+  await openExperiment(page);
   await (await vectorInput(page, 'A', 'Q', 'x')).fill('2');
-  await expect(page.getByTestId('beginner-example')).toContainText('2.0 × 1.0 + 0.0 × 0.0 = 2.000');
-  await (await calculationStep(page, '2 缩放')).click();
-  await expect(page.getByTestId('step-guide')).toContainText('与词元数量无关');
-  await expect(page.getByTestId('beginner-example')).toContainText('2.000 ÷ 1.414… ≈ 1.414');
-  await (await calculationStep(page, '3 Softmax')).click();
-  await expect(page.locator('.calculation-card .math-formula .math-power sup')).toHaveText(['zⱼ − max z', 'zₗ − max z']);
-  await expect(page.locator('.calculation-row .math-power sup')).toHaveText(['0.000', '-1.414', '-2.828']);
-  await expect(page.locator('.calculation-card')).not.toContainText('exp(');
-  await expect(page.getByTestId('step-guide')).toContainText('e ≈ 2.718');
-  await expect(page.getByTestId('beginner-example')).toContainText('76.8%');
-  await (await calculationStep(page, '4 加权求和')).click();
-  await expect(page.getByTestId('step-guide')).toContainText('不会改变前面的权重');
-  await expect(page.getByTestId('beginner-example')).toContainText('输出 x：');
-  await page.getByRole('button', { name: '实验总结', exact: true }).click();
-  await page.locator('.concept-summary').screenshot({ path: '.tools/preview-concept-summary.png' });
+  await expect(page.getByTestId('weight-0')).toHaveText('76.8%');
+  await openCalculation(page);
+  await expect(page.locator('.summary-calculation-steps > li')).toHaveCount(4);
+  await expect(page.locator('.summary-formula .math-power sup')).toHaveText(['zj', 'zl']);
+  await expect(page.locator('.summary-explanation')).toContainText('e ≈ 2.718');
+  await expect(page.locator('.formula-explanation .beginner-example')).toContainText('默认实验的完整例子');
+  await expect(page.locator('.formula-explanation .beginner-example')).toContainText('0.568');
+  await expect(page.getByRole('button', { name: '下一步', exact: true })).toHaveCount(0);
+  await openExperiment(page);
+  await expect((await vectorInput(page, 'A', 'Q', 'x'))).toHaveValue('2');
+  await expect(page.getByTestId('weight-0')).toHaveText('76.8%');
 });
 
 test('mobile guided experiment locates unlocked input, keeps task visible and checks in place', async ({ page }) => {

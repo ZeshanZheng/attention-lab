@@ -1,4 +1,4 @@
-import { openLab, openExperiment, vectorInput, calculationStep, comparisonButton, expandPanel } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, comparisonButton, expandPanel } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('default experiment renders correct results without browser errors', async ({ page }) => {
@@ -29,10 +29,7 @@ test('editing only B value doubles output y without changing attention weights',
   await expect(page.getByTestId('weight-delta-0')).toHaveText('与基线相同');
   await expect(page.getByTestId('output-delta-y')).toHaveText('+0.568');
   await expect(page.getByTestId('insight')).toContainText('权重没变，输出变了');
-  await (await calculationStep(page, '4 加权求和')).click();
-  await expandPanel(page, '.calculation-explanation');
-  await expect(page.getByText('最终输出向量', { exact: true })).toBeVisible();
-  await expect(page.getByText('(0.000, 1.136)', { exact: true })).toBeVisible();
+
 });
 
 test('saving and restoring a baseline keeps the snapshot independent, reset returns defaults', async ({ page }) => {
@@ -76,30 +73,27 @@ test('dragging and keyboard adjustment update K while keeping the observed Query
   await expect((await vectorInput(page, 'B', 'K', 'x'))).toHaveValue('2.1');
 });
 
-test('calculation steps change only through manual navigation', async ({ page }) => {
-  await page.clock.install({ time: new Date('2026-10-08T08:00:00Z') });
+test('comparison controls stay visible inside results and output remains inline at narrow widths', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 });
   await openLab(page);
-  await openExperiment(page, 'free');
-  await page.clock.pauseAt(new Date('2026-10-08T08:01:00Z'));
-  await page.clock.fastForward(60_000);
-  await expect((await calculationStep(page, '1 点积'))).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('button', { name: '上一步', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: '下一步', exact: true }).click();
-  await expect(page.getByText('让得分保持合适的尺度', { exact: true })).toBeVisible();
-  await (await calculationStep(page, '3 Softmax')).click();
-  await expect(page.getByTestId('weight-sum')).toHaveText('1.000');
-  await page.getByRole('button', { name: '下一步', exact: true }).click();
-  await expect(page.getByRole('button', { name: '下一步', exact: true })).toBeDisabled();
-  await expect(page.getByRole('combobox', { name: '每步停留时间' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '自动演示', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '暂停', exact: true })).toHaveCount(0);
-  await page.getByRole('button', { name: '上一步', exact: true }).click();
-  await page.clock.fastForward(60_000);
-  await expect((await calculationStep(page, '3 Softmax'))).toHaveAttribute('aria-pressed', 'true');
-  await (await calculationStep(page, '1 点积')).click();
-  await page.clock.fastForward(60_000);
-  await expect((await calculationStep(page, '1 点积'))).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByText('向量之间，有多匹配？', { exact: true })).toBeVisible();
+  await openExperiment(page);
+  const comparison = page.locator('.results-card .comparison-settings');
+  await expect(comparison.getByRole('heading', { name: '对比设置' })).toBeVisible();
+  await expect(comparison.locator('summary')).toHaveCount(0);
+  await expect(comparison.getByRole('button', { name: '保存基线' })).toBeEnabled();
+  await expect(comparison.getByRole('button', { name: '恢复基线' })).toBeDisabled();
+  for (const token of ['A', 'B', 'C']) {
+    await (await vectorInput(page, token, 'V', 'x')).fill('-5');
+    await (await vectorInput(page, token, 'V', 'y')).fill('-5');
+  }
+  await expect(page.getByTestId('output-vector')).toContainText('(-5.000, -5.000)');
+  const [heading, value] = await Promise.all([page.locator('.output-heading h3').boundingBox(), page.getByTestId('output-vector').boundingBox()]);
+  expect(Math.abs(heading!.y + heading!.height / 2 - value!.y - value!.height / 2)).toBeLessThan(3);
+  expect(value!.x).toBeGreaterThanOrEqual(heading!.x + heading!.width);
+  expect(value!.x + value!.width).toBeLessThanOrEqual(320);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+  await expect(page.getByText('自由探索操作说明', { exact: true })).toHaveCount(0);
+  await expect(page.locator('.calculation-disclosure')).toHaveCount(0);
 });
 
 test('changing the observed query updates current and baseline results consistently', async ({ page }) => {

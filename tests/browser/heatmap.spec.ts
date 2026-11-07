@@ -41,7 +41,7 @@ test('all nine heatmap cells show the computed weights and normalize separately 
   expect(errors).toEqual([]);
 });
 
-test('click and keyboard selection synchronize Query, bars and formulas without changing the editing token', async ({ page }) => {
+test('click and keyboard selection synchronize Query, bars and output without changing the editing token', async ({ page }) => {
   await openLab(page);
   await openExperiment(page, 'free');
   await expandPanel(page, '.heatmap-disclosure');
@@ -51,6 +51,8 @@ test('click and keyboard selection synchronize Query, bars and formulas without 
   await expect(page.getByTestId('heatmap-detail')).toContainText('B 在关注 C');
   const expected = computeAttention(createDefaultExperiment().input);
   for (let column = 0; column < 3; column += 1) await expect(page.getByTestId(`weight-${column}`)).toHaveText(`${formatNumber(expected.weights[1]![column]! * 100, 1)}%`);
+  // Keep the pointer off the grid while exercising keyboard focus and scrolling.
+  await page.mouse.move(0, 0);
   await page.getByTestId('heatmap-cell-2-0').focus();
   await expect(page.getByTestId('heatmap-detail')).toContainText('C 在关注 A');
   await expect(page.getByRole('button', { name: '观察词元 B', exact: true })).toHaveAttribute('aria-pressed', 'true');

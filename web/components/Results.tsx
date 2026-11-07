@@ -1,3 +1,4 @@
+import { Icon } from './Icon.tsx';
 import type { AttentionResult } from '../../src/index.ts';
 import { TOKEN_NAMES, TOKEN_COLORS, formatNumber, formatVector, formatDelta } from '../format.ts';
 
@@ -26,7 +27,7 @@ function OutputPlane({ current, baseline }: { current: readonly number[]; baseli
   </svg>;
 }
 
-export function Results({ current, baseline, query, hasChanges, focus }: { current: AttentionResult; baseline: AttentionResult; query: number; hasChanges: boolean; focus?: 'weights' | 'output' | undefined }) {
+export function Results({ current, baseline, query, hasChanges, focus, canSaveBaseline, canRestoreBaseline, onSaveBaseline, onRestoreBaseline }: { current: AttentionResult; baseline: AttentionResult; query: number; hasChanges: boolean; focus?: 'weights' | 'output' | undefined; canSaveBaseline: boolean; canRestoreBaseline: boolean; onSaveBaseline: () => void; onRestoreBaseline: () => void }) {
   const weights = current.weights[query]!;
   const previousWeights = baseline.weights[query]!;
   const output = current.outputs[query]!;
@@ -58,12 +59,19 @@ export function Results({ current, baseline, query, hasChanges, focus }: { curre
       })}
     </div>
     <div className="weight-total"><span>权重之和</span><code>{formatNumber(weights.reduce((sum, value) => sum + value, 0))}</code></div></div>
-    <div className={`output-section ${focus === 'output' ? 'result-focus' : ''}`} data-result-focus={focus === 'output'}><div className="result-heading"><h3>输出向量</h3><span>V 的加权组合</span></div>
-      <div className="output-vector" data-testid="output-vector"><span>o =</span><strong>{formatVector(output)}</strong></div>
+    <div className={`output-section ${focus === 'output' ? 'result-focus' : ''}`} data-result-focus={focus === 'output'}><div className="result-heading output-heading"><h3>输出向量</h3><div className="output-vector" data-testid="output-vector"><span>o =</span><strong>{formatVector(output)}</strong></div></div>
       <div className="output-comparison"><span>修改前（基线）</span><code data-testid="baseline-output">{formatVector(previousOutput)}</code></div>
       <div className="coordinate-deltas">{['x', 'y'].map((coordinate, index) => <div key={coordinate}><span>Δ{coordinate}</span><b data-testid={`output-delta-${coordinate}`}>{formatDelta(output[index]! - previousOutput[index]!)}</b></div>)}</div>
       <details className="output-visualization"><summary>查看输出坐标图</summary><div className="output-plot"><OutputPlane current={output} baseline={previousOutput} /></div></details>
     </div>
     <div className="insight-box"><span className="insight-symbol">✦</span><p data-testid="insight">{insight}</p></div>
+    <section className="comparison-settings" aria-labelledby="comparison-settings-title">
+      <h3 id="comparison-settings-title">对比设置</h3>
+      <p>基线是用来比较的修改前参数，默认是初始实验。自由探索中可以把当前参数保存为新基线；引导任务始终使用任务的初始参数。</p>
+      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><div className="comparison-actions">
+        <button className="button secondary" disabled={!canSaveBaseline} onClick={onSaveBaseline}><Icon name="save" size={17} />保存基线</button>
+        <button className="button secondary" disabled={!canRestoreBaseline} onClick={onRestoreBaseline}>恢复基线<Icon name="reset" size={14} /></button>
+      </div></div>
+    </section>
   </section>;
 }

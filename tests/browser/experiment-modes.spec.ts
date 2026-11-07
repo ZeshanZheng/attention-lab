@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { openLab, openExperiment, vectorInput, calculationStep, comparisonButton } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, openCalculation, comparisonButton } from './open-lab.ts';
 import { getLesson } from '../../web/learning/lessons.ts';
 
 async function expectModuleBarVisible(page: Page) {
@@ -16,7 +16,7 @@ test('one workbench preserves independent free and guided state across predictio
   const navigation = page.getByRole('group', { name: '学习模式' });
   await expect(navigation.getByRole('button', { name: '自由探索', exact: true })).toHaveCount(0);
   await expect(navigation.getByRole('button', { name: '引导实验', exact: true })).toHaveCount(0);
-  await expect(page.locator('.help-module-card')).toHaveCount(7);
+  await expect(page.locator('.help-module-card')).toHaveCount(8);
   await openExperiment(page);
   const workbench = page.locator('.lab-grid');
   const originalWorkbench = await workbench.elementHandle();
@@ -26,7 +26,7 @@ test('one workbench preserves independent free and guided state across predictio
   await value.fill('4');
   await (await comparisonButton(page, '保存基线')).click();
   await value.fill('3');
-  await (await calculationStep(page, '3 Softmax')).click();
+  await openCalculation(page);
 
   const lesson = getLesson('focus');
   await openExperiment(page, 'guided');
@@ -35,7 +35,9 @@ test('one workbench preserves independent free and guided state across predictio
   await openExperiment(page, 'free');
   await expect(value).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
-  await expect((await calculationStep(page, '3 Softmax'))).toHaveAttribute('aria-pressed', 'true');
+  await openCalculation(page);
+  await expect(page.locator('.formula-explanation')).toBeVisible();
+  await openExperiment(page, 'free');
   await openExperiment(page, 'guided');
   await expectModuleBarVisible(page);
   await expect(page.getByRole('radio', { name: lesson.prediction.options[0]!, exact: true })).toBeChecked();

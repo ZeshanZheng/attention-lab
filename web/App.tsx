@@ -3,11 +3,10 @@ import { computeAttention } from '../src/index.ts';
 import { createLabState, labReducer } from './state.ts';
 import { TOKEN_NAMES } from './format.ts';
 import { VectorEditor } from './components/VectorEditor.tsx';
-import { Calculation } from './components/Calculation.tsx';
+import { FormulaExplanation } from './components/FormulaExplanation.tsx';
 import { Results } from './components/Results.tsx';
 import { HelpPage } from './components/HelpPage.tsx';
 import { WelcomePage } from './components/WelcomePage.tsx';
-import { ModuleInstructions } from './components/ModuleInstructions.tsx';
 import { Icon } from './components/Icon.tsx';
 import { GuidedLessons } from './components/GuidedLessons.tsx';
 import { Assessment } from './components/Assessment.tsx';
@@ -25,10 +24,10 @@ import type { LessonSession } from './learning/session.ts';
 import type { LabState } from './state.ts';
 import { useLearningProgress } from './learning/useLearningProgress.ts';
 
-type ReadingView = 'help' | 'introduction' | 'example' | 'summary' | 'multihead' | 'types';
-const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '小栗子🌰', experiment: '动手实验', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
+type ReadingView = 'help' | 'introduction' | 'example' | 'calculation' | 'summary' | 'multihead' | 'types';
+const VIEW_LABELS = { help: '使用说明', introduction: 'Attention 引言', example: '理解Q,K,V', calculation: 'Attention 计算', experiment: '动手实验', summary: '实验总结', multihead: '多头注意力', types: '三种 Attention', assessment: '理解自测' };
 type LearningView = keyof typeof VIEW_LABELS;
-const MODULE_ORDER = ['help', 'introduction', 'example', 'experiment', 'summary', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
+const MODULE_ORDER = ['help', 'introduction', 'example', 'calculation', 'experiment', 'summary', 'assessment', 'multihead', 'types'] as const satisfies readonly LearningView[];
 
 export function App() {
   const [entered, setEntered] = useState(false);
@@ -86,7 +85,6 @@ function Laboratory() {
     return () => window.clearTimeout(timer);
   }, [announcement]);
 
-  const selectStep = (step: number) => dispatch({ type: 'select-step', step });
   const startLesson = (id: LessonId) => {
     setReadingView(null);
     if (mode === 'free') freeSnapshot.current = state;
@@ -173,6 +171,7 @@ function Laboratory() {
       <div hidden={readingView !== 'help'}><HelpPage onNavigate={enterModule} /></div>
       <div hidden={readingView !== 'introduction'}><LearningIntroduction nextNavigation={activeView === 'introduction' ? nextModuleNavigation : null} /></div>
       <div hidden={readingView !== 'example'}><SentenceExample nextNavigation={activeView === 'example' ? nextModuleNavigation : null} /></div>
+      <div hidden={readingView !== 'calculation'}><FormulaExplanation /></div>
       <div hidden={readingView !== 'summary'}><ConceptSummary /></div>
       <div hidden={readingView !== 'multihead'}><MultiHeadAttention /></div>
       <div hidden={readingView !== 'types'}><AttentionTypes /></div>
@@ -190,13 +189,11 @@ function Laboratory() {
       {mode === 'free' && <div className="experiment-toolbar"><div className="observation-control"><span className="section-label">观察谁的 Query</span><div className="segmented" aria-label="观察 Query">
         {TOKEN_NAMES.map((name, index) => <button key={name} aria-label={`观察词元 ${name}`} aria-pressed={state.selectedQueryIndex === index} className={state.selectedQueryIndex === index ? 'active' : ''} onClick={() => dispatch({ type: 'select-query', index })}>词元 {name}</button>)}
       </div></div><div className="experiment-meta"><span>3 个词元</span><span>2 维向量</span><span>单头 Attention</span></div></div>}
-      <div className="lab-grid experiment-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} focus={mode === 'guided' ? activeLesson?.kind === 'values' ? 'output' : 'weights' : undefined} /></div>
-      <details className="experiment-disclosure calculation-disclosure"><summary>查看计算过程</summary><Calculation input={state.input} result={result} query={state.selectedQueryIndex} step={state.step} onStep={selectStep} /></details>
+      <div className="lab-grid experiment-grid"><VectorEditor state={state} dispatch={dispatch} editorRef={editorRef} coordinateStep={coordinateStep} onCoordinateStep={setCoordinateStep} /><Results current={result} baseline={baselineResult} query={state.selectedQueryIndex} hasChanges={hasChanges} canSaveBaseline={mode === 'free'} canRestoreBaseline={hasChanges && (mode === 'free' || session?.phase === 'experiment')}
+        onSaveBaseline={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}
+        onRestoreBaseline={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }} focus={mode === 'guided' ? activeLesson?.kind === 'values' ? 'output' : 'weights' : undefined} /></div>
       <details className="experiment-disclosure heatmap-disclosure"><summary>查看所有词元的注意力</summary><AttentionHeatmap current={result} baseline={baselineResult} query={state.selectedQueryIndex}
         onSelectQuery={mode === 'free' ? (index) => dispatch({ type: 'select-query', index }) : undefined} /></details>
-      <details className="experiment-disclosure comparison-settings"><summary>对比设置</summary><div className="comparison-settings-body"><p>基线是用来比较的修改前参数，默认是初始实验。自由探索中可以把当前参数保存为新基线；引导任务始终使用任务的初始参数。</p>
-      <div className="baseline-footer"><span><i className={hasChanges ? 'changed-dot' : 'neutral-dot'} />{hasChanges ? '当前参数与基线不同' : '当前参数与基线相同'}</span><div className="comparison-actions"><button className="button secondary" disabled={mode === 'guided'} onClick={() => { dispatch({ type: 'save-baseline' }); setAnnouncement('已保存当前参数作为对比基线'); }}><Icon name="save" size={17} />保存基线</button><button className="button secondary" disabled={!hasChanges || mode === 'guided' && session?.phase !== 'experiment'} onClick={() => { dispatch({ type: 'restore-baseline' }); setAnnouncement('已恢复保存的基线参数'); }}>恢复基线<Icon name="reset" size={14} /></button></div></div>
-      </div></details>
       </div>}
       {readingView === null && mode === 'free' && <>
         <details className="free-experiment-scope experiment-disclosure" aria-labelledby="free-experiment-scope-title">
@@ -206,14 +203,7 @@ function Laboratory() {
           <p>这里的 A、B、C 和 Q/K/V 都是人为设定的教学数据，并没有训练语言模型。输出的是聚合向量，得到下一个词还需要其他模块。</p>
           <p>本实验没有加入训练、位置编码和多头机制。</p>
         </details>
-        <ModuleInstructions title="自由探索操作说明">
-          <ol className="guide-list">
-            <li><b>选择观察对象</b><span>页面上方选择 A、B 或 C，观察它的 Query 如何关注其他词元。</span></li>
-            <li><b>改变一个向量</b><span>选中编辑词元和 Q、K 或 V，修改 x、y 数字，或拖动向量圆点。默认拖动和方向键按整数调整，可切换为 0.1 步长；直接输入可用小数。向量各坐标范围为 −5 到 5。</span></li>
-            <li><b>查看计算过程</b><span>展开操作区下方的“查看计算过程”，用步骤标签或“上一步”“下一步”阅读公式和当前数值例子；“详细解释”补充输入、用途、符号和逐项计算。</span></li>
-            <li><b>比较修改前后</b><span>默认基线是初始实验。在“对比设置”中保存新基线或恢复基线；需要时还可展开输出坐标图和所有词元的注意力热力图。</span></li>
-          </ol>
-        </ModuleInstructions>
+
       </>}
       {activeView !== 'introduction' && activeView !== 'example' && nextModuleNavigation}
     </main>

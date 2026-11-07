@@ -44,8 +44,8 @@ const EXAMPLE_CLOSING_PARAGRAPHS = [
 ] as const;
 
 export function SentenceExample({ nextNavigation }: { nextNavigation: ReactNode }) {
-  return <section className="sentence-example" aria-label="小栗子🌰">
-    <div className="example-heading"><p className="example-scope">这只是指代关系的教学示意，并未运行真实语言模型；真实模型使用的词元划分取决于分词器。</p></div>
+  return <section className="sentence-example" aria-label="理解Q,K,V">
+    <div className="example-heading"><h2>理解 Q、K、V</h2><p>Q、K、V 分别是英文单词 Query（查询）、Key（键）和 Value（值）的首字母缩写。下面用一个指代例子说明它们如何配合。</p><p className="example-scope">这只是指代关系的教学示意，并未运行真实语言模型；真实模型使用的词元划分取决于分词器。</p></div>
     <div className="example-sentence" aria-label="例句">
       <p><span className="example-word example-subject">我</span>今天买了一本<span className="example-word example-book is-emphasized">书</span>，上午去了图书馆，然后下午又去了咖啡厅，晚上才开始读<span className="example-word example-pronoun is-emphasized">它</span>。</p>
       <div className="example-connection">Q/K 匹配 → 分配注意力权重 → 汇合 V → 融入上下文</div>
@@ -60,6 +60,6 @@ export function SentenceExample({ nextNavigation }: { nextNavigation: ReactNode 
       <div className="example-prose example-closing">{EXAMPLE_CLOSING_PARAGRAPHS.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
     </article>
     <p className="example-source">计算原理可参阅 <a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer 原论文 §3.2</a>。</p>
-    <div className="example-explore"><p>把例子带回实验：改 Q/K 看关注比例，改 V 看聚合内容。</p>{nextNavigation}</div>
+    <div className="example-explore"><p>接下来把 Q/K 匹配、权重分配和 V 的汇合写成公式，看看每一步怎样计算。</p>{nextNavigation}</div>
   </section>;
 }

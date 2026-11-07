@@ -1,21 +1,21 @@
-import { openLab, openExperiment, vectorInput, calculationStep, comparisonButton } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, openCalculation, comparisonButton } from './open-lab.ts';
 import { expect, test } from '@playwright/test';
 
 test('sentence example presents one continuous explanation and preserves experiment state', async ({ page }) => {
   await openLab(page);
   const modes = page.getByRole('group', { name: '学习模式' });
-  await expect(page.getByRole('region', { name: '小栗子🌰', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: '理解Q,K,V', exact: true })).toHaveCount(0);
   await openExperiment(page, 'free');
   await page.getByRole('button', { name: '编辑词元 B', exact: true }).click();
   await (await vectorInput(page, 'B', 'V', 'y')).fill('4');
   await (await comparisonButton(page, '保存基线')).click();
   await (await vectorInput(page, 'B', 'V', 'y')).fill('3');
-  await (await calculationStep(page, '3 Softmax')).click();
-  const exampleButton = modes.getByRole('button', { name: '小栗子🌰', exact: true });
+  await openCalculation(page);
+  const exampleButton = modes.getByRole('button', { name: '理解Q,K,V', exact: true });
   await exampleButton.click();
   await expect(exampleButton).toBeFocused();
-  await expect(modes.getByRole('button', { pressed: true })).toHaveText('小栗子🌰');
-  await expect(page.locator('.mode-pill')).toHaveText('小栗子🌰');
+  await expect(modes.getByRole('button', { pressed: true })).toHaveText('理解Q,K,V');
+  await expect(page.locator('.mode-pill')).toHaveText('理解Q,K,V');
   await expect(page.getByRole('spinbutton')).toHaveCount(0);
   await expect(page.getByRole('button', { name: '重置实验', exact: true })).toHaveCount(0);
   const explanation = page.getByRole('article', { name: '例子完整讲解' });
@@ -52,16 +52,18 @@ test('sentence example presents one continuous explanation and preserves experim
   const entryBounds = await page.locator('.example-explore').boundingBox();
   expect(articleBounds!.y + articleBounds!.height).toBeLessThan(sourceBounds!.y);
   expect(sourceBounds!.y + sourceBounds!.height).toBeLessThan(entryBounds!.y);
-  await expect(page.locator('.example-explore').getByRole('button', { name: '进入动手实验模块', exact: true })).toBeVisible();
+  await expect(page.locator('.example-explore').getByRole('button', { name: '进入Attention 计算模块', exact: true })).toBeVisible();
   await page.screenshot({ path: '.tools/preview-sentence-example-desktop.png', fullPage: true });
   await modes.getByRole('button', { name: '实验总结', exact: true }).click();
   await exampleButton.click();
   await expect(explanation).toContainText('V 本身是一组数字');
+  await page.getByRole('button', { name: '进入Attention 计算模块', exact: true }).click();
+  await expect(modes.getByRole('button', { pressed: true })).toHaveText('Attention 计算');
   await page.getByRole('button', { name: '进入动手实验模块', exact: true }).click();
-  await expect(modes.getByRole('button', { pressed: true })).toHaveText('动手实验');
   await expect((await vectorInput(page, 'B', 'V', 'y'))).toHaveValue('3');
   await expect(page.getByTestId('baseline-output')).toHaveText('(0.872, 1.136)');
-  await expect((await calculationStep(page, '3 Softmax'))).toHaveAttribute('aria-pressed', 'true');
+  await openCalculation(page);
+  await expect(page.locator('.formula-explanation')).toBeVisible();
 });
 
 for (const width of [320, 390]) {
@@ -72,7 +74,7 @@ for (const width of [320, 390]) {
     const questions = page.getByTestId('assessment-question');
     const ids = await questions.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-question-id')));
     await questions.first().getByRole('radio').first().check();
-    await page.getByRole('button', { name: '小栗子🌰', exact: true }).click();
+    await page.getByRole('button', { name: '理解Q,K,V', exact: true }).click();
     await expect(page.getByRole('radio')).toHaveCount(0);
     await expect(page.getByRole('article', { name: '例子完整讲解' }).getByRole('heading')).toHaveCount(4);
     await expect(page.locator('.example-step-picker, .example-step-controls')).toHaveCount(0);

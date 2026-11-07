@@ -23,11 +23,11 @@
 .guided-taskbar { position: sticky; top: 8px; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px 18px; margin-bottom: 18px; border: 1px solid #bca9ea; border-radius: 10px; background: #f9f6ff; box-shadow: 0 5px 20px #3b25631a; color: #493d65; }
 .guided-taskbar p { font-size: 13px; margin-top: 5px; line-height: 1.7; }
 .taskbar-actions { display: flex; flex-shrink: 0; gap: 8px; }
-.concept-summary { margin: 24px 0; }
-.concept-summary h2 { font-size: 22px; margin-top: 8px; }
-#concept-summary-title { scroll-margin-top: 24px; }
-.concept-summary > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
-.concept-summary .summary-formula { margin-top: 0; }
+.formula-explanation { margin: 0 0 24px; }
+.formula-explanation h2 { font-size: 24px; margin-bottom: 22px; }
+#attention-calculation-title { scroll-margin-top: 24px; }
+.formula-explanation > p { font-size: 15px; color: #4d5971; line-height: 1.95; margin-top: 14px; }
+.formula-explanation .summary-formula { margin-top: 0; }
 .summary-formula-term { display: inline-block; max-width: 100%; vertical-align: middle; }
 .math-power { display: inline-block; white-space: nowrap; font-family: var(--mono); line-height: 1.8; }
 .math-power sup { font-size: .78em; line-height: 0; vertical-align: super; }
@@ -46,7 +46,7 @@
 .assessment-answer p { font-size: 14px; margin-top: 10px; }
 @media (max-width: 700px) {
   .concept-definitions { grid-template-columns: 1fr; }
-  .concept-summary h2 { font-size: 19px; }
+  .formula-explanation h2 { font-size: 19px; }
   .summary-explanation { font-size: 16px; }
   .summary-calculation-steps { padding-left: 21px; }
   .summary-calculation-steps code { font-size: 14px; }

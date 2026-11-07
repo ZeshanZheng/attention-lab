@@ -1,48 +1,32 @@
 import { expect, test } from '@playwright/test';
-import { openLab, openExperiment, vectorInput, expandPanel, comparisonButton, calculationStep } from './open-lab.ts';
+import { openLab, openExperiment, vectorInput, expandPanel, comparisonButton } from './open-lab.ts';
 import { getLesson } from '../../web/learning/lessons.ts';
 
-test('the two-column experiment starts with essentials and expanded calculations retain the same live values', async ({ page }) => {
+test('the two-column workbench keeps comparison visible and exposes optional visualizations on demand', async ({ page }) => {
   await openLab(page);
   await openExperiment(page);
   await expect(page.locator('.experiment-grid > section')).toHaveCount(2);
   await expect(page.getByRole('spinbutton')).toHaveCount(2);
-  for (const selector of ['.calculation-disclosure', '.calculation-explanation', '.heatmap-disclosure', '.comparison-settings', '.output-visualization', '.free-experiment-scope']) {
+  for (const selector of ['.heatmap-disclosure', '.output-visualization', '.free-experiment-scope']) {
     await expect(page.locator(selector)).toHaveJSProperty('open', false);
   }
-  for (const selector of ['.calculation-card', '.output-plane', '.heatmap-card']) await expect(page.locator(selector)).toBeHidden();
-  const [editor, results, calculation] = await Promise.all([
-    page.locator('.editor-card').boundingBox(), page.locator('.results-card').boundingBox(), page.locator('.calculation-disclosure').boundingBox(),
-  ]);
+  for (const selector of ['.output-plane', '.heatmap-card', '.formula-explanation']) await expect(page.locator(selector)).toBeHidden();
+  const [editor, results] = await Promise.all([page.locator('.editor-card').boundingBox(), page.locator('.results-card').boundingBox()]);
   expect(results!.x).toBeGreaterThan(editor!.x + editor!.width);
   expect(results!.y).toBe(editor!.y);
-  expect(calculation!.y).toBeGreaterThan(Math.max(editor!.y + editor!.height, results!.y + results!.height));
   await (await vectorInput(page, 'B', 'V', 'y')).fill('4');
   await expect(page.getByTestId('weight-1')).toHaveText('28.4%');
-  await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
-  const calculationSummary = page.locator('.calculation-disclosure > summary');
-  await calculationSummary.focus();
-  await page.keyboard.press('Enter');
-  await (await calculationStep(page, '4 加权求和')).click();
-  await expect(page.getByTestId('beginner-example')).toBeVisible();
-  await expect(page.getByTestId('step-guide')).toBeHidden();
-  await expect(page.getByTestId('beginner-example')).toContainText('(0.872, 1.136)');
-  await expandPanel(page, '.calculation-explanation');
-  await expect(page.getByTestId('step-guide')).toBeVisible();
-  await expect(page.locator('.calculation-row')).toHaveCount(3);
-  await calculationSummary.click();
-  await expect(page.locator('.calculation-card')).toBeHidden();
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
   await (await comparisonButton(page, '保存基线')).click();
   await (await vectorInput(page, 'B', 'V', 'y')).fill('3');
   await (await comparisonButton(page, '恢复基线')).click();
   await expect(page.getByTestId('output-vector')).toContainText('(0.872, 1.136)');
-  await expandPanel(page, '.output-visualization');
+  const plotSummary = page.locator('.output-visualization > summary');
+  await plotSummary.focus();
+  await page.keyboard.press('Enter');
   await expect(page.locator('.output-plane')).toBeVisible();
   await expandPanel(page, '.heatmap-disclosure');
   await expect(page.getByTestId('heatmap-cell-0-1')).toHaveText('28.4%');
-  await expandPanel(page, '.calculation-disclosure');
-  await expect(page.getByRole('button', { name: '4 加权求和', exact: true })).toHaveAttribute('aria-pressed', 'true');
 });
 
 test('mobile guided work shows only the target, keeps other vectors locked and highlights the actual output change', async ({ page }) => {

@@ -58,3 +58,6 @@
   .introduction-lead { font-size: 14px; }
   .introduction-more .introduction-sources { font-size: 12px; }
 }
+
+.learning-introduction > .introduction-architecture { margin-top: 0; border-top: 0; padding-top: 0; }
+.introduction-architecture h2 { font-size: 24px; color: #30394f; }

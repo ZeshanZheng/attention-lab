@@ -3,24 +3,7 @@ import { TransformerArchitecture } from './TransformerArchitecture.tsx';
 
 export function LearningIntroduction({ nextNavigation }: { nextNavigation: ReactNode }) {
   return <section className="learning-introduction" aria-labelledby="attention-introduction-title">
-    <div className="introduction-heading"><h2 id="attention-introduction-title">先认识 Attention 中的 Q、K、V</h2></div>
-    <dl className="introduction-qkv">
-      <div><dt>Q · Query · 查询</dt><dd>当前位置想寻找什么信息。</dd></div>
-      <div><dt>K · Key · 键</dt><dd>各个位置提供哪些可供匹配的特征。</dd></div>
-      <div><dt>V · Value · 值</dt><dd>各个位置实际提供什么信息。</dd></div>
-    </dl>
-    <p className="introduction-vector-note">Q、K、V 分别是英文单词 Query、Key 和 Value 的首字母缩写。上面的说法是帮助理解的比喻，实际的 Q、K、V 都是数学向量，由当前层的输入表示经过学习到的变换得到。</p>
-    <section className="introduction-calculation" aria-labelledby="introduction-calculation-title">
-      <h3 id="introduction-calculation-title">一次 Attention，按这四步计算</h3>
-      <ol className="introduction-flow" aria-label="Attention 计算流程">
-        <li><b>Q 与 K 匹配</b><span>计算点积得分</span></li>
-        <li><b>缩放与 Softmax</b><span>得到注意力权重</span></li>
-        <li><b>按权重汇合 V</b><span>把各位置的信息加权相加</span></li>
-        <li><b>得到输出向量</b><span>得到汇合后的信息</span></li>
-      </ol>
-      <p className="introduction-vector-note">输出仍是一组数字，为更新当前位置的表示提供信息，还不是最终生成的文字。</p>
-    </section>
-    <section className="introduction-architecture" aria-labelledby="architecture-introduction-title"><h3 id="architecture-introduction-title">在 Transformer 架构里的 Attention</h3><div className="architecture-introduction-grid"><TransformerArchitecture showQkv showHighlightCaption={false} /><div className="architecture-introduction-copy"><div className="architecture-introduction-text">
+    <section className="introduction-architecture" aria-labelledby="attention-introduction-title"><h2 id="attention-introduction-title">在 Transformer 架构里的 Attention</h2><div className="architecture-introduction-grid"><TransformerArchitecture showQkv showHighlightCaption={false} /><div className="architecture-introduction-copy"><div className="architecture-introduction-text">
       <p><strong>先看红圈中的注意力子层，本实验主要拆解其中一个注意力头的计算。</strong></p>
       <p>红圈标出左边编码器中的 Multi-Head Attention（多头注意力）子层。它让输入序列中的各个位置交换信息；Q、K、V 来自同一序列的当前层表示，经过不同的学习到的投影得到。Attention 计算每个 Query 应该从哪些 Value 中取回多少信息。</p>
     </div><div className="architecture-introduction-text architecture-attention-note">
