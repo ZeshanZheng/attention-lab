@@ -66,6 +66,28 @@ test('architecture images load, all attention locations are labelled beside the 
   const matrixImage = page.locator('.multi-head-figure img');
   await expect(matrixImage).toBeVisible();
   expect(await matrixImage.evaluate((node) => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  const svgResponse = await page.request.get(await matrixImage.evaluate((node) => (node as HTMLImageElement).currentSrc));
+  expect(svgResponse.ok()).toBe(true);
+  const diagram = await page.evaluate((source) => {
+    const svg = new DOMParser().parseFromString(source, 'image/svg+xml');
+    return {
+      parseErrors: svg.querySelectorAll('parsererror').length,
+      embeddedImages: svg.querySelectorAll('image').length,
+      sheets: svg.querySelectorAll('polygon[id^="head-"]').length,
+      queries: Array.from(svg.querySelectorAll('[data-query-label]'), (node) => node.textContent),
+      keys: Array.from(svg.querySelectorAll('[data-key-label]'), (node) => node.textContent),
+      cells: Array.from(svg.querySelectorAll('[data-key][data-query]'), (node) => ({ key: Number(node.getAttribute('data-key')), query: Number(node.getAttribute('data-query')), formula: node.textContent })),
+    };
+  }, await svgResponse.text());
+  expect(diagram.parseErrors).toBe(0);
+  expect(diagram.embeddedImages).toBe(0);
+  expect(diagram.sheets).toBe(8);
+  expect(diagram.queries).toEqual(['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8']);
+  expect(diagram.keys).toEqual(['K1', 'K2', 'K3', 'K4', 'K5', 'K6', 'K7', 'K8']);
+  expect(diagram.cells).toHaveLength(64);
+  for (let row = 0; row < 8; row++) for (let column = 0; column < 8; column++) {
+    expect(diagram.cells[row * 8 + column]).toEqual({ key: row + 1, query: column + 1, formula: `K${row + 1} · Q${column + 1}` });
+  }
   await expect(page.locator('.advanced-reading:visible')).toContainText('输出投影 Wₒ');
   await expect(page.locator('.advanced-reading:visible')).toContainText('模型并不会提前规定');
   await expect(page.locator('.head-flow-branches > div')).toHaveText(['头 1（64 维）', '头 2（64 维）', '头 8（64 维）']);
